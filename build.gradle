@@ -1,0 +1,50 @@
+plugins {
+    id 'org.springframework.boot' version '2.6.4'
+    id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+    id 'java'
+}
+
+group = 'com.steepCliff'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '1.8'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+    // jpa
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    // mysql
+    runtimeOnly 'mysql:mysql-connector-java'
+    // h2
+    runtimeOnly 'com.h2database:h2'
+    // spring web
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    // websocket
+    implementation 'org.springframework.boot:spring-boot-starter-websocket'
+    // redis
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+    //embedded redis
+    implementation 'it.ozimov:embedded-redis:0.7.2'
+    implementation 'org.webjars.bower:bootstrap:4.3.1'
+    implementation 'org.webjars.bower:vue:2.5.16'
+    implementation 'org.webjars.bower:axios:0.17.1'
+    implementation 'org.webjars:sockjs-client:1.1.2'
+    implementation 'org.webjars:stomp-websocket:2.3.3-1'
+    implementation 'com.google.code.gson:gson:2.8.0'
+    implementation 'io.jsonwebtoken:jjwt:0.9.1'
+    implementation 'javax.xml.bind:jaxb-api'
+
+    //test
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.security:spring-security-test'
+
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
