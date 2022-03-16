@@ -15,7 +15,7 @@ public class BwRoomResponseDto {
 
     private Integer time;
 
-    public BwRoomResponseDto(Long roomId, Integer headCount, Integer time) {
+    public BwRoomResponseDto(Long roomId,Integer headCount, Integer time) {
         this.roomId = roomId;
         this.headCount = headCount;
         this.time = time;

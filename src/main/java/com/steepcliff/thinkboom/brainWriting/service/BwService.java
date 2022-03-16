@@ -51,7 +51,7 @@ public class BwService {
 
         bwRoomRepository.save(bwRoom);
 
-        return new BwRoomResponseDto(bwRoom.getId(), requestDto.getHeadCount(), requestDto.getTime());
+        return new BwRoomResponseDto(bwRoom.getId(),requestDto.getHeadCount(), requestDto.getTime());
     }
 
     // 브레인 라이팅 닉네임 입력.
@@ -67,6 +67,7 @@ public class BwService {
         if(room.getHostId() == null) {
             room.setHostId(user.getId());
         }
+        bwRoomRepository.save(room);
 
         bwUserRoomRepository.save(new BwUserRoom(user, room));
 

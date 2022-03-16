@@ -8,7 +8,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class ChatMessageResponseDto {
+public class EnterMessageResponseDto {
 
     public enum MessageType {
         ENTER, TALK, QUIT
@@ -27,7 +27,7 @@ public class ChatMessageResponseDto {
     private String createdAt;
 
     @Builder
-    public ChatMessageResponseDto(MessageType type, String roomId, Long senderId, String sender, String message, String createdAt) {
+    public EnterMessageResponseDto(MessageType type, String roomId, Long senderId, String sender, String message, String createdAt) {
         this.type = type;
         this.roomId = roomId;
         this.senderId = senderId;

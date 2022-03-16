@@ -1,7 +1,6 @@
 package com.steepcliff.thinkboom.webSocket;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
@@ -25,21 +24,6 @@ public class RedisConfig {
         redisTemplate.setValueSerializer(new Jackson2JsonRedisSerializer<>(String.class));
         return redisTemplate;
     }
-
-    // BrainWriting을 위한 Topic 설정
-//    @Bean
-//    @Qualifier("BwChannelTopic")
-//    public ChannelTopic BwChannelTopic() {
-//        return new ChannelTopic("BwMessageResponseDto");
-//    }
-//
-//    // SixHat을 위한 Topic 설정
-//    @Bean
-//    @Qualifier("ShChannelTopic")
-//    public ChannelTopic ShChannelTopic() {
-//        return new ChannelTopic("BwMessageResponseDto");
-//    }
-
 
     @Bean
     public ChannelTopic ChannelTopic() {

@@ -2,7 +2,7 @@ package com.steepcliff.thinkboom.webSocket;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.steepcliff.thinkboom.brainWriting.dto.BwMessageResponseDto;
-import com.steepcliff.thinkboom.sixHat.SixHat;
+import com.steepcliff.thinkboom.sixHat.dto.ShMessageResponseDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
@@ -35,9 +35,9 @@ public class RedisSubscriber {
     public void ShSendMessage(String publishMessage) {
         try {
             log.info("ShSendMessage");
-            BwMessageResponseDto bwMessageResponseDto = objectMapper.readValue(publishMessage, BwMessageResponseDto.class);
+            ShMessageResponseDto shMessageResponseDto = objectMapper.readValue(publishMessage, ShMessageResponseDto.class);
 
-            messagingTemplate.convertAndSend("/sub/api/sixHat/rooms/" + bwMessageResponseDto.getRoomId(), bwMessageResponseDto);
+            messagingTemplate.convertAndSend("/subSH/api/sixHat/rooms/" + shMessageResponseDto.getRoomId(), shMessageResponseDto);
         } catch (Exception e) {
             log.error("Exception {}", e);
         }

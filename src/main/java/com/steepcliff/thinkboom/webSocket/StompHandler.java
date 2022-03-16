@@ -1,6 +1,6 @@
 package com.steepcliff.thinkboom.webSocket;
 
-import com.steepcliff.thinkboom.chat.ChatMessageResponseDto;
+import com.steepcliff.thinkboom.chat.EnterMessageResponseDto;
 import com.steepcliff.thinkboom.chat.ChatRoomService;
 import com.steepcliff.thinkboom.chat.ChatMessageService;
 import com.steepcliff.thinkboom.user.User;
@@ -51,9 +51,9 @@ public class StompHandler implements ChannelInterceptor {
                     NullPointerException::new
             );
 
-            chatMessageService.EnterChatMessage(ChatMessageResponseDto
+            chatMessageService.EnterChatMessage(EnterMessageResponseDto
                     .builder()
-                    .type(ChatMessageResponseDto.MessageType.ENTER)
+                    .type(EnterMessageResponseDto.MessageType.ENTER)
                     .roomId(roomId)
                     .sender(user.getNickname())
                     .build());

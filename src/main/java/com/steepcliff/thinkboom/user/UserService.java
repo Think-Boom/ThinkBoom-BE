@@ -3,6 +3,8 @@ package com.steepcliff.thinkboom.user;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
+
 @Service
 public class UserService {
 
@@ -18,7 +20,7 @@ public class UserService {
                 ()-> new IllegalArgumentException("찾는 유저가 없습니다")
         );
     }
-
+    @Transactional
     public User save(String nickname) {
 
         return userRepository.save(new User(nickname));
