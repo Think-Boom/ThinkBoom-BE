@@ -1,0 +1,33 @@
+#spring:
+#  profiles:
+#    active: local
+#  redis:
+#    host: localhost
+#    port: 6379
+#
+#
+#  datasource:
+#    driver-class-name: com.mysql.cj.jdbc.Driver
+#    url: jdbc:mysql://127.0.0.1:3306/sixhat?useSSL=false&useUnicode=true&serverTimezone=Asia/Seoul
+#    #url: jdbc:mysql://springboot-database.co1pd3ntey2p.ap-northeast-2.rds.amazonaws.com:3306/myselectshop
+#    username: root
+#    password: corud
+#
+#
+#  jpa:
+#    hibernate:
+#      ddl-auto: create  #none,update,validate
+#    properties:
+#      hibernate:
+#        format_sql: true
+#
+#  jackson:
+#    property-naming-strategy: SNAKE_CASE
+#
+#
+#logging.level:
+#  org.hibernate.SQL: debug
+#  org.apache.coyote.http11: debug
+#
+#
+#
