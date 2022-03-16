@@ -1,5 +1,7 @@
 package com.steepcliff.thinkboom.chat;
 
+import com.steepcliff.thinkboom.brainWriting.domain.BwChatMessage;
+import com.steepcliff.thinkboom.brainWriting.dto.BwMessageResponseDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -13,6 +15,7 @@ public class ChatMessageService {
 
     private final ChannelTopic channelTopic;
     private final RedisTemplate redisTemplate;
+
 
     // destination 정보에서 roomId 추출
     public String getRoomId(String destination) {
@@ -40,5 +43,15 @@ public class ChatMessageService {
         }
 
         redisTemplate.convertAndSend(channelTopic.getTopic(), chatMessageResponseDto);
+    }
+
+    public void SendChatMessage(BwMessageResponseDto bwMessageResponseDto) {
+        log.info("SendChatMessage 시작");
+        redisTemplate.convertAndSend(channelTopic.getTopic(), bwMessageResponseDto);
+    }
+
+    public void SendChatMessage2(BwMessageResponseDto bwMessageResponseDto) {
+        log.info("SendChatMessage2 시작");
+        redisTemplate.convertAndSend(channelTopic.getTopic(), bwMessageResponseDto);
     }
 }

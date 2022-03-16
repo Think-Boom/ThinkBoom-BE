@@ -3,15 +3,16 @@ package com.steepcliff.thinkboom.brainWriting.dto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 
-@Getter
+import java.util.List;
+
 @Setter
+@Getter
 @AllArgsConstructor
-public class BwRoomRequestDto {
+public class BwIdeaListDto {
 
-    private Integer headCount;
+    private Boolean endComment;
 
-    private Integer time;
+    private List<BwIdeaListItem> bwIdeaListItemList;
 
 }
