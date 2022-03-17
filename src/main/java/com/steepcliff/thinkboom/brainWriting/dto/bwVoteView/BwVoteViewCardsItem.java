@@ -1,5 +1,6 @@
 package com.steepcliff.thinkboom.brainWriting.dto.bwVoteView;
 
+import com.steepcliff.thinkboom.brainWriting.domain.BwComments;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -13,5 +14,5 @@ public class BwVoteViewCardsItem {
 
     private String idea;
 
-    private List<String> commentsList;
+    private List<BwComments> commentsList;
 }

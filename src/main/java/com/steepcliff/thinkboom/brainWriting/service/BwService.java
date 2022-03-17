@@ -1,5 +1,6 @@
 package com.steepcliff.thinkboom.brainWriting.service;
 
+import com.steepcliff.thinkboom.brainWriting.domain.BwComments;
 import com.steepcliff.thinkboom.brainWriting.domain.BwIdea;
 import com.steepcliff.thinkboom.brainWriting.domain.BwRoom;
 import com.steepcliff.thinkboom.brainWriting.domain.BwUserRoom;
@@ -12,6 +13,7 @@ import com.steepcliff.thinkboom.brainWriting.dto.bwVote.BwVoteRequestDto;
 import com.steepcliff.thinkboom.brainWriting.dto.bwVote.BwVoteResponseDto;
 import com.steepcliff.thinkboom.brainWriting.dto.bwVoteView.BwVoteViewCardsItem;
 import com.steepcliff.thinkboom.brainWriting.dto.bwVoteView.BwVoteViewResponseDto;
+import com.steepcliff.thinkboom.brainWriting.repository.BwCommentsRepository;
 import com.steepcliff.thinkboom.brainWriting.repository.BwIdeaRepository;
 import com.steepcliff.thinkboom.brainWriting.repository.BwRoomRepository;
 import com.steepcliff.thinkboom.brainWriting.repository.BwUserRoomRepository;
@@ -35,13 +37,15 @@ public class BwService {
     private final BwUserRoomRepository bwUserRoomRepository;
     private final UserService userService;
     private final BwIdeaRepository bwIdeaRepository;
+    private final BwCommentsRepository bwCommentsRepository;
 
     @Autowired
-    public BwService(BwRoomRepository bwRoomRepository, BwUserRoomRepository bwUserRoomRepository, UserService userService, BwIdeaRepository bwIdeaRepository) {
+    public BwService(BwRoomRepository bwRoomRepository, BwUserRoomRepository bwUserRoomRepository, UserService userService, BwIdeaRepository bwIdeaRepository, BwCommentsRepository bwCommentsRepository) {
         this.bwRoomRepository = bwRoomRepository;
         this.bwUserRoomRepository = bwUserRoomRepository;
         this.userService = userService;
         this.bwIdeaRepository = bwIdeaRepository;
+        this.bwCommentsRepository = bwCommentsRepository;
     }
 
     // 브레인 라이팅 방 생성.
@@ -94,7 +98,7 @@ public class BwService {
             User user = userQueue.poll();
             userQueue.add(user);
 
-            BwIdea bwIdea = new BwIdea(user, sequence.toString(), false,bwRoom);
+            BwIdea bwIdea = new BwIdea(user, sequence.toString(),bwRoom);
 
             bwIdeaList.add(bwIdea);
         }
@@ -103,7 +107,7 @@ public class BwService {
         // 테스트용
 //        List<BwIdea> bwIdeaListTest = bwIdeaRepository.findAllByBwRoom(bwRoom);
         for (BwIdea bwIdea : bwIdeaListTest) {
-            log.info("{} {}", bwIdea.getId(),bwIdea.getSequence());
+            log.info("{} {}", bwIdea.getId(),bwIdea.getBwSequence());
         }
     }
 
@@ -130,23 +134,23 @@ public class BwService {
                 () -> new NullPointerException("해당 방이 존재하지 않습니다.")
         );
 
-        List<BwIdea> bwIdeaList = bwIdeaRepository.findAllByBwRoomAndIsComment(bwRoom, false);
+        List<BwIdea> bwIdeaList = bwIdeaRepository.findAllByBwRoom(bwRoom);
         List<BwIdeaListItem> bwIdeaListItemList = new ArrayList<>();
 
-        Boolean endComment = false;
+        boolean endComment = false;
         for(BwIdea bwIdea:bwIdeaList) {
             BwIdeaListItem bwIdeaListItem = new BwIdeaListItem();
 
-            String[] strings = bwIdea.getSequence().split(":");
+            String[] strings = bwIdea.getBwSequence().split(":");
 
-            bwIdeaListItem.setViewUserId(Long.valueOf(strings[bwIdea.getIndex()]));
+            bwIdeaListItem.setViewUserId(Long.valueOf(strings[bwIdea.getBwIndex()]));
             bwIdeaListItem.setIdeaId(bwIdea.getId());
             bwIdeaListItem.setIdea(bwIdea.getIdea());
             bwIdeaListItemList.add(bwIdeaListItem);
 
-            bwIdea.setIndex(bwIdea.getIndex()+1);
+            bwIdea.setBwIndex(bwIdea.getBwIndex()+1);
             bwIdeaRepository.save(bwIdea);
-            if(bwIdea.getIndex().equals(bwRoom.getHeadCount())) {
+            if(bwIdea.getBwIndex().equals(bwRoom.getHeadCount())) {
                 endComment = true;
             }
         }
@@ -159,19 +163,19 @@ public class BwService {
                 () -> new NullPointerException("해당 방이 존재하지 않습니다.")
         );
         User user =userService.findById(requestDto.getUserId());
-        BwIdea parentsBwIdea = bwIdeaRepository.findById(requestDto.getIdeaId()).orElseThrow(
+        BwIdea bwIdea = bwIdeaRepository.findById(requestDto.getIdeaId()).orElseThrow(
                 () -> new NullPointerException("해당 아이디어가 존재하지 않습니다.")
         );
 
-        BwIdea bwIdea = new BwIdea();
-        bwIdea.setIdea(requestDto.getComment());
-        bwIdea.setUser(user);
-        bwIdea.setBwRoom(bwRoom);
-        bwIdea.setBwIdea(parentsBwIdea);
-        bwIdea.setIsComment(true);
-        bwIdeaRepository.save(bwIdea);
+        BwComments bwComments = new BwComments();
+        bwComments.setComments(requestDto.getComment());
+        bwComments.setUser(user);
+        bwComments.setBwRoom(bwRoom);
+        bwComments.setBwIdea(bwIdea);
 
-        return new BwCommentResponseDto(bwIdea.getId(), bwIdea.getUser().getId(), bwIdea.getIdea());
+        bwCommentsRepository.save(bwComments);
+
+        return new BwCommentResponseDto(bwComments.getBwIdea().getId(), bwComments.getUser().getId(), bwComments.getComments());
     }
 
     // 투표뷰 데이터 주기.
@@ -183,22 +187,17 @@ public class BwService {
 
         List<BwVoteViewCardsItem> bwVoteViewCardsItemList = new ArrayList<>();
 
-        List<BwIdea> bwIdeaList = bwIdeaRepository.findAllByBwRoomAndIsComment(bwRoom, false);
+        List<BwIdea> bwIdeaList = bwIdeaRepository.findAllByBwRoom(bwRoom);
 
         for(BwIdea bwIdea : bwIdeaList) {
 
-            List<BwIdea> bwCommentList = bwIdeaRepository.findAllByBwIdeaAndIsComment(bwIdea, true);
-            List<String> bwCommentStringList = new ArrayList<>();
-            for(BwIdea bwComment : bwCommentList) {
-                bwCommentStringList.add(bwComment.getIdea());
-            }
-
+            List<BwComments> bwCommentsList = bwCommentsRepository.findAllByBwIdea(bwIdea);
 
             BwVoteViewCardsItem bwVoteViewCardsItem = new BwVoteViewCardsItem();
 
             bwVoteViewCardsItem.setIdeaId(bwIdea.getId());
             bwVoteViewCardsItem.setIdea(bwIdea.getIdea());
-            bwVoteViewCardsItem.setCommentsList(bwCommentStringList);
+            bwVoteViewCardsItem.setCommentsList(bwCommentsList);
 
             bwVoteViewCardsItemList.add(bwVoteViewCardsItem);
         }
