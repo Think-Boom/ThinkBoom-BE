@@ -42,7 +42,7 @@ public class ShService {
 
         shRoomRepository.save(shRoom);
 
-        return new ShRoomResponseDto(shRoom.getId(),shRoom.getTitle() ,shRoom.getHeadCount(), shRoom.getTime());
+        return new ShRoomResponseDto(String.valueOf(shRoom.getId()),shRoom.getTitle() ,shRoom.getHeadCount(), shRoom.getTime());
     }
 
     // 시스햇 닉네임 입력
@@ -61,7 +61,7 @@ public class ShService {
 
         shUserRoomRepository.save(new ShUserRoom(user, shRoom));
         log.info("shRoom.getId() {} user.getId() {}",shRoom.getId(), user.getId());
-        return new ShNickResponseDto(shRoom.getId(), user.getId(), user.getNickname());
+        return new ShNickResponseDto(String.valueOf(shRoom.getId()), user.getId(), user.getNickname());
     }
 
 

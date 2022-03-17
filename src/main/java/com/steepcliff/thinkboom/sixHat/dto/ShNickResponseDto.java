@@ -7,13 +7,13 @@ import lombok.Setter;
 @Setter
 public class ShNickResponseDto {
 
-    private Long roomId;
+    private String roomId;
 
     private Long userId;
 
     private String nickname;
 
-    public ShNickResponseDto(Long roomId, Long userId, String nickname) {
+    public ShNickResponseDto(String roomId, Long userId, String nickname) {
         this.roomId = roomId;
         this.userId = userId;
         this.nickname = nickname;

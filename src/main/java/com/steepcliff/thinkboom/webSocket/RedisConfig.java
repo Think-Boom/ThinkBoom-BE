@@ -7,6 +7,7 @@ import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.data.redis.listener.RedisMessageListenerContainer;
+import org.springframework.data.redis.listener.Topic;
 import org.springframework.data.redis.listener.adapter.MessageListenerAdapter;
 import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
@@ -27,9 +28,9 @@ public class RedisConfig {
 
     @Bean
     public ChannelTopic ChannelTopic() {
+
         return new ChannelTopic("thinkBoom");
     }
-
 
 
     @Bean
@@ -46,11 +47,13 @@ public class RedisConfig {
     @Bean
     public RedisMessageListenerContainer ShRedisMessageListener(RedisConnectionFactory connectionFactory,
                                                                 MessageListenerAdapter ShListenerAdapter,
+//                                                                MessageListenerAdapter BwListenerAdapter,
                                                                 ChannelTopic ChannelTopic) {
         log.info("six hat messageListener start");
         RedisMessageListenerContainer container = new RedisMessageListenerContainer();
         container.setConnectionFactory(connectionFactory);
         container.addMessageListener(ShListenerAdapter, ChannelTopic);
+//        container.addMessageListener(BwListenerAdapter, ChannelTopic);
         return container;
     }
 
@@ -59,6 +62,7 @@ public class RedisConfig {
     // 이 곳으로 메시지가 던져짐.
     @Bean
     public MessageListenerAdapter BwListenerAdapter(RedisSubscriber subscriber) {
+        ;
         log.info("BwListenerAdapter");
         return new MessageListenerAdapter(subscriber, "BwSendMessage");
     }

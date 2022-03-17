@@ -9,7 +9,7 @@ import lombok.Setter;
 @AllArgsConstructor
 public class ShRoomResponseDto {
 
-    private Long shRoomId;
+    private String shRoomId;
 
     private String title;
 
