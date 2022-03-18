@@ -3,7 +3,6 @@ package com.steepcliff.thinkboom.randomWord.controller;
 
 import com.steepcliff.thinkboom.randomWord.dto.RwRequestDto;
 import com.steepcliff.thinkboom.randomWord.dto.RwResponseDto;
-import com.steepcliff.thinkboom.randomWord.dto.WordDto;
 import com.steepcliff.thinkboom.randomWord.service.RandomWordService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -19,7 +18,7 @@ public class RandomWordController {
 
     //런덤한 단어를 받는 요청
     @GetMapping("/randomWord")
-    public List<WordDto> getWordList() {
+    public List<String> getWordList() {
         return wordService.getWord();
     }
 

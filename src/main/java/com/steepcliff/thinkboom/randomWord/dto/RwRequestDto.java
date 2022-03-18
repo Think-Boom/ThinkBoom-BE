@@ -9,5 +9,5 @@ import java.util.List;
 @Setter
 @Getter
 public class RwRequestDto {
-    List<WordDto> wordList;
+    List<String> wordList;
 }
