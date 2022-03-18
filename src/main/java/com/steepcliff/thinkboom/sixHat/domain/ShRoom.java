@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 
@@ -15,9 +16,9 @@ import javax.persistence.*;
 public class ShRoom {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column
-    private Long id;
+    @GeneratedValue(generator = "uuid")
+    @GenericGenerator(name = "uuid", strategy = "uuid2")
+    private String id;
 
     @Column
     private String title;
@@ -26,7 +27,7 @@ public class ShRoom {
     private Integer headCount;
 
     @Column
-    private Integer time;
+    private Integer shTimer;
 
     @Column
     private String subject;
@@ -34,10 +35,14 @@ public class ShRoom {
     @Column
     private Long hostId;
 
+    @Column
+    private Integer currentUsers;
 
-    public ShRoom(String title, Integer headCount, Integer time) {
+
+    public ShRoom(String title, Integer headCount, Integer shTimer, Integer currentUsers) {
         this.title = title;
         this.headCount = headCount;
-        this.time = time;
+        this.shTimer = shTimer;
+        this.currentUsers = currentUsers;
     }
 }

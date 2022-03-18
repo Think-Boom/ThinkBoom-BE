@@ -2,6 +2,7 @@ package com.steepcliff.thinkboom.sixHat.domain;
 
 import com.steepcliff.thinkboom.user.User;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
@@ -9,10 +10,11 @@ import javax.persistence.*;
 @Entity
 @Setter
 @Getter
+@NoArgsConstructor
 public class ShChatMessage {
 
     public enum MessageType {
-        ENTER, TALK, QUIT, HAT
+        ENTER, TALK, DEBATING, QUIT, HAT, SUBJECT
     }
 
     @Id
@@ -32,11 +34,11 @@ public class ShChatMessage {
     @Column
     private String createdAt;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "shroom_id")
     private ShRoom shRoom;
 

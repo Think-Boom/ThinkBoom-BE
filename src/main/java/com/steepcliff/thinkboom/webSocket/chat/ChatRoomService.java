@@ -1,4 +1,4 @@
-package com.steepcliff.thinkboom.chat;
+package com.steepcliff.thinkboom.webSocket.chat;
 
 import com.steepcliff.thinkboom.brainWriting.domain.BwRoom;
 import com.steepcliff.thinkboom.brainWriting.dto.BwRoomRequestDto;
@@ -43,10 +43,10 @@ public class ChatRoomService {
 
     // brain writing 채팅방 생성
     public BwRoomResponseDto bwCreateChatRoom(BwRoomRequestDto requestDto) {
-        BwRoom brainWritingRoom = new BwRoom(requestDto.getHeadCount(), requestDto.getTime());
+        BwRoom brainWritingRoom = new BwRoom(requestDto.getHeadCount(), requestDto.getTime(), 0);
         bwRoomRepository.save(brainWritingRoom);
 
-        return new BwRoomResponseDto(brainWritingRoom.getId(), brainWritingRoom.getHeadCount(), brainWritingRoom.getTime());
+        return new BwRoomResponseDto(brainWritingRoom.getId(), brainWritingRoom.getHeadCount(), brainWritingRoom.getTimer());
     }
 
 

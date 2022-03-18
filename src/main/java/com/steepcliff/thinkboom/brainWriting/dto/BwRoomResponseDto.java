@@ -9,13 +9,13 @@ import lombok.Setter;
 @NoArgsConstructor
 public class BwRoomResponseDto {
 
-    private Long roomId;
+    private String roomId;
 
     private Integer headCount;
 
     private Integer time;
 
-    public BwRoomResponseDto(Long roomId,Integer headCount, Integer time) {
+    public BwRoomResponseDto(String roomId,Integer headCount, Integer time) {
         this.roomId = roomId;
         this.headCount = headCount;
         this.time = time;

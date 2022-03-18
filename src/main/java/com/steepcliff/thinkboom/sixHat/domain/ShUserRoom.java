@@ -1,8 +1,7 @@
 package com.steepcliff.thinkboom.sixHat.domain;
 
-import com.steepcliff.thinkboom.brainWriting.domain.BwRoom;
+
 import com.steepcliff.thinkboom.user.User;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -32,5 +31,4 @@ public class ShUserRoom {
         this.user = user;
         this.shRoom = shRoom;
     }
-
 }

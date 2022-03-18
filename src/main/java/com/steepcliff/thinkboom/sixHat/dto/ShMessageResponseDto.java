@@ -18,6 +18,8 @@ public class ShMessageResponseDto {
 
     private String hat;
 
+    private String subject;
+
     private String message;
 
     private String createdAt;

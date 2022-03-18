@@ -7,7 +7,6 @@ import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.data.redis.listener.RedisMessageListenerContainer;
-import org.springframework.data.redis.listener.Topic;
 import org.springframework.data.redis.listener.adapter.MessageListenerAdapter;
 import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
@@ -70,6 +69,7 @@ public class RedisConfig {
     @Bean
     public MessageListenerAdapter ShListenerAdapter(RedisSubscriber subscriber) {
         log.info("ShListenerAdapter");
+
         return new MessageListenerAdapter(subscriber, "ShSendMessage");
     }
 }

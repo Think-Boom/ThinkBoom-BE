@@ -1,6 +1,7 @@
 package com.steepcliff.thinkboom.sixHat.controller;
 
 import com.steepcliff.thinkboom.sixHat.ShMessageService;
+import com.steepcliff.thinkboom.sixHat.domain.ShChatMessage;
 import com.steepcliff.thinkboom.sixHat.dto.ShMessageRequestDto;
 import com.steepcliff.thinkboom.sixHat.dto.ShMessageResponseDto;
 import lombok.extern.slf4j.Slf4j;
@@ -43,13 +44,15 @@ public class ShMessageController {
         shMessageResponseDto.setHat(requestDto.getHat());
         shMessageResponseDto.setSender(requestDto.getSender());
         shMessageResponseDto.setSenderId(requestDto.getSenderId());
+        shMessageResponseDto.setSubject(requestDto.getSubject());
         shMessageResponseDto.setCreatedAt(dateResult);
 
         shMessageService.SendShChatMessage(shMessageResponseDto);
 
         log.info("sendBwChatMessage 완료 userId {}", shMessageResponseDto.getSenderId());
-
-        shMessageService.save(shMessageResponseDto);
+        if(shMessageResponseDto.getType().equals(ShChatMessage.MessageType.DEBATING)) {
+            shMessageService.save(shMessageResponseDto);
+        }
         log.info("six hat message controller 끝");
     }
 }

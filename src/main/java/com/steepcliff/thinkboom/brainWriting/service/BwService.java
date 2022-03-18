@@ -51,7 +51,7 @@ public class BwService {
     // 브레인 라이팅 방 생성.
     public BwRoomResponseDto createBwRoom(BwRoomRequestDto requestDto) {
 
-        BwRoom bwRoom = new BwRoom(requestDto.getHeadCount(), requestDto.getTime());
+        BwRoom bwRoom = new BwRoom(requestDto.getHeadCount(), requestDto.getTime(), 0);
 
         bwRoomRepository.save(bwRoom);
 
@@ -98,7 +98,7 @@ public class BwService {
             User user = userQueue.poll();
             userQueue.add(user);
 
-            BwIdea bwIdea = new BwIdea(user, sequence.toString(),bwRoom);
+            BwIdea bwIdea = new BwIdea(user, sequence.toString(),bwRoom, 1, 0);
 
             bwIdeaList.add(bwIdea);
         }
@@ -228,5 +228,34 @@ public class BwService {
         return new BwVoteResponseDto(bwRoom.getHeadCount(), bwRoom.getPresentVoted());
     }
 
+    // 인원 1증가
+    @Transactional
+    public void plusUserCount(String roomId) {
 
+        BwRoom bwRoom = bwRoomRepository.findById(Long.valueOf(roomId)).orElseThrow(
+                () -> new NullPointerException("해당 방이 존재하지 않습니다.")
+        );
+
+        bwRoom.setCurrentUsers(bwRoom.getCurrentUsers() + 1);
+
+        bwRoomRepository.save(bwRoom);
+    }
+
+    // 인원 1 감소
+    @Transactional
+    public void minusUserCount(String roomId) {
+        BwRoom bwRoom = bwRoomRepository.findById(Long.valueOf(roomId)).orElseThrow(
+                () -> new NullPointerException("해당 방이 존재하지 않습니다.")
+        );
+
+        bwRoom.setCurrentUsers(bwRoom.getCurrentUsers() -1);
+        bwRoomRepository.save(bwRoom);
+    }
+
+    // 브레인 라이팅 방 찾기
+    public BwRoom findBwRoom(String roomId) {
+        return bwRoomRepository.findById(Long.valueOf(roomId)).orElseThrow(
+                () -> new NullPointerException("해당 방이 존재하지 않습니다.")
+        );
+    }
 }

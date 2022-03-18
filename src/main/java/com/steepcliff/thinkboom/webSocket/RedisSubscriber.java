@@ -27,6 +27,9 @@ public class RedisSubscriber {
             BwMessageResponseDto bwMessageResponseDto = objectMapper.readValue(publishMessage, BwMessageResponseDto.class);
 
             messagingTemplate.convertAndSend("/sub/api/brainWriting/rooms/" + bwMessageResponseDto.getRoomId(), bwMessageResponseDto);
+
+            ShMessageResponseDto shMessageResponseDto = objectMapper.readValue(publishMessage, ShMessageResponseDto.class);
+            messagingTemplate.convertAndSend("/subSH/api/sixHat/rooms/" + shMessageResponseDto.getRoomId(), shMessageResponseDto);
         } catch (Exception e) {
             log.error("Exception {}", e);
         }

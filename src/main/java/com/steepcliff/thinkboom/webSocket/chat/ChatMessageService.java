@@ -1,6 +1,5 @@
-package com.steepcliff.thinkboom.chat;
+package com.steepcliff.thinkboom.webSocket.chat;
 
-import com.steepcliff.thinkboom.brainWriting.dto.BwMessageResponseDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -25,18 +24,16 @@ public class ChatMessageService {
             return "";
     }
 
-    public void EnterChatMessage(EnterMessageResponseDto enterMessageResponseDto) {
-        if(EnterMessageResponseDto.MessageType.ENTER.equals(enterMessageResponseDto.getType())) {
+    public void EnterQuitChatMessage(EnterQuitMessageResponseDto enterMessageResponseDto) {
+        if(EnterQuitMessageResponseDto.MessageType.ENTER.equals(enterMessageResponseDto.getType())) {
 
-            enterMessageResponseDto.setMessage(enterMessageResponseDto.getSender() + "님이 방에 입장했습니다.");
-            enterMessageResponseDto.setSender("[알림]");
+            enterMessageResponseDto.setMessage("[알림] "+ enterMessageResponseDto.getSender() + "님이 방에 입장했습니다.");
 
             log.info("ENTER 데이터 {}", enterMessageResponseDto.getMessage());
         }
-        else if (EnterMessageResponseDto.MessageType.QUIT.equals(enterMessageResponseDto.getType())) {
+        else if (EnterQuitMessageResponseDto.MessageType.QUIT.equals(enterMessageResponseDto.getType())) {
 
-            enterMessageResponseDto.setMessage(enterMessageResponseDto.getSender() + "님이 방에서 나갔습니다.");
-            enterMessageResponseDto.setSender("[알림]");
+            enterMessageResponseDto.setMessage("[알림] " + enterMessageResponseDto.getSender() + "님이 방에서 나갔습니다.");
 
             log.info("QUIT 데이터 {}", enterMessageResponseDto.getMessage());
         }

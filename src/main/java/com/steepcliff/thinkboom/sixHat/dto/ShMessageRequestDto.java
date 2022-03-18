@@ -12,6 +12,7 @@ public class ShMessageRequestDto {
     private ShChatMessage.MessageType type;
     private String roomId;
     private Long senderId;
+    private String subject;
     private String hat;
     private String sender;
     private String message;

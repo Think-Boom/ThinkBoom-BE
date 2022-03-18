@@ -17,5 +17,4 @@ public class ShRoomResponseDto {
 
     private Integer timer;
 
-
 }

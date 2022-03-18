@@ -3,6 +3,7 @@ package com.steepcliff.thinkboom.brainWriting.domain;
 import com.steepcliff.thinkboom.user.User;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.DynamicInsert;
 
 import javax.persistence.*;
 
@@ -12,6 +13,7 @@ import javax.persistence.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
+@DynamicInsert
 public class BwIdea {
 
     @Id
@@ -38,16 +40,16 @@ public class BwIdea {
     private String bwSequence;
 
     @Column
-    @ColumnDefault("1")
     private Integer bwIndex;
 
     @Column
-    @ColumnDefault("0")
     private Integer numberOfVotes;
 
-    public BwIdea(User user, String bwSequence, BwRoom bwRoom) {
+    public BwIdea(User user, String bwSequence, BwRoom bwRoom, Integer bwIndex, Integer numberOfVotes) {
         this.user = user;
         this.bwSequence = bwSequence;
         this.bwRoom = bwRoom;
+        this.bwIndex = bwIndex;
+        this.numberOfVotes = numberOfVotes;
     }
 }
