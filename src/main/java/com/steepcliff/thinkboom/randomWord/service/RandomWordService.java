@@ -1,7 +1,6 @@
 package com.steepcliff.thinkboom.randomWord.service;
 
 
-import com.steepcliff.thinkboom.randomWord.dto.RwRequestDto;
 import com.steepcliff.thinkboom.randomWord.dto.RwResponseDto;
 import com.steepcliff.thinkboom.randomWord.model.RandomWord;
 import com.steepcliff.thinkboom.randomWord.model.RwWd;
@@ -46,9 +45,9 @@ public class RandomWordService {
     }
 
     //사용자가 전달한 단어들을 DB에 저장하기
-    public RwResponseDto saveWord(RwRequestDto requestDto){
+    public RwResponseDto saveWord(List<String> request){
         //사용자에게 전달받은 단어 리스트
-        List<String> wordDtoList = requestDto.getWordList();
+        List<String> wordDtoList = request;
         RandomWord randomWord = new RandomWord();
         //UUID를 통해 고유값 전달(중복될 가능성이 있어서 추후 수정할 수도 있음)/UUID가 너무 길기 때문에 8글자로 자름
         String uuid = UUID.randomUUID().toString().substring(0,8);
@@ -64,7 +63,7 @@ public class RandomWordService {
             rwWdRepository.save(rwWd);
         }
         RwResponseDto rwResponseDto = new RwResponseDto();
-        rwResponseDto.setWordList(requestDto.getWordList());
+        rwResponseDto.setWordList(request);
 
 
         rwResponseDto.setRwId(uuid);
