@@ -3,7 +3,6 @@ package com.steepcliff.thinkboom.randomWord.service;
 
 import com.steepcliff.thinkboom.randomWord.dto.RwRequestDto;
 import com.steepcliff.thinkboom.randomWord.dto.RwResponseDto;
-import com.steepcliff.thinkboom.randomWord.dto.WordDto;
 import com.steepcliff.thinkboom.randomWord.model.RandomWord;
 import com.steepcliff.thinkboom.randomWord.model.RwWd;
 import com.steepcliff.thinkboom.randomWord.model.Word;
@@ -25,57 +24,69 @@ public class RandomWordService {
     private final WordRepository wordRepository;
     private final RwWdRepository rwWdRepository;
 
-    public List<WordDto> getWord(){
+    //DB에서 랜덤한 단어 받아오기
+    public List<String> getWord(){
+        //난수를 발생하기 위한 random 객채 생성
         Random random=new Random();
-        List<WordDto> wordDtoList=new ArrayList<>();
-        while (wordDtoList.size()!=6){
-            int rint=random.nextInt(5888)+1;
+        //리턴할 wordDtoList 객체 생성
+        List<String> wordList = new ArrayList<>();
+        //사용자에게 전달할 단어의 갯수가 6개 이므로 리스트의 크기가 6이 될때까지 반복
+        while (wordList.size()!=6){
+            //random.nextInt를 통해 렌덤한 숫자 반환 (0이 나올수 있기때문에 +1)
+            int rint = random.nextInt(5467)+1;
+            System.out.println(rint);
+            //DB에서 rint와 id가 같은 단어를 찾아옴
             Word word=wordRepository.findById(Long.valueOf(rint)).orElseThrow(
                     ()->new NullPointerException("찾을단어가 없습니다.")
             );
-            WordDto wordDto=new WordDto();
-            wordDto.setWord(word.getWord());
-            wordDtoList.add(wordDto);
+            String wordStr = word.getWord();
+
+            wordList.add(wordStr);
         }
-        return wordDtoList;
+        return wordList;
     }
 
+    //사용자가 전달한 단어들을 DB에 저장하기
     public RwResponseDto saveWord(RwRequestDto requestDto){
-        List<WordDto> wordDtoList=requestDto.getWordList();
-        RandomWord randomWord=new RandomWord();
-        String uuid= UUID.randomUUID().toString().substring(0,8);
+        //사용자에게 전달받은 단어 리스트
+        List<String> wordDtoList = requestDto.getWordList();
+        RandomWord randomWord = new RandomWord();
+        //UUID를 통해 고유값 전달(중복될 가능성이 있어서 추후 수정할 수도 있음)/UUID가 너무 길기 때문에 8글자로 자름
+        String uuid = UUID.randomUUID().toString().substring(0,8);
         randomWord.setUuId(uuid);
         randomWordRepository.save(randomWord);
 
-        for(WordDto w:wordDtoList){
-            Word word=wordRepository.findWordByWord(w.getWord());
-            RwWd rwWd=new RwWd();
+        //전달받은 단어 리스트를 하나씩 꺼내서 DB에 저장
+        for(String w : wordDtoList){
+            Word word = wordRepository.findWordByWord(w);
+            RwWd rwWd = new RwWd();
             rwWd.setWord(word);
             rwWd.setRandomWord(randomWord);
             rwWdRepository.save(rwWd);
         }
-        RwResponseDto rwResponseDto=new RwResponseDto();
-        rwResponseDto.setWordList(requestDto.getWordList());
+        RwResponseDto rwResponseDto = new RwResponseDto();
+        rwResponseDto.setWordList(wordDtoList);
 
 
         rwResponseDto.setRwId(uuid);
         return rwResponseDto;
     }
 
+    //공유 여부 변경
     public String shareCheck(String uuId) {
+        //전달받은 UUID로 randomword객체를 찾아서 공유여부 변경
         RandomWord randomWord= randomWordRepository.findByUuId(uuId);
         randomWord.update();
         return "success";
     }
 
+    //랜덤워드 결과물에 대한 상세 정보 반환
     public RwResponseDto getRwGallery(String uuId) {
         RandomWord randomWord=randomWordRepository.findByUuId(uuId);
-        List<WordDto> wordDtoList=new ArrayList<>();
+        List<String> wordDtoList=new ArrayList<>();
         List<Word> dbWordList=rwWdRepository.findWordByRandomWord(randomWord);
-        for(Word w:dbWordList){
-            WordDto wordDto=new WordDto();
-            wordDto.setWord(w.getWord());
-            wordDtoList.add(wordDto);
+        for(Word w : dbWordList){
+            wordDtoList.add(w.getWord());
         }
         RwResponseDto rwResponseDto=new RwResponseDto();
         rwResponseDto.setRwId(uuId);
