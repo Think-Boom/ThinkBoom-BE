@@ -12,6 +12,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
+import java.util.HashSet;
+import java.util.Set;
+
 @EnableJpaAuditing
 @SpringBootApplication
 public class ThinkBoomApplication {
@@ -27,11 +30,16 @@ public class ThinkBoomApplication {
 //            String Url = "https://ko.wiktionary.org/wiki/%EB%B6%80%EB%A1%9D:%EC%9E%90%EC%A3%BC_%EC%93%B0%EC%9D%B4%EB%8A%94_%ED%95%9C%EA%B5%AD%EC%96%B4_%EB%82%B1%EB%A7%90_5800";
 //            Document doc = Jsoup.connect(Url).get();
 //            Elements elem = doc.select("table.prettytable");
+//            Set<String> wordSet=new HashSet<>();
 //            for (Element e : elem.select("a")) {
-//                Word word = new Word();
-//                word.setWord(e.text());
+//                wordSet.add(e.text());
+//            }
+//            for(String w:wordSet){
+//                Word word=new Word();
+//                word.setWord(w);
 //                wordRepository.save(word);
 //            }
+//
 //        };
 //    }
 }

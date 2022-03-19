@@ -1,6 +1,7 @@
 package com.steepcliff.thinkboom.randomWord.service;
 
 
+import com.steepcliff.thinkboom.randomWord.dto.RwRequestDto;
 import com.steepcliff.thinkboom.randomWord.dto.RwResponseDto;
 import com.steepcliff.thinkboom.randomWord.model.RandomWord;
 import com.steepcliff.thinkboom.randomWord.model.RwWd;
@@ -32,7 +33,8 @@ public class RandomWordService {
         //사용자에게 전달할 단어의 갯수가 6개 이므로 리스트의 크기가 6이 될때까지 반복
         while (wordList.size()!=6){
             //random.nextInt를 통해 렌덤한 숫자 반환 (0이 나올수 있기때문에 +1)
-            int rint = random.nextInt(5888)+1;
+            int rint = random.nextInt(5467)+1;
+            System.out.println(rint);
             //DB에서 rint와 id가 같은 단어를 찾아옴
             Word word=wordRepository.findById(Long.valueOf(rint)).orElseThrow(
                     ()->new NullPointerException("찾을단어가 없습니다.")
@@ -45,9 +47,9 @@ public class RandomWordService {
     }
 
     //사용자가 전달한 단어들을 DB에 저장하기
-    public RwResponseDto saveWord(List<String> request){
+    public RwResponseDto saveWord(RwRequestDto requestDto){
         //사용자에게 전달받은 단어 리스트
-        List<String> wordDtoList = request;
+        List<String> wordDtoList = requestDto.getWordList();
         RandomWord randomWord = new RandomWord();
         //UUID를 통해 고유값 전달(중복될 가능성이 있어서 추후 수정할 수도 있음)/UUID가 너무 길기 때문에 8글자로 자름
         String uuid = UUID.randomUUID().toString().substring(0,8);
@@ -63,7 +65,7 @@ public class RandomWordService {
             rwWdRepository.save(rwWd);
         }
         RwResponseDto rwResponseDto = new RwResponseDto();
-        rwResponseDto.setWordList(request);
+        rwResponseDto.setWordList(wordDtoList);
 
 
         rwResponseDto.setRwId(uuid);
