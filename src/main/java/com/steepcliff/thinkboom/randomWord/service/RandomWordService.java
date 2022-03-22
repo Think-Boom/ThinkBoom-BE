@@ -34,7 +34,6 @@ public class RandomWordService {
         while (wordList.size()!=6){
             //random.nextInt를 통해 렌덤한 숫자 반환 (0이 나올수 있기때문에 +1)
             int rint = random.nextInt(5467)+1;
-            System.out.println(rint);
             //DB에서 rint와 id가 같은 단어를 찾아옴
             Word word=wordRepository.findById(Long.valueOf(rint)).orElseThrow(
                     ()->new NullPointerException("찾을단어가 없습니다.")
@@ -75,14 +74,18 @@ public class RandomWordService {
     //공유 여부 변경
     public String shareCheck(String uuId) {
         //전달받은 UUID로 randomword객체를 찾아서 공유여부 변경
-        RandomWord randomWord= randomWordRepository.findByUuId(uuId);
+        RandomWord randomWord = randomWordRepository.findByUuId(uuId).orElseThrow(
+                ()->new NullPointerException("수정할 랜덤워드 결과가 없습니다.")
+        );
         randomWord.update();
         return "success";
     }
 
     //랜덤워드 결과물에 대한 상세 정보 반환
     public RwResponseDto getRwGallery(String uuId) {
-        RandomWord randomWord=randomWordRepository.findByUuId(uuId);
+        RandomWord randomWord = randomWordRepository.findByUuId(uuId).orElseThrow(
+                ()->new NullPointerException("반환할 랜덤워드 결과가 없습니다.")
+        );
         List<String> wordDtoList=new ArrayList<>();
         List<Word> dbWordList=rwWdRepository.findWordByRandomWord(randomWord);
         for(Word w : dbWordList){
