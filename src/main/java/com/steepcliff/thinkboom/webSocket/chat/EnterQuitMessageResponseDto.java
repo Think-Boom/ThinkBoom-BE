@@ -1,4 +1,4 @@
-package com.steepcliff.thinkboom.chat;
+package com.steepcliff.thinkboom.webSocket.chat;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -8,7 +8,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class ChatMessageResponseDto {
+public class EnterQuitMessageResponseDto {
 
     public enum MessageType {
         ENTER, TALK, QUIT
@@ -26,13 +26,19 @@ public class ChatMessageResponseDto {
 
     private String createdAt;
 
+    private Integer totalUser;
+
+    private Integer currentUser;
+
     @Builder
-    public ChatMessageResponseDto(MessageType type, String roomId, Long senderId, String sender, String message, String createdAt) {
+    public EnterQuitMessageResponseDto(MessageType type, String roomId, Long senderId, String sender, String message, String createdAt, Integer totalUser, Integer currentUser) {
         this.type = type;
         this.roomId = roomId;
         this.senderId = senderId;
         this.sender = sender;
         this.message = message;
         this.createdAt = createdAt;
+        this.totalUser = totalUser;
+        this.currentUser = currentUser;
     }
 }

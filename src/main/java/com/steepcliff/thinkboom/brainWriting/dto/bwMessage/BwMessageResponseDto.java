@@ -1,4 +1,4 @@
-package com.steepcliff.thinkboom.brainWriting.dto;
+package com.steepcliff.thinkboom.brainWriting.dto.bwMessage;
 
 import com.steepcliff.thinkboom.brainWriting.domain.BwChatMessage;
 import com.steepcliff.thinkboom.brainWriting.domain.BwRoom;
@@ -10,6 +10,7 @@ import lombok.Setter;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.*;
+import java.util.UUID;
 
 @Getter
 @Setter

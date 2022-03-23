@@ -1,4 +1,4 @@
-package com.steepcliff.thinkboom.brainWriting.dto;
+package com.steepcliff.thinkboom.brainWriting.dto.bwRoom;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -12,6 +12,8 @@ public class BwRoomRequestDto {
 
     private Integer headCount;
 
-    private Integer time;
+    private String title;
+
+    private Long time;
 
 }

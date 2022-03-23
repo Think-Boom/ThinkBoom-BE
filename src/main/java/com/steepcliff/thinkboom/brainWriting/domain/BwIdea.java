@@ -1,23 +1,19 @@
 package com.steepcliff.thinkboom.brainWriting.domain;
 
 import com.steepcliff.thinkboom.user.User;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.DynamicInsert;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
+
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@DynamicInsert
 @Entity
+@DynamicInsert
 public class BwIdea {
 
     @Id
@@ -36,28 +32,24 @@ public class BwIdea {
     @JoinColumn(name = "bwRoom_id")
     private BwRoom bwRoom;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "parent_bwIdea_id")
-    private BwIdea bwIdea;
+//    @OneToMany(mappedBy = "bwIdea")
+//    @JoinColumn(name = "bw_comments")
+//    private BwComments bwComments;
 
     @Column
-    private Boolean isComment; // idea 라면 false, comment 라면 true
+    private String bwSequence;
 
     @Column
-    private String sequence;
+    private Integer bwIndex;
 
     @Column
-    @ColumnDefault("1")
-    private Integer index;
-
-    @Column
-    @ColumnDefault("0")
     private Integer numberOfVotes;
 
-    public BwIdea(User user, String sequence, Boolean isComment, BwRoom bwRoom) {
+    public BwIdea(User user, String bwSequence, BwRoom bwRoom, Integer bwIndex, Integer numberOfVotes) {
         this.user = user;
-        this.sequence = sequence;
-        this.isComment = isComment;
+        this.bwSequence = bwSequence;
         this.bwRoom = bwRoom;
+        this.bwIndex = bwIndex;
+        this.numberOfVotes = numberOfVotes;
     }
 }

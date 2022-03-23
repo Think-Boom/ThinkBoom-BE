@@ -1,7 +1,6 @@
 package com.steepcliff.thinkboom.webSocket;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
@@ -26,26 +25,11 @@ public class RedisConfig {
         return redisTemplate;
     }
 
-    // BrainWriting을 위한 Topic 설정
-//    @Bean
-//    @Qualifier("BwChannelTopic")
-//    public ChannelTopic BwChannelTopic() {
-//        return new ChannelTopic("BwMessageResponseDto");
-//    }
-//
-//    // SixHat을 위한 Topic 설정
-//    @Bean
-//    @Qualifier("ShChannelTopic")
-//    public ChannelTopic ShChannelTopic() {
-//        return new ChannelTopic("BwMessageResponseDto");
-//    }
-
-
     @Bean
     public ChannelTopic ChannelTopic() {
+
         return new ChannelTopic("thinkBoom");
     }
-
 
 
     @Bean
@@ -62,11 +46,13 @@ public class RedisConfig {
     @Bean
     public RedisMessageListenerContainer ShRedisMessageListener(RedisConnectionFactory connectionFactory,
                                                                 MessageListenerAdapter ShListenerAdapter,
+//                                                                MessageListenerAdapter BwListenerAdapter,
                                                                 ChannelTopic ChannelTopic) {
         log.info("six hat messageListener start");
         RedisMessageListenerContainer container = new RedisMessageListenerContainer();
         container.setConnectionFactory(connectionFactory);
         container.addMessageListener(ShListenerAdapter, ChannelTopic);
+//        container.addMessageListener(BwListenerAdapter, ChannelTopic);
         return container;
     }
 
@@ -75,6 +61,7 @@ public class RedisConfig {
     // 이 곳으로 메시지가 던져짐.
     @Bean
     public MessageListenerAdapter BwListenerAdapter(RedisSubscriber subscriber) {
+        ;
         log.info("BwListenerAdapter");
         return new MessageListenerAdapter(subscriber, "BwSendMessage");
     }
@@ -82,6 +69,7 @@ public class RedisConfig {
     @Bean
     public MessageListenerAdapter ShListenerAdapter(RedisSubscriber subscriber) {
         log.info("ShListenerAdapter");
+
         return new MessageListenerAdapter(subscriber, "ShSendMessage");
     }
 }

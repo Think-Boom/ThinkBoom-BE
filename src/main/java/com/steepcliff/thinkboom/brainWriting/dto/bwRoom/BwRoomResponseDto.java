@@ -1,21 +1,23 @@
-package com.steepcliff.thinkboom.brainWriting.dto;
+package com.steepcliff.thinkboom.brainWriting.dto.bwRoom;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.util.UUID;
 
 @Getter
 @Setter
 @NoArgsConstructor
 public class BwRoomResponseDto {
 
-    private Long roomId;
+    private String roomId;
 
     private Integer headCount;
 
-    private Integer time;
+    private Long time;
 
-    public BwRoomResponseDto(Long roomId, Integer headCount, Integer time) {
+    public BwRoomResponseDto(String roomId,Integer headCount, Long time) {
         this.roomId = roomId;
         this.headCount = headCount;
         this.time = time;

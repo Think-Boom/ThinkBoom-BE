@@ -22,7 +22,8 @@ public class CORSfilter {
         source.registerCorsConfiguration("/api/**", config);
         source.registerCorsConfiguration("/user/**", config);
         source.registerCorsConfiguration("/h2-console", config);
-
+        source.registerCorsConfiguration("/randomWord/**", config);
+        source.registerCorsConfiguration("/**", config);
 
         return new CorsFilter(source);
         // http://localhost:3000,http://localhost:8080

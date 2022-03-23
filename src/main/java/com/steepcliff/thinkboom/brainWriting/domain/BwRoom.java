@@ -1,11 +1,15 @@
 package com.steepcliff.thinkboom.brainWriting.domain;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+import net.bytebuddy.implementation.bind.annotation.Default;
+import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.GenericGenerators;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Setter
 @Getter
@@ -15,15 +19,18 @@ import javax.persistence.*;
 public class BwRoom {
 
     @Id
-    @GeneratedValue( strategy = GenerationType.IDENTITY)
-    @Column(name = "chat_room_id")
-    private Long id;
+    @GeneratedValue(generator = "uuid")
+    @GenericGenerator(name = "uuid", strategy = "uuid2")
+    private String id;
 
     @Column
     private Integer headCount;
 
     @Column
-    private Integer time;
+    private LocalDateTime localDateTime;
+
+    @Column
+    private String title;
 
     @Column
     private String subject;
@@ -37,15 +44,20 @@ public class BwRoom {
     @Column
     private Integer insertCount;
 
-    public BwRoom(Integer headCount, Integer time, String subject, Long hostId) {
+    @Column
+    private Integer currentUsers;
+
+    public BwRoom(Integer headCount, LocalDateTime localDateTime, String subject, Long hostId) {
         this.headCount = headCount;
-        this.time = time;
+        this.localDateTime = localDateTime;
         this.subject = subject;
         this.hostId = hostId;
     }
 
-    public  BwRoom(Integer headCount, Integer time) {
+    public  BwRoom(Integer headCount, String title, LocalDateTime localDateTime, Integer currentUsers) {
         this.headCount = headCount;
-        this.time = time;
+        this.title = title;
+        this.localDateTime = localDateTime;
+        this.currentUsers = currentUsers;
     }
 }

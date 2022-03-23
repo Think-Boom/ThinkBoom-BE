@@ -11,13 +11,9 @@ import java.util.List;
 public interface BwIdeaRepository extends JpaRepository<BwIdea, Long> {
         BwIdea findByUser(User user);
 
-//        List<BwIdea> findAllByBwRoom(BwRoom bwRoom);
+        List<BwIdea> findAllByBwRoom(BwRoom bwRoom);
 
         BwIdea findByBwRoomAndUser(BwRoom bwRoom, User user);
-
-        List<BwIdea> findAllByBwRoomAndIsComment(BwRoom bwRoom, Boolean isComment);
-
-        List<BwIdea> findAllByBwIdeaAndIsComment(BwIdea bwIdea, Boolean isComment);
 
 
 }

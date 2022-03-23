@@ -1,10 +1,12 @@
-package com.steepcliff.thinkboom.brainWriting.dto;
+package com.steepcliff.thinkboom.brainWriting.dto.bwMessage;
 
 import com.steepcliff.thinkboom.brainWriting.domain.BwChatMessage;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.util.UUID;
 
 @Getter
 @Setter
@@ -30,7 +32,6 @@ public class BwMessageRequestDto {
     @Builder
     public BwMessageRequestDto(BwChatMessage.MessageType type, String senderId, String sender, String message) {
         this.type = type;
-        this.roomId = roomId;
         this.senderId = null;
         this.sender = sender;
         this.message = message;
