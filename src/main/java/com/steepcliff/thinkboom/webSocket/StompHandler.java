@@ -1,5 +1,12 @@
 package com.steepcliff.thinkboom.webSocket;
 
+import com.steepcliff.thinkboom.brainWriting.domain.BwRoom;
+import com.steepcliff.thinkboom.brainWriting.service.BwService;
+import com.steepcliff.thinkboom.webSocket.chat.EnterQuitMessageResponseDto;
+import com.steepcliff.thinkboom.webSocket.chat.ChatRoomService;
+import com.steepcliff.thinkboom.webSocket.chat.ChatMessageService;
+import com.steepcliff.thinkboom.sixHat.ShService;
+import com.steepcliff.thinkboom.sixHat.domain.ShRoom;
 import com.steepcliff.thinkboom.user.User;
 import com.steepcliff.thinkboom.user.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -18,61 +25,122 @@ import java.util.Optional;
 @Component
 public class StompHandler implements ChannelInterceptor {
 
-//    private final ChatRoomService chatRoomService;
-//    private final ChatMessageService chatMessageService;
-//    private final UserRepository userRepository;
-//
-//    @Override
-//    public Message<?> preSend(Message<?> message, MessageChannel channel) {
-//
-//        StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
-//
-//        if (StompCommand.CONNECT == accessor.getCommand()) { // websocket 연결요청
-//
-//            log.info("CONNECT");
-//
-//            String senderId = Optional.ofNullable(accessor.getFirstNativeHeader("senderId")).orElse("UnknownUser");
-//            log.info("sessionId={}", senderId);
-//
-//        }
-//
-//        else if(StompCommand.SUBSCRIBE == accessor.getCommand()) {
-//            log.info(" subscibe 시작");
-//
-//            String destination = Optional.ofNullable((String) message.getHeaders().get("simpDestination")).orElse("InvalidRoomId");
-//
-//            log.info(destination);
-//            String roomId = chatMessageService.getRoomId(destination);
-//
-//            String sessionId = (String) message.getHeaders().get("simpSessionId");
-//            log.info("sessionId={}", sessionId);
-//            chatRoomService.setUserEnterInfo(sessionId, roomId);
-//
-//            String senderId = Optional.ofNullable(accessor.getFirstNativeHeader("senderId")).orElse("UnknownUser");
-//            log.info("senderId={}", senderId);
-//            User user = userRepository.findById(Long.parseLong(senderId)).orElseThrow(
-//                    NullPointerException::new
-//            );
-//
-//            chatMessageService.sendChatMessage(BwChatMessageResponseDto
-//                    .builder()
-//                    .type(BwChatMessage.MessageType.ENTER)
-//                    .roomId(roomId)
-//                    .sender(user.getNickname())
-//                    .build());
-//            log.info("SUBSCRIBED {}, {}", user.getNickname(), roomId);
-//        }
-//
-//        else if (StompCommand.DISCONNECT == accessor.getCommand()) {
-//            String sessionId = (String) message.getHeaders().get("simpSessionId");
-//
-//            String roomId = chatRoomService.getUserEnterRoomId(sessionId);
-//
-//            chatRoomService.removeUserEnterInfo(sessionId);
-//
-//            log.info("DISCONNECT {}, {}", sessionId, roomId);
-//        }
-//
-//        return message;
-//    }
+    private final ChatMessageService chatMessageService;
+    private final ChatRoomService chatRoomService;
+    private final UserRepository userRepository;
+    private final BwService bwService;
+    private final ShService shService;
+
+    @Override
+    public Message<?> preSend(Message<?> message, MessageChannel channel) {
+
+        StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
+
+        if (StompCommand.CONNECT == accessor.getCommand()) {
+            log.info("CONNECT");
+
+        }
+
+        else if (StompCommand.SUBSCRIBE == accessor.getCommand()) {
+            log.info("SUBSCRIBE");
+
+            String category = accessor.getFirstNativeHeader("category");
+
+            String destination = Optional.ofNullable((String) message.getHeaders().get("simpDestination")).orElse("InvalidRoomId");
+
+            String roomId = chatMessageService.getRoomId(destination);
+
+            String sessionId = (String) message.getHeaders().get("simpSessionId");
+
+            chatRoomService.setUserEnterInfo(sessionId, roomId);
+
+            String senderId = Optional.ofNullable(accessor.getFirstNativeHeader("senderId")).orElse("UnknownUser");
+
+            User user = userRepository.findById(Long.parseLong(senderId)).orElseThrow(
+                    NullPointerException::new
+            );
+
+            if(category.equals("BW")) {
+                bwService.plusUserCount(roomId);
+                BwRoom room = bwService.findBwRoom(roomId);
+
+                chatMessageService.EnterQuitChatMessage(EnterQuitMessageResponseDto
+                        .builder()
+                        .type(EnterQuitMessageResponseDto.MessageType.ENTER)
+                        .roomId(roomId)
+                        .sender(user.getNickname())
+                        .totalUser(room.getHeadCount())
+                        .currentUser(room.getCurrentUsers())
+                        .build());
+                log.info("SUBSCRIBED {}, {}", user.getNickname(), roomId);
+
+            } else if(category.equals("SH")) {
+                shService.plusUserCount(roomId);
+                ShRoom room = shService.findShRoom(roomId);
+
+                chatMessageService.EnterQuitChatMessage(EnterQuitMessageResponseDto
+                        .builder()
+                        .type(EnterQuitMessageResponseDto.MessageType.ENTER)
+                        .roomId(roomId)
+                        .sender(user.getNickname())
+                        .totalUser(room.getHeadCount())
+                        .currentUser(room.getCurrentUsers())
+                        .build());
+                log.info("SUBSCRIBED {}, {}", user.getNickname(), roomId);
+            }
+
+        }
+
+        else if (StompCommand.DISCONNECT == accessor.getCommand()) {
+            String sessionId = (String) message.getHeaders().get("simpSessionId");
+
+            String destination = Optional.ofNullable((String) message.getHeaders().get("simpDestination")).orElse("InvalidRoomId");
+
+            String roomId = chatMessageService.getRoomId(destination);
+
+            String category = accessor.getFirstNativeHeader("category");
+
+
+
+            chatRoomService.removeUserEnterInfo(sessionId);
+
+            String senderId = Optional.ofNullable(accessor.getFirstNativeHeader("senderId")).orElse("UnknownUser");
+            User user = userRepository.findById(Long.parseLong(senderId)).orElseThrow(
+                    NullPointerException::new
+            );
+
+            if(category.equals("BW")) {
+
+                bwService.minusUserCount(roomId);
+                BwRoom room = bwService.findBwRoom(roomId);
+                chatMessageService.EnterQuitChatMessage(EnterQuitMessageResponseDto
+                        .builder()
+                        .type(EnterQuitMessageResponseDto.MessageType.QUIT)
+                        .roomId(roomId)
+                        .sender(user.getNickname())
+                        .totalUser(room.getHeadCount())
+                        .currentUser(room.getCurrentUsers())
+                        .build());
+
+            } else if(category.equals("SH")) {
+
+                shService.minusUserCount(roomId);
+                ShRoom room = shService.findShRoom(roomId);
+                chatMessageService.EnterQuitChatMessage(EnterQuitMessageResponseDto
+                        .builder()
+                        .type(EnterQuitMessageResponseDto.MessageType.QUIT)
+                        .roomId(roomId)
+                        .sender(user.getNickname())
+                        .totalUser(room.getHeadCount())
+                        .currentUser(room.getCurrentUsers())
+                        .build());
+            }
+            log.info("DISCONNECT");
+        }
+
+        return message;
+    }
+
+
+
 }
