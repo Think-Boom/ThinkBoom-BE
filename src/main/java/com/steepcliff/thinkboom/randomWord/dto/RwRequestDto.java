@@ -8,5 +8,6 @@ import java.util.List;
 @Setter
 @Getter
 public class RwRequestDto {
+    String subject;
     List<String> wordList;
 }

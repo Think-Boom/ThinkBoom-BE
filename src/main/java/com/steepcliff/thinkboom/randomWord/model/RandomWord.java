@@ -15,6 +15,9 @@ public class RandomWord {
     private Long rwId;
 
     @Column(nullable = false)
+    private String subject;
+
+    @Column(nullable = false)
     private String uuId;
 
     @Column(nullable = false)
