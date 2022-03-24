@@ -53,6 +53,7 @@ public class RandomWordService {
         //UUID를 통해 고유값 전달(중복될 가능성이 있어서 추후 수정할 수도 있음)/UUID가 너무 길기 때문에 8글자로 자름
         String uuid = UUID.randomUUID().toString().substring(0,8);
         randomWord.setUuId(uuid);
+        randomWord.setSubject(requestDto.getSubject());
         randomWordRepository.save(randomWord);
 
         //전달받은 단어 리스트를 하나씩 꺼내서 DB에 저장
