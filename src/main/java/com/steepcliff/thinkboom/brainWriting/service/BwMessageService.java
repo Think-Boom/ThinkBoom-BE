@@ -20,15 +20,13 @@ public class BwMessageService {
     private final ChannelTopic channelTopic;
     private final RedisTemplate redisTemplate;
     private final UserService userService;
-    private final BwService bwService;
     private final BwRoomRepository bwRoomRepository;
 
-    public BwMessageService(BwMessageRepository bwMessageRepository, ChannelTopic channelTopic, RedisTemplate redisTemplate, UserService userService, BwService bwService, BwRoomRepository bwRoomRepository) {
+    public BwMessageService(BwMessageRepository bwMessageRepository, ChannelTopic channelTopic, RedisTemplate redisTemplate, UserService userService, BwRoomRepository bwRoomRepository) {
         this.bwMessageRepository = bwMessageRepository;
         this.channelTopic = channelTopic;
         this.redisTemplate = redisTemplate;
         this.userService = userService;
-        this.bwService = bwService;
         this.bwRoomRepository = bwRoomRepository;
     }
 
@@ -41,7 +39,9 @@ public class BwMessageService {
 
         User user = userService.findById(bwMessageResponseDto.getSenderId());
 
-        BwRoom bwRoom = bwService.findBwRoom(bwMessageResponseDto.getRoomId());
+        BwRoom bwRoom = bwRoomRepository.findById(bwMessageResponseDto.getRoomId()).orElseThrow(
+                ()-> new NullPointerException()
+        );
 
         BwChatMessage message = new BwChatMessage();
 

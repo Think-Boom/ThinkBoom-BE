@@ -5,8 +5,8 @@ import com.steepcliff.thinkboom.brainWriting.dto.bwComment.BwCommentRequestDto;
 import com.steepcliff.thinkboom.brainWriting.dto.bwComment.BwCommentResponseDto;
 import com.steepcliff.thinkboom.brainWriting.dto.bwIdea.BwIdeaRequestDto;
 import com.steepcliff.thinkboom.brainWriting.dto.bwIdea.BwIdeaResponseDto;
-import com.steepcliff.thinkboom.brainWriting.dto.bwNick.BwNickRequestDto;
-import com.steepcliff.thinkboom.brainWriting.dto.bwNick.BwNickResponseDto;
+import com.steepcliff.thinkboom.brainWriting.dto.bwNickname.BwNickRequestDto;
+import com.steepcliff.thinkboom.brainWriting.dto.bwNickname.BwNickResponseDto;
 import com.steepcliff.thinkboom.brainWriting.dto.bwRoom.BwRoomRequestDto;
 import com.steepcliff.thinkboom.brainWriting.dto.bwRoom.BwRoomResponseDto;
 import com.steepcliff.thinkboom.brainWriting.dto.bwVote.BwVoteRequestDto;
@@ -15,8 +15,6 @@ import com.steepcliff.thinkboom.brainWriting.dto.bwVoteView.BwVoteViewResponseDt
 import com.steepcliff.thinkboom.brainWriting.service.BwService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.UUID;
 
 
 @RestController
@@ -37,49 +35,54 @@ public class BwController {
     }
 
     // 브레인라이팅 닉네임 입력
-    @PostMapping("/user/nickname/{bwroomid}")
-    public BwNickResponseDto inputNickname(@PathVariable String bwroomid, @RequestBody BwNickRequestDto requestDto) {
-        return bwService.createNickname(bwroomid, requestDto);
+    @PostMapping("/user/nickname/{bwRoomId}")
+    public BwNickResponseDto inputNickname(@PathVariable String bwRoomId , @RequestBody BwNickRequestDto requestDto) {
+        return bwService.createNickname(bwRoomId, requestDto);
     }
 
     // 브레인라이팅 아이디어 입력
-    @PostMapping("/idea/{bwroomid}")
-    public BwIdeaResponseDto idea(@PathVariable String bwroomid, @RequestBody BwIdeaRequestDto requestDto) {
-        return bwService.insertIdea(bwroomid, requestDto);
+    @PostMapping("/idea/{bwRoomId}")
+    public BwIdeaResponseDto idea(@PathVariable String bwRoomId, @RequestBody BwIdeaRequestDto requestDto) {
+        return bwService.insertIdea(bwRoomId, requestDto);
     }
 
     // 브레인 라이팅 코멘트 입력.
-    @PostMapping("/comment/{bwroomid}")
-    public BwCommentResponseDto comment(@PathVariable String bwroomid, @RequestBody BwCommentRequestDto requestDto) {
-        return bwService.insertComment(bwroomid,requestDto);
+    @PostMapping("/comment/{bwRoomId}")
+    public BwCommentResponseDto comment(@PathVariable String bwRoomId, @RequestBody BwCommentRequestDto requestDto) {
+        return bwService.insertComment(bwRoomId,requestDto);
     }
 
     // 브레인 라이팅 아이디어 클라이언트에 전달.
-    @GetMapping("/idea/{bwroomid}")
-    public BwIdeaListDto getCards(@PathVariable String bwroomid) {
-        return bwService.getAllIdeaWithOrederBy(bwroomid);
+    @GetMapping("/idea/{bwRoomId}")
+    public BwIdeaListDto getCards(@PathVariable String bwRoomId) {
+        return bwService.getAllIdeaWithOrederBy(bwRoomId);
     }
 
-    @GetMapping("/voteView/{bwroomid}")
-    public BwVoteViewResponseDto voteView(@PathVariable String bwroomid) {
-        return bwService.voteViewIdea(bwroomid);
+    @GetMapping("/voteview/{bwRoomId}")
+    public BwVoteViewResponseDto voteView(@PathVariable String bwRoomId) {
+        return bwService.voteViewIdea(bwRoomId);
     }
 
-    @PostMapping("/vote/{bwroomid}")
-    public BwVoteResponseDto voting(@PathVariable String bwroomid, @RequestBody BwVoteRequestDto requestDto, @PathVariable String BwRoomId) {
-        return bwService.voteIdea(bwroomid, requestDto);
+    @PostMapping("/vote/{bwRoomId}")
+    public BwVoteResponseDto voting(@PathVariable String bwRoomId, @RequestBody BwVoteRequestDto requestDto, @PathVariable String BwRoomId) {
+        return bwService.voteIdea(bwRoomId, requestDto);
+    }
+
+    // 갤래리를 위해 갤러리 db에 저장
+    @PostMapping("/gallery/save/{bwRoomId}")
+    public void saveGallery(@PathVariable String bwRoomId) {
+        bwService.bwSaveGallery(bwRoomId);
     }
 
     // 아이디어 카드 생성.
-    @GetMapping("/idea/create/{bwroomid}")
-    public void createIdea(@PathVariable String bwroomid) {
-
-        bwService.createIdea(bwroomid);
+    @GetMapping("/idea/create/{bwRoomId}")
+    public void createIdea(@PathVariable String bwRoomId) {
+        bwService.createIdea(bwRoomId);
     }
 
-    // 남은 시간 주기
-    @GetMapping("/timer/{bwroomid}")
-    public BwTimersResponseDto remainingTime(@PathVariable String bwroomid) {
-        return bwService.getTime(bwroomid);
+    // 공유여부 변경 true->false
+    @PostMapping("/sharing/{bwRoomId}")
+    public void BwSharingCheck(@PathVariable String bwRoomId) {
+        bwService.shareCheck(bwRoomId);
     }
 }

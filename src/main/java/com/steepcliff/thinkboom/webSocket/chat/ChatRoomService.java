@@ -1,5 +1,8 @@
 package com.steepcliff.thinkboom.webSocket.chat;
 
+import com.steepcliff.thinkboom.brainWriting.domain.BwRoom;
+import com.steepcliff.thinkboom.brainWriting.dto.bwRoom.BwRoomRequestDto;
+import com.steepcliff.thinkboom.brainWriting.dto.bwRoom.BwRoomResponseDto;
 import com.steepcliff.thinkboom.brainWriting.repository.BwRoomRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.HashOperations;

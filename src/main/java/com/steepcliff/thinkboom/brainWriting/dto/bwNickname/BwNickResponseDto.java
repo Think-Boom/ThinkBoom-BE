@@ -1,4 +1,4 @@
-package com.steepcliff.thinkboom.brainWriting.dto.bwNick;
+package com.steepcliff.thinkboom.brainWriting.dto.bwNickname;
 
 import lombok.Getter;
 import lombok.Setter;

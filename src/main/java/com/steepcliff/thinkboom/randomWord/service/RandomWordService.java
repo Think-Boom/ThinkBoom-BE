@@ -1,6 +1,9 @@
 package com.steepcliff.thinkboom.randomWord.service;
 
 
+import com.steepcliff.thinkboom.gallery.Gallery;
+import com.steepcliff.thinkboom.gallery.GallerySaveResponseDto;
+import com.steepcliff.thinkboom.gallery.GalleryService;
 import com.steepcliff.thinkboom.randomWord.dto.RwRequestDto;
 import com.steepcliff.thinkboom.randomWord.dto.RwResponseDto;
 import com.steepcliff.thinkboom.randomWord.model.RandomWord;
@@ -10,19 +13,23 @@ import com.steepcliff.thinkboom.randomWord.repository.RandomWordRepository;
 import com.steepcliff.thinkboom.randomWord.repository.RwWdRepository;
 import com.steepcliff.thinkboom.randomWord.repository.WordRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class RandomWordService {
     private final RandomWordRepository randomWordRepository;
     private final WordRepository wordRepository;
     private final RwWdRepository rwWdRepository;
+    private final GalleryService galleryService;
 
     //DB에서 랜덤한 단어 받아오기
     public List<String> getWord(){
@@ -34,7 +41,6 @@ public class RandomWordService {
         while (wordList.size()!=6){
             //random.nextInt를 통해 렌덤한 숫자 반환 (0이 나올수 있기때문에 +1)
             int rint = random.nextInt(5467)+1;
-            System.out.println(rint);
             //DB에서 rint와 id가 같은 단어를 찾아옴
             Word word=wordRepository.findById(Long.valueOf(rint)).orElseThrow(
                     ()->new NullPointerException("찾을단어가 없습니다.")
@@ -54,8 +60,9 @@ public class RandomWordService {
         //UUID를 통해 고유값 전달(중복될 가능성이 있어서 추후 수정할 수도 있음)/UUID가 너무 길기 때문에 8글자로 자름
         String uuid = UUID.randomUUID().toString().substring(0,8);
         randomWord.setUuId(uuid);
+        randomWord.setSubject(requestDto.getSubject());
         randomWordRepository.save(randomWord);
-
+        log.info("여기까지 진행1");
         //전달받은 단어 리스트를 하나씩 꺼내서 DB에 저장
         for(String w : wordDtoList){
             Word word = wordRepository.findWordByWord(w);
@@ -67,22 +74,37 @@ public class RandomWordService {
         RwResponseDto rwResponseDto = new RwResponseDto();
         rwResponseDto.setWordList(wordDtoList);
 
-
         rwResponseDto.setRwId(uuid);
+        log.info("여기까지 진행2");
+        // 갤러리 db에 저장
+        GallerySaveResponseDto gallerySaveResponseDto = new GallerySaveResponseDto();
+        gallerySaveResponseDto.setRoomId(uuid);
+        gallerySaveResponseDto.setType(Gallery.RoomType.RW);
+        gallerySaveResponseDto.setTitle("랜덤워드");
+        gallerySaveResponseDto.setSubject(requestDto.getSubject());
+        galleryService.saveGallery(gallerySaveResponseDto);
+
         return rwResponseDto;
     }
 
     //공유 여부 변경
+    @Transactional
     public String shareCheck(String uuId) {
         //전달받은 UUID로 randomword객체를 찾아서 공유여부 변경
-        RandomWord randomWord= randomWordRepository.findByUuId(uuId);
+        RandomWord randomWord = randomWordRepository.findByUuId(uuId).orElseThrow(
+                ()->new NullPointerException("수정할 랜덤워드 결과가 없습니다.")
+        );
+
         randomWord.update();
+        galleryService.deleteGallery(uuId);
         return "success";
     }
 
     //랜덤워드 결과물에 대한 상세 정보 반환
     public RwResponseDto getRwGallery(String uuId) {
-        RandomWord randomWord=randomWordRepository.findByUuId(uuId);
+        RandomWord randomWord = randomWordRepository.findByUuId(uuId).orElseThrow(
+                ()->new NullPointerException("반환할 랜덤워드 결과가 없습니다.")
+        );
         List<String> wordDtoList=new ArrayList<>();
         List<Word> dbWordList=rwWdRepository.findWordByRandomWord(randomWord);
         for(Word w : dbWordList){
@@ -93,7 +115,6 @@ public class RandomWordService {
         rwResponseDto.setWordList(wordDtoList);
         return rwResponseDto;
     }
-
 
     //api를통해 단어와 뜻을 받아오는 코드
 //    private static final String apiURL = "http://opendict.korean.go.kr/api/view?" +

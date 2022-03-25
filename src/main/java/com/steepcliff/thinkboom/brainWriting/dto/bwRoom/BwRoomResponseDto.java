@@ -4,8 +4,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.UUID;
-
 @Getter
 @Setter
 @NoArgsConstructor
@@ -15,9 +13,9 @@ public class BwRoomResponseDto {
 
     private Integer headCount;
 
-    private Long time;
+    private Integer time;
 
-    public BwRoomResponseDto(String roomId,Integer headCount, Long time) {
+    public BwRoomResponseDto(String roomId,Integer headCount, Integer time) {
         this.roomId = roomId;
         this.headCount = headCount;
         this.time = time;

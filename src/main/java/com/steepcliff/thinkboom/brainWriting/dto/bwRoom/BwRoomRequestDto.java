@@ -10,10 +10,10 @@ import lombok.ToString;
 @AllArgsConstructor
 public class BwRoomRequestDto {
 
-    private Integer headCount;
-
     private String title;
 
-    private Long time;
+    private Integer headCount;
+
+    private Integer time;
 
 }

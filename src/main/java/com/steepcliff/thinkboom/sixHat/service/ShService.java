@@ -1,11 +1,11 @@
-package com.steepcliff.thinkboom.sixHat;
+package com.steepcliff.thinkboom.sixHat.service;
 
+import com.steepcliff.thinkboom.gallery.Gallery;
+import com.steepcliff.thinkboom.gallery.GallerySaveResponseDto;
+import com.steepcliff.thinkboom.gallery.GalleryService;
 import com.steepcliff.thinkboom.sixHat.domain.ShRoom;
 import com.steepcliff.thinkboom.sixHat.domain.ShUserRoom;
-import com.steepcliff.thinkboom.sixHat.dto.ShNickRequestDto;
-import com.steepcliff.thinkboom.sixHat.dto.ShNickResponseDto;
-import com.steepcliff.thinkboom.sixHat.dto.ShRoomRequestDto;
-import com.steepcliff.thinkboom.sixHat.dto.ShRoomResponseDto;
+import com.steepcliff.thinkboom.sixHat.dto.*;
 import com.steepcliff.thinkboom.sixHat.repository.ShRoomRepository;
 import com.steepcliff.thinkboom.sixHat.repository.ShUserRoomRepository;
 import com.steepcliff.thinkboom.user.User;
@@ -23,18 +23,20 @@ public class ShService {
     private final ShRoomRepository shRoomRepository;
     private final ShUserRoomRepository shUserRoomRepository;
     private final UserService userService;
+    private final GalleryService galleryService;
 
     @Autowired
-    public ShService(ShRoomRepository shRoomRepository, ShUserRoomRepository shUserRoomRepository, UserService userService) {
+    public ShService(ShRoomRepository shRoomRepository, ShUserRoomRepository shUserRoomRepository, UserService userService, GalleryService galleryService) {
         this.shRoomRepository = shRoomRepository;
         this.shUserRoomRepository = shUserRoomRepository;
         this.userService = userService;
+        this.galleryService = galleryService;
     }
 
     // 식스햇 방 생성.
     public ShRoomResponseDto createRoom(ShRoomRequestDto requestDto) {
 
-        ShRoom shRoom = new ShRoom(requestDto.getTitle(),requestDto.getHeadCount(), requestDto.getTimer(), 0);
+        ShRoom shRoom = new ShRoom(requestDto.getTitle(),requestDto.getHeadCount(), requestDto.getTimer(), 0, true);
 
         shRoomRepository.save(shRoom);
 
@@ -59,6 +61,32 @@ public class ShService {
         shUserRoomRepository.save(shUserRoom);
         log.info("shRoom.getId() {} user.getId() {}",shRoom.getId(), user.getId());
         return new ShNickResponseDto(String.valueOf(shRoom.getId()), user.getId(), user.getNickname());
+    }
+
+    // 갤러리에 저장.
+    public void shSaveGallery(String shRoomId) {
+        ShRoom shRoom = shRoomRepository.findById(shRoomId).orElseThrow(
+                () -> new NullPointerException("해당 방이 존재하지 않습니다.")
+        );
+
+        GallerySaveResponseDto gallerySaveResponseDto = new GallerySaveResponseDto();
+        gallerySaveResponseDto.setRoomId(shRoom.getId());
+        gallerySaveResponseDto.setType(Gallery.RoomType.SH);
+        gallerySaveResponseDto.setTitle(shRoom.getTitle());
+        gallerySaveResponseDto.setSubject(shRoom.getSubject());
+        galleryService.saveGallery(gallerySaveResponseDto);
+    }
+
+    //식스햇 공유여부 true->false
+    @Transactional
+    public void shSharingCheck(String shRoomId) {
+        ShRoom shRoom = shRoomRepository.findById(shRoomId).orElseThrow(
+                () -> new NullPointerException("해당 방이 존재하지 않습니다.")
+        );
+
+        shRoom.setSharing(false);
+//        galleryService.deleteGallery(shRoomId);
+
     }
 
     // 유저 1 증가

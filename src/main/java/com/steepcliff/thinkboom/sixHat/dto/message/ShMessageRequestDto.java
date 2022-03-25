@@ -1,12 +1,15 @@
-package com.steepcliff.thinkboom.sixHat.dto;
+package com.steepcliff.thinkboom.sixHat.dto.message;
+
 
 import com.steepcliff.thinkboom.sixHat.domain.ShChatMessage;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.List;
+
 @Getter
 @Setter
-public class ShMessageResponseDto {
+public class ShMessageRequestDto {
 
     private ShChatMessage.MessageType type;
 
@@ -14,13 +17,13 @@ public class ShMessageResponseDto {
 
     private Long senderId;
 
-    private String sender;
+    private String subject;
 
     private String hat;
 
-    private String subject;
+    private String sender;
 
     private String message;
 
-    private String createdAt;
+    private List<ShRandomHatItem> randomHat;
 }

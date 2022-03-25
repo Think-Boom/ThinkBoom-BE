@@ -6,8 +6,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.UUID;
-
 @Getter
 @Setter
 @NoArgsConstructor
@@ -32,6 +30,7 @@ public class BwMessageRequestDto {
     @Builder
     public BwMessageRequestDto(BwChatMessage.MessageType type, String senderId, String sender, String message) {
         this.type = type;
+        this.roomId = roomId;
         this.senderId = null;
         this.sender = sender;
         this.message = message;

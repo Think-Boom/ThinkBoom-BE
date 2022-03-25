@@ -35,7 +35,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         registry.addEndpoint("/websocket").setAllowedOrigins("http://localhost:3000")
                 .withSockJS();
     }
-
+//https://main.d27ujnkhjz3clc.amplifyapp.com
     // StompHandler 인터셉터 설정
     // StompHandler 가 Websocket 앞단에서 token 및 메시지 TYPE 등을 체크할 수 있도록 다음과 같이 인터셉터로 설정한다
     @Override

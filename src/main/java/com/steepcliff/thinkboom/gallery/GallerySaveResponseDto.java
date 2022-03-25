@@ -1,11 +1,12 @@
 package com.steepcliff.thinkboom.gallery;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-public class GallerySaveRequestDto {
+public class GallerySaveResponseDto {
 
     private String roomId;
 
