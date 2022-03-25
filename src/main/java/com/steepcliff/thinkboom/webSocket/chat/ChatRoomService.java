@@ -1,8 +1,8 @@
 package com.steepcliff.thinkboom.webSocket.chat;
 
 import com.steepcliff.thinkboom.brainWriting.domain.BwRoom;
-import com.steepcliff.thinkboom.brainWriting.dto.BwRoomRequestDto;
-import com.steepcliff.thinkboom.brainWriting.dto.BwRoomResponseDto;
+import com.steepcliff.thinkboom.brainWriting.dto.bwRoom.BwRoomRequestDto;
+import com.steepcliff.thinkboom.brainWriting.dto.bwRoom.BwRoomResponseDto;
 import com.steepcliff.thinkboom.brainWriting.repository.BwRoomRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.HashOperations;
@@ -39,14 +39,6 @@ public class ChatRoomService {
     // 실시간으로 보는 방은 하나이기 떄문이다.
     public void removeUserEnterInfo(String sessionId) {
         hashOpsEnterInfo.delete(ENTER_INFO, sessionId);
-    }
-
-    // brain writing 채팅방 생성
-    public BwRoomResponseDto bwCreateChatRoom(BwRoomRequestDto requestDto) {
-        BwRoom brainWritingRoom = new BwRoom(requestDto.getHeadCount(), requestDto.getTime(), 0);
-        bwRoomRepository.save(brainWritingRoom);
-
-        return new BwRoomResponseDto(brainWritingRoom.getId(), brainWritingRoom.getHeadCount(), brainWritingRoom.getTimer());
     }
 
 

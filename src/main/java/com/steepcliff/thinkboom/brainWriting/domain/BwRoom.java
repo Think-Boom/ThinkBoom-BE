@@ -28,10 +28,16 @@ public class BwRoom {
     private Integer timer;
 
     @Column
+    private String title;
+
+    @Column
     private String subject;
 
     @Column
     private Long hostId;
+
+    @Column
+    private Boolean sharing;
 
     @Column
     private Integer presentVoted;
@@ -49,9 +55,11 @@ public class BwRoom {
         this.hostId = hostId;
     }
 
-    public  BwRoom(Integer headCount, Integer timer, Integer currentUsers) {
+    public  BwRoom(String title ,Integer headCount, Integer timer, Integer currentUsers, Boolean sharing) {
+        this.title = title;
         this.headCount = headCount;
         this.timer = timer;
         this.currentUsers = currentUsers;
+        this.sharing = sharing;
     }
 }

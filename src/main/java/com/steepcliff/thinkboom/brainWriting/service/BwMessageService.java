@@ -2,7 +2,7 @@ package com.steepcliff.thinkboom.brainWriting.service;
 
 import com.steepcliff.thinkboom.brainWriting.domain.BwChatMessage;
 import com.steepcliff.thinkboom.brainWriting.domain.BwRoom;
-import com.steepcliff.thinkboom.brainWriting.dto.BwMessageResponseDto;
+import com.steepcliff.thinkboom.brainWriting.dto.bwMessage.BwMessageResponseDto;
 import com.steepcliff.thinkboom.brainWriting.repository.BwMessageRepository;
 import com.steepcliff.thinkboom.brainWriting.repository.BwRoomRepository;
 import com.steepcliff.thinkboom.user.User;
@@ -39,7 +39,7 @@ public class BwMessageService {
 
         User user = userService.findById(bwMessageResponseDto.getSenderId());
 
-        BwRoom bwRoom = bwRoomRepository.findById(Long.valueOf(bwMessageResponseDto.getRoomId())).orElseThrow(
+        BwRoom bwRoom = bwRoomRepository.findById(bwMessageResponseDto.getRoomId()).orElseThrow(
                 ()-> new NullPointerException()
         );
 

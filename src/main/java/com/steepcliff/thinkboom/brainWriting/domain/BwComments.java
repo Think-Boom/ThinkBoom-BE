@@ -34,5 +34,14 @@ public class BwComments {
     @ManyToOne
     @JoinColumn(name = "bwIdea_id")
     private BwIdea bwIdea;
+
+    public void setBwIdea(BwIdea bwIdea) {
+        if(this.bwIdea != null) {
+            this.bwIdea.getBwCommentsList().remove(this);
+        }
+        this.bwIdea = bwIdea;
+        bwIdea.getBwCommentsList().add(this);
+    }
+
 }
 

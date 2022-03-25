@@ -6,6 +6,8 @@ import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.DynamicInsert;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 
 @Getter
@@ -44,6 +46,12 @@ public class BwIdea {
 
     @Column
     private Integer numberOfVotes;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "bwIdea")
+    private List<BwComments> bwCommentsList = new ArrayList<>();
+
+    // 양방향 메핑 해결
+
 
     public BwIdea(User user, String bwSequence, BwRoom bwRoom, Integer bwIndex, Integer numberOfVotes) {
         this.user = user;

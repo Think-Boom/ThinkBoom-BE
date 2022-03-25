@@ -1,6 +1,9 @@
 package com.steepcliff.thinkboom.randomWord.service;
 
 
+import com.steepcliff.thinkboom.gallery.Gallery;
+import com.steepcliff.thinkboom.gallery.GallerySaveResponseDto;
+import com.steepcliff.thinkboom.gallery.GalleryService;
 import com.steepcliff.thinkboom.randomWord.dto.RwRequestDto;
 import com.steepcliff.thinkboom.randomWord.dto.RwResponseDto;
 import com.steepcliff.thinkboom.randomWord.model.RandomWord;
@@ -10,19 +13,23 @@ import com.steepcliff.thinkboom.randomWord.repository.RandomWordRepository;
 import com.steepcliff.thinkboom.randomWord.repository.RwWdRepository;
 import com.steepcliff.thinkboom.randomWord.repository.WordRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class RandomWordService {
     private final RandomWordRepository randomWordRepository;
     private final WordRepository wordRepository;
     private final RwWdRepository rwWdRepository;
+    private final GalleryService galleryService;
 
     //DB에서 랜덤한 단어 받아오기
     public List<String> getWord(){
@@ -55,7 +62,7 @@ public class RandomWordService {
         randomWord.setUuId(uuid);
         randomWord.setSubject(requestDto.getSubject());
         randomWordRepository.save(randomWord);
-
+        log.info("여기까지 진행1");
         //전달받은 단어 리스트를 하나씩 꺼내서 DB에 저장
         for(String w : wordDtoList){
             Word word = wordRepository.findWordByWord(w);
@@ -67,18 +74,29 @@ public class RandomWordService {
         RwResponseDto rwResponseDto = new RwResponseDto();
         rwResponseDto.setWordList(wordDtoList);
 
-
         rwResponseDto.setRwId(uuid);
+        log.info("여기까지 진행2");
+        // 갤러리 db에 저장
+        GallerySaveResponseDto gallerySaveResponseDto = new GallerySaveResponseDto();
+        gallerySaveResponseDto.setRoomId(uuid);
+        gallerySaveResponseDto.setType(Gallery.RoomType.RW);
+        gallerySaveResponseDto.setTitle("랜덤워드");
+        gallerySaveResponseDto.setSubject(requestDto.getSubject());
+        galleryService.saveGallery(gallerySaveResponseDto);
+
         return rwResponseDto;
     }
 
     //공유 여부 변경
+    @Transactional
     public String shareCheck(String uuId) {
         //전달받은 UUID로 randomword객체를 찾아서 공유여부 변경
         RandomWord randomWord = randomWordRepository.findByUuId(uuId).orElseThrow(
                 ()->new NullPointerException("수정할 랜덤워드 결과가 없습니다.")
         );
+
         randomWord.update();
+        galleryService.deleteGallery(uuId);
         return "success";
     }
 
@@ -97,7 +115,6 @@ public class RandomWordService {
         rwResponseDto.setWordList(wordDtoList);
         return rwResponseDto;
     }
-
 
     //api를통해 단어와 뜻을 받아오는 코드
 //    private static final String apiURL = "http://opendict.korean.go.kr/api/view?" +

@@ -1,4 +1,4 @@
-package com.steepcliff.thinkboom.brainWriting.dto;
+package com.steepcliff.thinkboom.brainWriting.dto.bwMessage;
 
 import com.steepcliff.thinkboom.brainWriting.domain.BwChatMessage;
 import lombok.Builder;

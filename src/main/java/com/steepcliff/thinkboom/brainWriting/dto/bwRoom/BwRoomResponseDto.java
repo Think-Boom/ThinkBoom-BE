@@ -1,4 +1,4 @@
-package com.steepcliff.thinkboom.brainWriting.dto;
+package com.steepcliff.thinkboom.brainWriting.dto.bwRoom;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

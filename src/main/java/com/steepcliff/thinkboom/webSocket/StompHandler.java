@@ -5,7 +5,7 @@ import com.steepcliff.thinkboom.brainWriting.service.BwService;
 import com.steepcliff.thinkboom.webSocket.chat.EnterQuitMessageResponseDto;
 import com.steepcliff.thinkboom.webSocket.chat.ChatRoomService;
 import com.steepcliff.thinkboom.webSocket.chat.ChatMessageService;
-import com.steepcliff.thinkboom.sixHat.ShService;
+import com.steepcliff.thinkboom.sixHat.service.ShService;
 import com.steepcliff.thinkboom.sixHat.domain.ShRoom;
 import com.steepcliff.thinkboom.user.User;
 import com.steepcliff.thinkboom.user.UserRepository;

@@ -7,7 +7,7 @@ import lombok.Setter;
 @Setter
 public class ShNickRequestDto {
 
-    private Long shRoomId;
+    private String shRoomId;
 
     private String nickname;
 }

@@ -34,9 +34,5 @@ public class RandomWordController {
         return wordService.shareCheck(rwId);
     }
 
-    //랜덤워드 결과에 관한 상세 조회 요청
-    @GetMapping("/gallery/randomWord/{rwId}")
-    public RwResponseDto getRwGallery(@PathVariable String rwId) {
-        return wordService.getRwGallery(rwId);
-    }
+
 }

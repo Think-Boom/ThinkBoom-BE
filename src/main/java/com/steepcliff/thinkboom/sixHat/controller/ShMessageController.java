@@ -1,9 +1,9 @@
 package com.steepcliff.thinkboom.sixHat.controller;
 
-import com.steepcliff.thinkboom.sixHat.ShMessageService;
+import com.steepcliff.thinkboom.sixHat.service.ShMessageService;
 import com.steepcliff.thinkboom.sixHat.domain.ShChatMessage;
-import com.steepcliff.thinkboom.sixHat.dto.ShMessageRequestDto;
-import com.steepcliff.thinkboom.sixHat.dto.ShMessageResponseDto;
+import com.steepcliff.thinkboom.sixHat.dto.message.ShMessageRequestDto;
+import com.steepcliff.thinkboom.sixHat.dto.message.ShMessageResponseDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -46,6 +46,10 @@ public class ShMessageController {
         shMessageResponseDto.setSenderId(requestDto.getSenderId());
         shMessageResponseDto.setSubject(requestDto.getSubject());
         shMessageResponseDto.setCreatedAt(dateResult);
+
+        if(shMessageResponseDto.getType().equals(ShChatMessage.MessageType.RANDOMHAT)) {
+            shMessageResponseDto.setRandomHat(requestDto.getRandomHat());
+        }
 
         shMessageService.SendShChatMessage(shMessageResponseDto);
 

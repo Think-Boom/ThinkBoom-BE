@@ -1,8 +1,10 @@
-package com.steepcliff.thinkboom.sixHat;
+package com.steepcliff.thinkboom.sixHat.service;
 
 import com.steepcliff.thinkboom.sixHat.domain.ShChatMessage;
 import com.steepcliff.thinkboom.sixHat.domain.ShRoom;
-import com.steepcliff.thinkboom.sixHat.dto.ShMessageResponseDto;
+import com.steepcliff.thinkboom.sixHat.dto.message.ShMessageResponseDto;
+import com.steepcliff.thinkboom.sixHat.dto.ShResultMessageItem;
+import com.steepcliff.thinkboom.sixHat.dto.ShResultResponseDto;
 import com.steepcliff.thinkboom.sixHat.repository.ShMessageRepository;
 import com.steepcliff.thinkboom.sixHat.repository.ShRoomRepository;
 import com.steepcliff.thinkboom.user.User;
@@ -11,6 +13,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Slf4j
 @Service
@@ -42,6 +47,8 @@ public class ShMessageService {
             shService.saveSubject(shMessageResponseDto.getRoomId(), shMessageResponseDto.getSubject());
             shMessageResponseDto.setMessage("[알림]주제가" + shMessageResponseDto.getSubject() + "로 변경되었습니다.");
 
+        } else if(ShChatMessage.MessageType.RANDOMHAT.equals(shMessageResponseDto.getType())) {
+            shMessageResponseDto.setMessage("[알림] 모자가 랜덤으로 설정되었습니다.");
         }
         redisTemplate.convertAndSend(channelTopic.getTopic(), shMessageResponseDto);
     }
@@ -50,7 +57,7 @@ public class ShMessageService {
     public void save(ShMessageResponseDto shMessageResponseDto) {
         User user = userService.findById(shMessageResponseDto.getSenderId());
 
-        ShRoom shRoom = shRoomRepository.findById(Long.valueOf(shMessageResponseDto.getRoomId())).orElseThrow(
+        ShRoom shRoom = shRoomRepository.findById(shMessageResponseDto.getRoomId()).orElseThrow(
                 () -> new NullPointerException()
         );
 
@@ -66,5 +73,34 @@ public class ShMessageService {
 
         shMessageRepository.save(message);
 
+    }
+
+    // 결과 데이터 얻기
+    // 채팅 목록 반환하기
+    public ShResultResponseDto getResult(String shRoomId) {
+        ShRoom shRoom = shRoomRepository.findById(shRoomId).orElseThrow(
+                () -> new NullPointerException("해당 방이 존재하지 않습니다.")
+        );
+
+        ShResultResponseDto shResultResponseDto = new ShResultResponseDto();
+        shResultResponseDto.setSubject(shRoom.getSubject());
+
+        List<ShChatMessage> shChatMessageList = shMessageRepository.findAllByShRoom(shRoom);
+
+        List<ShResultMessageItem> shResultMessageItemList = new ArrayList<>();
+
+        for(ShChatMessage shChatMessage:shChatMessageList) {
+            ShResultMessageItem shResultMessageItem = new ShResultMessageItem();
+
+            shResultMessageItem.setSenderId(shChatMessage.getUser().getId());
+            shResultMessageItem.setSender(shChatMessage.getUser().getNickname());
+            shResultMessageItem.setHat(shChatMessage.getHat());
+            shResultMessageItem.setMessage(shChatMessage.getMessage());
+
+            shResultMessageItemList.add(shResultMessageItem);
+        }
+        shResultResponseDto.setMessageList(shResultMessageItemList);
+
+        return shResultResponseDto;
     }
 }

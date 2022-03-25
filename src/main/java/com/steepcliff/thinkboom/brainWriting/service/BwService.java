@@ -9,6 +9,13 @@ import com.steepcliff.thinkboom.brainWriting.dto.bwComment.BwCommentRequestDto;
 import com.steepcliff.thinkboom.brainWriting.dto.bwComment.BwCommentResponseDto;
 import com.steepcliff.thinkboom.brainWriting.dto.bwIdea.BwIdeaRequestDto;
 import com.steepcliff.thinkboom.brainWriting.dto.bwIdea.BwIdeaResponseDto;
+import com.steepcliff.thinkboom.brainWriting.dto.bwNickname.BwNickRequestDto;
+import com.steepcliff.thinkboom.brainWriting.dto.bwNickname.BwNickResponseDto;
+import com.steepcliff.thinkboom.brainWriting.dto.bwResult.BwResultResponseComments;
+import com.steepcliff.thinkboom.brainWriting.dto.bwResult.BwResultResponseDto;
+import com.steepcliff.thinkboom.brainWriting.dto.bwResult.BwResultResponseItem;
+import com.steepcliff.thinkboom.brainWriting.dto.bwRoom.BwRoomRequestDto;
+import com.steepcliff.thinkboom.brainWriting.dto.bwRoom.BwRoomResponseDto;
 import com.steepcliff.thinkboom.brainWriting.dto.bwVote.BwVoteRequestDto;
 import com.steepcliff.thinkboom.brainWriting.dto.bwVote.BwVoteResponseDto;
 import com.steepcliff.thinkboom.brainWriting.dto.bwVoteView.BwVoteViewCardsItem;
@@ -17,6 +24,9 @@ import com.steepcliff.thinkboom.brainWriting.repository.BwCommentsRepository;
 import com.steepcliff.thinkboom.brainWriting.repository.BwIdeaRepository;
 import com.steepcliff.thinkboom.brainWriting.repository.BwRoomRepository;
 import com.steepcliff.thinkboom.brainWriting.repository.BwUserRoomRepository;
+import com.steepcliff.thinkboom.gallery.Gallery;
+import com.steepcliff.thinkboom.gallery.GallerySaveResponseDto;
+import com.steepcliff.thinkboom.gallery.GalleryService;
 import com.steepcliff.thinkboom.user.User;
 import com.steepcliff.thinkboom.user.UserService;
 import lombok.extern.slf4j.Slf4j;
@@ -38,20 +48,22 @@ public class BwService {
     private final UserService userService;
     private final BwIdeaRepository bwIdeaRepository;
     private final BwCommentsRepository bwCommentsRepository;
+    private final GalleryService galleryService;
 
     @Autowired
-    public BwService(BwRoomRepository bwRoomRepository, BwUserRoomRepository bwUserRoomRepository, UserService userService, BwIdeaRepository bwIdeaRepository, BwCommentsRepository bwCommentsRepository) {
+    public BwService(BwRoomRepository bwRoomRepository, BwUserRoomRepository bwUserRoomRepository, UserService userService, BwIdeaRepository bwIdeaRepository, BwCommentsRepository bwCommentsRepository, GalleryService galleryService) {
         this.bwRoomRepository = bwRoomRepository;
         this.bwUserRoomRepository = bwUserRoomRepository;
         this.userService = userService;
         this.bwIdeaRepository = bwIdeaRepository;
         this.bwCommentsRepository = bwCommentsRepository;
+        this.galleryService = galleryService;
     }
 
     // 브레인 라이팅 방 생성.
     public BwRoomResponseDto createBwRoom(BwRoomRequestDto requestDto) {
 
-        BwRoom bwRoom = new BwRoom(requestDto.getHeadCount(), requestDto.getTime(), 0);
+        BwRoom bwRoom = new BwRoom(requestDto.getTitle(), requestDto.getHeadCount(), requestDto.getTime(), 0, true);
 
         bwRoomRepository.save(bwRoom);
 
@@ -60,28 +72,25 @@ public class BwService {
 
     // 브레인 라이팅 닉네임 입력.
     @Transactional
-    public BwNickResponseDto createNickname(BwNickRequestDto requestDto) {
+    public BwNickResponseDto createNickname(String bwRoomId, BwNickRequestDto requestDto) {
 
-        BwRoom room = bwRoomRepository.findById(Long.valueOf(requestDto.getRoomId())).orElseThrow(
-                () -> new NullPointerException()
-        );
+        BwRoom bwRoom = findBwRoom(bwRoomId);
 
         User user = userService.save(requestDto.getNickname());
 
-        if(room.getHostId() == null) {
-            room.setHostId(user.getId());
+        if(bwRoom.getHostId() == null) {
+            bwRoom.setHostId(user.getId());
         }
-        bwRoomRepository.save(room);
+        bwRoomRepository.save(bwRoom);
 
-        bwUserRoomRepository.save(new BwUserRoom(user, room));
+        bwUserRoomRepository.save(new BwUserRoom(user, bwRoom));
 
         return new BwNickResponseDto(user.getId(), user.getNickname());
     }
 
-    public void createIdea(Long bwRoomId) {
-        BwRoom bwRoom = bwRoomRepository.findById(bwRoomId).orElseThrow(
-                () -> new NullPointerException()
-        );
+    // 아이디어 카드 생성
+    public void createIdea(String bwRoomId) {
+        BwRoom bwRoom = findBwRoom(bwRoomId);
 
         List<BwUserRoom> userRoomList = bwUserRoomRepository.findAllByBwroom(bwRoom);
         Queue<User> userQueue = new LinkedList<>();
@@ -113,10 +122,8 @@ public class BwService {
 
     // 브레인 라이팅 아이디어 입력
     @Transactional
-    public BwIdeaResponseDto insertIdea(Long bwRoomId, BwIdeaRequestDto requestDto) {
-        BwRoom bwRoom = bwRoomRepository.findById(bwRoomId).orElseThrow(
-                () -> new NullPointerException()
-        );
+    public BwIdeaResponseDto insertIdea(String bwRoomId, BwIdeaRequestDto requestDto) {
+        BwRoom bwRoom = findBwRoom(bwRoomId);
         User user = userService.findById(requestDto.getUserId());
 
         BwIdea bwIdea = bwIdeaRepository.findByUser(user);
@@ -128,11 +135,9 @@ public class BwService {
     }
 
     // 브레인 라이팅 아이디어 목록 반환
-    public BwIdeaListDto getAllIdeaWithOrederBy(Long bwRoomId) {
+    public BwIdeaListDto getAllIdeaWithOrederBy(String bwRoomId) {
 
-        BwRoom bwRoom = bwRoomRepository.findById(bwRoomId).orElseThrow(
-                () -> new NullPointerException("해당 방이 존재하지 않습니다.")
-        );
+        BwRoom bwRoom = findBwRoom(bwRoomId);
 
         List<BwIdea> bwIdeaList = bwIdeaRepository.findAllByBwRoom(bwRoom);
         List<BwIdeaListItem> bwIdeaListItemList = new ArrayList<>();
@@ -158,10 +163,8 @@ public class BwService {
     }
 
     // 코멘트 입력
-    public BwCommentResponseDto insertComment(Long bwRoomId, BwCommentRequestDto requestDto) {
-        BwRoom bwRoom = bwRoomRepository.findById(bwRoomId).orElseThrow(
-                () -> new NullPointerException("해당 방이 존재하지 않습니다.")
-        );
+    public BwCommentResponseDto insertComment(String bwRoomId, BwCommentRequestDto requestDto) {
+        BwRoom bwRoom = findBwRoom(bwRoomId);
         User user =userService.findById(requestDto.getUserId());
         BwIdea bwIdea = bwIdeaRepository.findById(requestDto.getIdeaId()).orElseThrow(
                 () -> new NullPointerException("해당 아이디어가 존재하지 않습니다.")
@@ -179,11 +182,9 @@ public class BwService {
     }
 
     // 투표뷰 데이터 주기.
-    public BwVoteViewResponseDto voteViewIdea(Long bwRoomId) {
+    public BwVoteViewResponseDto voteViewIdea(String bwRoomId) {
 
-        BwRoom bwRoom = bwRoomRepository.findById(bwRoomId).orElseThrow(
-                ()-> new NullPointerException()
-        );
+        BwRoom bwRoom = findBwRoom(bwRoomId);
 
         List<BwVoteViewCardsItem> bwVoteViewCardsItemList = new ArrayList<>();
 
@@ -206,7 +207,7 @@ public class BwService {
 
     // 투표하기
     @Transactional
-    public BwVoteResponseDto voteIdea(Long bwRoomId, BwVoteRequestDto requestDto) {
+    public BwVoteResponseDto voteIdea(String bwRoomId, BwVoteRequestDto requestDto) {
 
         userService.isvote(requestDto.getUserId());
 
@@ -217,9 +218,7 @@ public class BwService {
             bwIdea.setNumberOfVotes(bwIdea.getNumberOfVotes()+1);
         }
 
-        BwRoom bwRoom = bwRoomRepository.findById(bwRoomId).orElseThrow(
-                () -> new NullPointerException("찾는 브레인라이팅 방이 없습니다.")
-        );
+        BwRoom bwRoom = findBwRoom(bwRoomId);
 
         bwRoom.setPresentVoted(bwRoom.getPresentVoted()+1);
         bwRoomRepository.save(bwRoom);
@@ -228,13 +227,66 @@ public class BwService {
         return new BwVoteResponseDto(bwRoom.getHeadCount(), bwRoom.getPresentVoted());
     }
 
+    // 갤러리에 데이터 저장.
+    public void bwSaveGallery(String bwRoomId) {
+        BwRoom bwRoom = findBwRoom(bwRoomId);
+
+        GallerySaveResponseDto gallerySaveResponseDto = new GallerySaveResponseDto();
+        gallerySaveResponseDto.setRoomId(bwRoom.getId());
+        gallerySaveResponseDto.setType(Gallery.RoomType.BW);
+        gallerySaveResponseDto.setTitle(bwRoom.getTitle());
+        gallerySaveResponseDto.setSubject(bwRoom.getSubject());
+
+        galleryService.saveGallery(gallerySaveResponseDto);
+
+    }
+
+    // 브레인 라이팅 결과 데이터
+   public BwResultResponseDto getResult(String bwRoomId) {
+        BwRoom bwRoom = findBwRoom(bwRoomId);
+        List<BwIdea> bwIdeaList = bwIdeaRepository.findAllByBwRoom(bwRoom);
+
+       List<BwResultResponseItem> bwResultResponseItemList = new ArrayList<>();
+       for(BwIdea bwIdea:bwIdeaList) {
+           // BwResultResponseItem 을 위한 코멘트 리스트 준비
+           List<BwResultResponseComments> bwResultResponseCommentsList = new ArrayList<>();
+           for(BwComments bwComments:bwIdea.getBwCommentsList()) {
+               BwResultResponseComments bwResultResponseComments = new BwResultResponseComments();
+               bwResultResponseComments.setNickname(bwComments.getUser().getNickname());
+               bwResultResponseComments.setComment(bwComments.getComments());
+               bwResultResponseCommentsList.add(bwResultResponseComments);
+           }
+
+           // BwResultResponseDto 를 위한 아이디어 리스트 준비.
+           BwResultResponseItem bwResultResponseItem = new BwResultResponseItem();
+           bwResultResponseItem.setIdeaId(bwIdea.getId());
+           bwResultResponseItem.setNickname(bwIdea.getUser().getNickname());
+           bwResultResponseItem.setIdea(bwIdea.getIdea());
+           bwResultResponseItem.setVoteCount(bwIdea.getNumberOfVotes());
+           bwResultResponseItem.setCommentsList(bwResultResponseCommentsList);
+           bwResultResponseItemList.add(bwResultResponseItem);
+       }
+       // 최종적으로 반환할 dto 준비
+       BwResultResponseDto bwResultResponseDto = new BwResultResponseDto();
+       bwResultResponseDto.setSubject(bwRoom.getSubject());
+       bwResultResponseDto.setResult(bwResultResponseItemList);
+
+       return bwResultResponseDto;
+    }
+
+    // 공유 여부 변경
+    @Transactional
+    public void shareCheck(String bwRoomId) {
+        BwRoom bwRoom = findBwRoom(bwRoomId);
+        bwRoom.setSharing(false);
+        galleryService.deleteGallery(bwRoomId);
+    }
+
     // 인원 1증가
     @Transactional
     public void plusUserCount(String roomId) {
 
-        BwRoom bwRoom = bwRoomRepository.findById(Long.valueOf(roomId)).orElseThrow(
-                () -> new NullPointerException("해당 방이 존재하지 않습니다.")
-        );
+        BwRoom bwRoom = findBwRoom(roomId);
 
         bwRoom.setCurrentUsers(bwRoom.getCurrentUsers() + 1);
 
@@ -244,9 +296,7 @@ public class BwService {
     // 인원 1 감소
     @Transactional
     public void minusUserCount(String roomId) {
-        BwRoom bwRoom = bwRoomRepository.findById(Long.valueOf(roomId)).orElseThrow(
-                () -> new NullPointerException("해당 방이 존재하지 않습니다.")
-        );
+        BwRoom bwRoom = findBwRoom(roomId);
 
         bwRoom.setCurrentUsers(bwRoom.getCurrentUsers() -1);
         bwRoomRepository.save(bwRoom);
@@ -254,7 +304,7 @@ public class BwService {
 
     // 브레인 라이팅 방 찾기
     public BwRoom findBwRoom(String roomId) {
-        return bwRoomRepository.findById(Long.valueOf(roomId)).orElseThrow(
+        return bwRoomRepository.findById(roomId).orElseThrow(
                 () -> new NullPointerException("해당 방이 존재하지 않습니다.")
         );
     }

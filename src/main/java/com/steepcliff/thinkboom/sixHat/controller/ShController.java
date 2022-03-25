@@ -1,16 +1,13 @@
 package com.steepcliff.thinkboom.sixHat.controller;
 
-import com.steepcliff.thinkboom.sixHat.ShService;
+import com.steepcliff.thinkboom.sixHat.service.ShService;
 import com.steepcliff.thinkboom.sixHat.dto.ShNickRequestDto;
 import com.steepcliff.thinkboom.sixHat.dto.ShNickResponseDto;
 import com.steepcliff.thinkboom.sixHat.dto.ShRoomRequestDto;
 import com.steepcliff.thinkboom.sixHat.dto.ShRoomResponseDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -33,4 +30,11 @@ public class ShController {
         log.info("닉네임 입력");
         return shService.createNickname(requestDto);
     }
+
+    // 식스햇 공유 여부 변경 true->false
+    @PostMapping("/sharing/{shRoomId}")
+    public void sharingCheck(@PathVariable String shRoomId) {
+        shService.shSharingCheck(shRoomId);
+    }
+
 }

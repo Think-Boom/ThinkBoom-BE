@@ -1,7 +1,7 @@
 package com.steepcliff.thinkboom.brainWriting.controller;
 
-import com.steepcliff.thinkboom.brainWriting.dto.BwMessageRequestDto;
-import com.steepcliff.thinkboom.brainWriting.dto.BwMessageResponseDto;
+import com.steepcliff.thinkboom.brainWriting.dto.bwMessage.BwMessageRequestDto;
+import com.steepcliff.thinkboom.brainWriting.dto.bwMessage.BwMessageResponseDto;
 import com.steepcliff.thinkboom.brainWriting.service.BwMessageService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.handler.annotation.MessageMapping;
