@@ -27,13 +27,13 @@ public class UserService {
     }
 
     // 투표 여부 업데이트
+    @Transactional
     public void isvote(Long userId) {
         User user = userRepository.findById(userId).orElseThrow(
                 ()-> new NullPointerException("찾는 유저가 없습니다.")
         );
 
         user.setIsVote(true);
-        userRepository.save(user);
     }
 
     // 아이디가 잘 입력되었는지 테스트용

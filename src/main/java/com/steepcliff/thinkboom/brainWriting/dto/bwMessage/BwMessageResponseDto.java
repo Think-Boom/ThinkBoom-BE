@@ -28,6 +28,10 @@ public class BwMessageResponseDto {
 
     private String createdAt;
 
+    private Integer totalUser;
+
+    private Integer currentUser;
+
     @Builder
     public BwMessageResponseDto(BwChatMessage.MessageType type, String roomId, Long senderId, String sender, String message, String createdAt) {
         this.type = type;

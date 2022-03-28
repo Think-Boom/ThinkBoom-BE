@@ -30,6 +30,8 @@ public class ChatMessageService {
             enterMessageResponseDto.setMessage("[알림] "+ enterMessageResponseDto.getSender() + "님이 방에 입장했습니다.");
 
             log.info("ENTER 데이터 {}", enterMessageResponseDto.getMessage());
+            log.info("ENTER 데이터 {}", enterMessageResponseDto.getTotalUser());
+            log.info("ENTER 데이터 {}", enterMessageResponseDto.getCurrentUser());
         }
         else if (EnterQuitMessageResponseDto.MessageType.QUIT.equals(enterMessageResponseDto.getType())) {
 

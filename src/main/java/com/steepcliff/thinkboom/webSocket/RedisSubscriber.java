@@ -26,7 +26,7 @@ public class RedisSubscriber {
             log.info("BwSendMessage 시작");
             BwMessageResponseDto bwMessageResponseDto = objectMapper.readValue(publishMessage, BwMessageResponseDto.class);
 
-            messagingTemplate.convertAndSend("/sub/api/brainWriting/rooms/" + bwMessageResponseDto.getRoomId(), bwMessageResponseDto);
+            messagingTemplate.convertAndSend("/sub/api/brainwriting/rooms/" + bwMessageResponseDto.getRoomId(), bwMessageResponseDto);
 
         } catch (Exception e) {
             log.error("Exception {}", e);

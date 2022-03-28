@@ -26,5 +26,11 @@ public class ShMessageResponseDto {
 
     private String createdAt;
 
+    private Integer totalUser;
+
+    private Integer currentUser;
+
+    private Integer currentPage;
+
     private List<ShRandomHatItem> randomHat;
 }

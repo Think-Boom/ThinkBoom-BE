@@ -1,5 +1,6 @@
 package com.steepcliff.thinkboom.sixHat.service;
 
+import com.steepcliff.thinkboom.brainWriting.dto.BwTimersResponseDto;
 import com.steepcliff.thinkboom.gallery.Gallery;
 import com.steepcliff.thinkboom.gallery.GallerySaveResponseDto;
 import com.steepcliff.thinkboom.gallery.GalleryService;
@@ -15,6 +16,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 
 @Slf4j
 @Service
@@ -36,11 +39,14 @@ public class ShService {
     // 식스햇 방 생성.
     public ShRoomResponseDto createRoom(ShRoomRequestDto requestDto) {
 
-        ShRoom shRoom = new ShRoom(requestDto.getTitle(),requestDto.getHeadCount(), requestDto.getTimer(), 0, true);
+        // 시간 구하기
+        LocalDateTime localDateTime = LocalDateTime.now().plusMinutes(requestDto.getTimer());
+
+        ShRoom shRoom = new ShRoom(requestDto.getTitle(),requestDto.getHeadCount(), localDateTime, 0, true);
 
         shRoomRepository.save(shRoom);
 
-        return new ShRoomResponseDto(String.valueOf(shRoom.getId()),shRoom.getTitle() ,shRoom.getHeadCount(), shRoom.getShTimer());
+        return new ShRoomResponseDto(shRoom.getId(),shRoom.getTitle() ,shRoom.getHeadCount(), requestDto.getTimer());
     }
 
     // 시스햇 닉네임 입력
@@ -61,6 +67,23 @@ public class ShService {
         shUserRoomRepository.save(shUserRoom);
         log.info("shRoom.getId() {} user.getId() {}",shRoom.getId(), user.getId());
         return new ShNickResponseDto(String.valueOf(shRoom.getId()), user.getId(), user.getNickname());
+    }
+
+    // 남은 시간 주기
+    public ShTimerResponseDto getTime(String shRoomId) {
+        ShRoom shRoom = findShRoom(shRoomId);
+
+        LocalDateTime nowTime = LocalDateTime.now();
+
+        LocalDateTime remainingTime = shRoom.getShTimer();
+
+        long hours = ChronoUnit.HOURS.between(remainingTime, nowTime);
+        long minutes = ChronoUnit.MINUTES.between(remainingTime, nowTime);
+        long seconds = ChronoUnit.MINUTES.between(remainingTime, nowTime);
+
+        Long remainingSec = hours*3600 + minutes*60 + seconds;
+
+        return new ShTimerResponseDto(remainingSec);
     }
 
     // 갤러리에 저장.
@@ -98,8 +121,6 @@ public class ShService {
         );
 
         shRoom.setCurrentUsers(shRoom.getCurrentUsers() + 1);
-
-        shRoomRepository.save(shRoom);
     }
 
     // 유저 1 감소
@@ -111,8 +132,6 @@ public class ShService {
         );
 
         shRoom.setCurrentUsers(shRoom.getCurrentUsers() - 1);
-
-        shRoomRepository.save(shRoom);
     }
 
     // 식스햇 방 찾기
@@ -128,7 +147,5 @@ public class ShService {
         ShRoom shRoom = findShRoom(shRoomId);
 
         shRoom.setSubject(subject);
-
-        shRoomRepository.save(shRoom);
     }
 }

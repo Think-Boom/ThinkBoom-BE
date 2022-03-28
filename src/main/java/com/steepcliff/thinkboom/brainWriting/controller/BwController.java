@@ -85,4 +85,10 @@ public class BwController {
     public void BwSharingCheck(@PathVariable String bwRoomId) {
         bwService.shareCheck(bwRoomId);
     }
+
+    // 남은 시간 주기
+    @GetMapping("/timer/{bwroomid}")
+    public BwTimersResponseDto remainingTime(@PathVariable String bwroomid) {
+        return bwService.getTime(bwroomid);
+    }
 }

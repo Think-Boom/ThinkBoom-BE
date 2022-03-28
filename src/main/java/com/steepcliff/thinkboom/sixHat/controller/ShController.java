@@ -1,10 +1,7 @@
 package com.steepcliff.thinkboom.sixHat.controller;
 
+import com.steepcliff.thinkboom.sixHat.dto.*;
 import com.steepcliff.thinkboom.sixHat.service.ShService;
-import com.steepcliff.thinkboom.sixHat.dto.ShNickRequestDto;
-import com.steepcliff.thinkboom.sixHat.dto.ShNickResponseDto;
-import com.steepcliff.thinkboom.sixHat.dto.ShRoomRequestDto;
-import com.steepcliff.thinkboom.sixHat.dto.ShRoomResponseDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
@@ -37,4 +34,9 @@ public class ShController {
         shService.shSharingCheck(shRoomId);
     }
 
+    // 남은 시간 주기
+    @GetMapping("/timer/{shRoomId}")
+    public ShTimerResponseDto remainingTime(@PathVariable String shRoomId) {
+        return shService.getTime(shRoomId);
+    }
 }

@@ -15,7 +15,7 @@ public class CORSfilter {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
         config.addAllowedOriginPattern("*");
-        config.addAllowedOrigin("http://localhost:3000, https://main.d27ujnkhjz3clc.amplifyapp.com");
+        config.addAllowedOrigin("https://main.d3lmsr9juer9tj.amplifyapp.com, http://localhost:3000");
         config.addAllowedHeader("*");
         config.addAllowedMethod("*");
 

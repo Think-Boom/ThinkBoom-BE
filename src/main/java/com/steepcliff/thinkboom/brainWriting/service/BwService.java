@@ -34,6 +34,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -63,7 +65,10 @@ public class BwService {
     // 브레인 라이팅 방 생성.
     public BwRoomResponseDto createBwRoom(BwRoomRequestDto requestDto) {
 
-        BwRoom bwRoom = new BwRoom(requestDto.getTitle(), requestDto.getHeadCount(), requestDto.getTime(), 0, true);
+        // 시간 구하기
+        LocalDateTime localDateTime = LocalDateTime.now().plusMinutes(requestDto.getTime());
+
+        BwRoom bwRoom = new BwRoom(requestDto.getTitle(), requestDto.getHeadCount(), localDateTime, 0, true);
 
         bwRoomRepository.save(bwRoom);
 
@@ -129,7 +134,6 @@ public class BwService {
         BwIdea bwIdea = bwIdeaRepository.findByUser(user);
         log.info(requestDto.getIdea());
         bwIdea.setIdea(requestDto.getIdea());
-        bwIdeaRepository.save(bwIdea);
 
         return new  BwIdeaResponseDto(user.getId(),bwIdea.getIdea());
     }
@@ -221,10 +225,25 @@ public class BwService {
         BwRoom bwRoom = findBwRoom(bwRoomId);
 
         bwRoom.setPresentVoted(bwRoom.getPresentVoted()+1);
-        bwRoomRepository.save(bwRoom);
-
 
         return new BwVoteResponseDto(bwRoom.getHeadCount(), bwRoom.getPresentVoted());
+    }
+
+    // 남은 시간 주기
+    public BwTimersResponseDto getTime(String roomId) {
+        BwRoom bwRoom = findBwRoom(roomId);
+
+        LocalDateTime nowTime = LocalDateTime.now();
+
+        LocalDateTime remainingTime = bwRoom.getTimer();
+
+        long hours = ChronoUnit.HOURS.between(remainingTime, nowTime);
+        long minutes = ChronoUnit.MINUTES.between(remainingTime, nowTime);
+        long seconds = ChronoUnit.MINUTES.between(remainingTime, nowTime);
+
+        Long remainingSec = hours*3600 + minutes*60 + seconds;
+
+        return new BwTimersResponseDto(remainingSec);
     }
 
     // 갤러리에 데이터 저장.
@@ -289,8 +308,6 @@ public class BwService {
         BwRoom bwRoom = findBwRoom(roomId);
 
         bwRoom.setCurrentUsers(bwRoom.getCurrentUsers() + 1);
-
-        bwRoomRepository.save(bwRoom);
     }
 
     // 인원 1 감소
@@ -299,7 +316,7 @@ public class BwService {
         BwRoom bwRoom = findBwRoom(roomId);
 
         bwRoom.setCurrentUsers(bwRoom.getCurrentUsers() -1);
-        bwRoomRepository.save(bwRoom);
+
     }
 
     // 브레인 라이팅 방 찾기

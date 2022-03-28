@@ -51,6 +51,11 @@ public class ShMessageController {
             shMessageResponseDto.setRandomHat(requestDto.getRandomHat());
         }
 
+        if(shMessageResponseDto.getType().equals(ShChatMessage.MessageType.NEXTPAGE)) {
+            log.info("현재 페이지 {}", requestDto.getCurrentPage());
+            shMessageResponseDto.setCurrentPage(requestDto.getCurrentPage());
+        }
+
         shMessageService.SendShChatMessage(shMessageResponseDto);
 
         log.info("sendBwChatMessage 완료 userId {}", shMessageResponseDto.getSenderId());
