@@ -10,4 +10,6 @@ import java.util.Queue;
 
 public interface BwUserRoomRepository extends JpaRepository<BwUserRoom, Long> {
     List<BwUserRoom> findAllByBwroom(BwRoom bwRoom);
+
+    BwUserRoom findByUserId(Long userId);
 }

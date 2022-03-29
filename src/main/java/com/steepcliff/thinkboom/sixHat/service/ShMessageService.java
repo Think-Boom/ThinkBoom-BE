@@ -45,7 +45,7 @@ public class ShMessageService {
             shMessageResponseDto.setMessage(message);
         } else if(ShChatMessage.MessageType.SUBJECT.equals(shMessageResponseDto.getType())) {
             shService.saveSubject(shMessageResponseDto.getRoomId(), shMessageResponseDto.getSubject());
-            shMessageResponseDto.setMessage("[알림]주제가" + shMessageResponseDto.getSubject() + "로 변경되었습니다.");
+            shMessageResponseDto.setMessage("[알림] 주제가" + shMessageResponseDto.getSubject() + "로 변경되었습니다.");
 
         } else if(ShChatMessage.MessageType.RANDOMHAT.equals(shMessageResponseDto.getType())) {
             shMessageResponseDto.setMessage("[알림] 모자가 랜덤으로 설정되었습니다.");

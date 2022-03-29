@@ -44,14 +44,13 @@ public class ShMessageController {
         shMessageResponseDto.setHat(requestDto.getHat());
         shMessageResponseDto.setSender(requestDto.getSender());
         shMessageResponseDto.setSenderId(requestDto.getSenderId());
-        shMessageResponseDto.setSubject(requestDto.getSubject());
         shMessageResponseDto.setCreatedAt(dateResult);
 
-        if(shMessageResponseDto.getType().equals(ShChatMessage.MessageType.RANDOMHAT)) {
+        if(shMessageResponseDto.getType().equals(ShChatMessage.MessageType.SUBJECT)) {
+            shMessageResponseDto.setSubject(requestDto.getSubject());
+        } else if(shMessageResponseDto.getType().equals(ShChatMessage.MessageType.RANDOMHAT)) {
             shMessageResponseDto.setRandomHat(requestDto.getRandomHat());
-        }
-
-        if(shMessageResponseDto.getType().equals(ShChatMessage.MessageType.NEXTPAGE)) {
+        } else if(shMessageResponseDto.getType().equals(ShChatMessage.MessageType.NEXTPAGE)) {
             log.info("현재 페이지 {}", requestDto.getCurrentPage());
             shMessageResponseDto.setCurrentPage(requestDto.getCurrentPage());
         }

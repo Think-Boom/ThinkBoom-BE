@@ -17,6 +17,10 @@ public class BwMessageRequestDto {
     private String sender;
     private String message;
 
+    private String subject;
+
+    private Integer currentPage;
+
     @Builder
     public BwMessageRequestDto(BwChatMessage.MessageType type, String roomId, Long senderId, String sender, String message) {
         this.type = type;

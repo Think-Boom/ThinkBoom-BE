@@ -141,6 +141,10 @@ public class ShService {
         );
     }
 
+    public String getEnterUserRoomId(String senderId) {
+        return shUserRoomRepository.findByUserId(Long.valueOf(senderId)).getShRoom().getId();
+    }
+
     // 주제 저장하기
     @Transactional
     public void saveSubject(String shRoomId ,String subject) {

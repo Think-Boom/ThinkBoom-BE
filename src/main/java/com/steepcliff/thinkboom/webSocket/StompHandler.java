@@ -94,23 +94,22 @@ public class StompHandler implements ChannelInterceptor {
         else if (StompCommand.DISCONNECT == accessor.getCommand()) {
             String sessionId = (String) message.getHeaders().get("simpSessionId");
 
-            String destination = Optional.ofNullable((String) message.getHeaders().get("simpDestination")).orElse("InvalidRoomId");
 
-            String roomId = chatMessageService.getRoomId(destination);
+//            String roomId = chatMessageService.getRoomId(destination);
 
             String category = accessor.getFirstNativeHeader("category");
 
-
-
+//            log.info("DISCONNECT 값 가져오기 완료 {}", roomId);
+            log.info("senderId{}", accessor.getFirstNativeHeader("senderId"));
             chatRoomService.removeUserEnterInfo(sessionId);
-
+            // 에러처리 필요
             String senderId = Optional.ofNullable(accessor.getFirstNativeHeader("senderId")).orElse("UnknownUser");
             User user = userRepository.findById(Long.parseLong(senderId)).orElseThrow(
                     NullPointerException::new
             );
 
             if(category.equals("BW")) {
-
+                String roomId = bwService.getEnterUserRoomId(senderId);
                 bwService.minusUserCount(roomId);
                 BwRoom room = bwService.findBwRoom(roomId);
                 chatMessageService.EnterQuitChatMessage(EnterQuitMessageResponseDto
@@ -121,9 +120,9 @@ public class StompHandler implements ChannelInterceptor {
                         .totalUser(room.getHeadCount())
                         .currentUser(room.getCurrentUsers())
                         .build());
-
+                log.info("DISCONNECT {}", roomId);
             } else if(category.equals("SH")) {
-
+                String roomId = shService.getEnterUserRoomId(senderId);
                 shService.minusUserCount(roomId);
                 ShRoom room = shService.findShRoom(roomId);
                 chatMessageService.EnterQuitChatMessage(EnterQuitMessageResponseDto
@@ -134,8 +133,8 @@ public class StompHandler implements ChannelInterceptor {
                         .totalUser(room.getHeadCount())
                         .currentUser(room.getCurrentUsers())
                         .build());
+                log.info("DISCONNECT {}", roomId);
             }
-            log.info("DISCONNECT");
         }
 
         return message;

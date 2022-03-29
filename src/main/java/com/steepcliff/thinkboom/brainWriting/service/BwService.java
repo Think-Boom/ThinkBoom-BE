@@ -325,4 +325,8 @@ public class BwService {
                 () -> new NullPointerException("해당 방이 존재하지 않습니다.")
         );
     }
+
+    public String getEnterUserRoomId(String senderId) {
+        return bwUserRoomRepository.findByUserId(Long.valueOf(senderId)).getBwroom().getId();
+    }
 }

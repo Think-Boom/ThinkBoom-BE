@@ -24,6 +24,8 @@ public class BwMessageResponseDto {
 
     private String sender;
 
+    private String subject;
+
     private String message;
 
     private String createdAt;
@@ -31,6 +33,8 @@ public class BwMessageResponseDto {
     private Integer totalUser;
 
     private Integer currentUser;
+
+    private Integer currentPage;
 
     @Builder
     public BwMessageResponseDto(BwChatMessage.MessageType type, String roomId, Long senderId, String sender, String message, String createdAt) {

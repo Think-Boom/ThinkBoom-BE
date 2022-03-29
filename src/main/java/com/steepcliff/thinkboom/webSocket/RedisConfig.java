@@ -1,5 +1,7 @@
 package com.steepcliff.thinkboom.webSocket;
 
+import com.steepcliff.thinkboom.webSocket.subscriber.BwRedisSubscriber;
+import com.steepcliff.thinkboom.webSocket.subscriber.ShRedisSubscriber;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -60,17 +62,16 @@ public class RedisConfig {
 
     // 이 곳으로 메시지가 던져짐.
     @Bean
-    public MessageListenerAdapter BwListenerAdapter(RedisSubscriber subscriber) {
-        ;
+    public MessageListenerAdapter BwListenerAdapter(BwRedisSubscriber subscriber) {
+
         log.info("BwListenerAdapter");
         return new MessageListenerAdapter(subscriber, "BwSendMessage");
     }
 
     @Bean
-    public MessageListenerAdapter ShListenerAdapter(RedisSubscriber subscriber) {
+    public MessageListenerAdapter ShListenerAdapter(ShRedisSubscriber subscriber) {
         log.info("ShListenerAdapter");
 
         return new MessageListenerAdapter(subscriber, "ShSendMessage");
     }
-
 }
