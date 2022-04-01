@@ -39,7 +39,7 @@ public class ChatMessageService {
 
             log.info("QUIT 데이터 {}", enterMessageResponseDto.getMessage());
         }
-
+        log.info("ChatMessageService userList {}", enterMessageResponseDto.getUserList());
         redisTemplate.convertAndSend(channelTopic.getTopic(), enterMessageResponseDto);
     }
 

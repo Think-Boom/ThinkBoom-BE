@@ -4,6 +4,7 @@ import com.steepcliff.thinkboom.sixHat.service.ShMessageService;
 import com.steepcliff.thinkboom.sixHat.domain.ShChatMessage;
 import com.steepcliff.thinkboom.sixHat.dto.message.ShMessageRequestDto;
 import com.steepcliff.thinkboom.sixHat.dto.message.ShMessageResponseDto;
+import com.steepcliff.thinkboom.user.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -20,10 +21,12 @@ import java.util.TimeZone;
 public class ShMessageController {
 
     private final ShMessageService shMessageService;
+    private final UserService userService;
 
     @Autowired
-    public ShMessageController(ShMessageService shMessageService) {
+    public ShMessageController(ShMessageService shMessageService, UserService userService) {
         this.shMessageService = shMessageService;
+        this.userService = userService;
     }
 
     @MessageMapping("/api/sixHat/chat/message")
@@ -53,6 +56,8 @@ public class ShMessageController {
         } else if(shMessageResponseDto.getType().equals(ShChatMessage.MessageType.NEXTPAGE)) {
             log.info("현재 페이지 {}", requestDto.getCurrentPage());
             shMessageResponseDto.setCurrentPage(requestDto.getCurrentPage());
+        } else if(shMessageResponseDto.getType().equals(ShChatMessage.MessageType.HAT)) {
+            userService.saveHat(requestDto.getSenderId(), requestDto.getHat());
         }
 
         shMessageService.SendShChatMessage(shMessageResponseDto);

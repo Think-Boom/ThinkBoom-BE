@@ -25,15 +25,13 @@ public class ShMessageService {
     private final ChannelTopic channelTopic;
     private final RedisTemplate redisTemplate;
     private final UserService userService;
-    private final ShRoomRepository shRoomRepository;
     private final ShService shService;
 
-    public ShMessageService(ShMessageRepository shMessageRepository, ChannelTopic channelTopic, RedisTemplate redisTemplate, UserService userService, ShRoomRepository shRoomRepository, ShService shService) {
+    public ShMessageService(ShMessageRepository shMessageRepository, ChannelTopic channelTopic, RedisTemplate redisTemplate, UserService userService, ShService shService) {
         this.shMessageRepository = shMessageRepository;
         this.channelTopic = channelTopic;
         this.redisTemplate = redisTemplate;
         this.userService = userService;
-        this.shRoomRepository = shRoomRepository;
         this.shService = shService;
     }
 
@@ -57,9 +55,7 @@ public class ShMessageService {
     public void save(ShMessageResponseDto shMessageResponseDto) {
         User user = userService.findById(shMessageResponseDto.getSenderId());
 
-        ShRoom shRoom = shRoomRepository.findById(shMessageResponseDto.getRoomId()).orElseThrow(
-                () -> new NullPointerException()
-        );
+        ShRoom shRoom = shService.findShRoom(shMessageResponseDto.getRoomId());
 
         ShChatMessage message = new ShChatMessage();
 
@@ -78,9 +74,7 @@ public class ShMessageService {
     // 결과 데이터 얻기
     // 채팅 목록 반환하기
     public ShResultResponseDto getResult(String shRoomId) {
-        ShRoom shRoom = shRoomRepository.findById(shRoomId).orElseThrow(
-                () -> new NullPointerException("해당 방이 존재하지 않습니다.")
-        );
+        ShRoom shRoom = shService.findShRoom(shRoomId);
 
         ShResultResponseDto shResultResponseDto = new ShResultResponseDto();
         shResultResponseDto.setSubject(shRoom.getSubject());

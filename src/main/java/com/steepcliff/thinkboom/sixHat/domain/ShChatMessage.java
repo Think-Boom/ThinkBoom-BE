@@ -29,6 +29,7 @@ public class ShChatMessage {
     private String hat;
 
     @Column
+    @Lob
     private String message;
 
     @Column

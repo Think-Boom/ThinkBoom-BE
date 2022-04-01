@@ -24,6 +24,7 @@ import com.steepcliff.thinkboom.brainWriting.repository.BwCommentsRepository;
 import com.steepcliff.thinkboom.brainWriting.repository.BwIdeaRepository;
 import com.steepcliff.thinkboom.brainWriting.repository.BwRoomRepository;
 import com.steepcliff.thinkboom.brainWriting.repository.BwUserRoomRepository;
+import com.steepcliff.thinkboom.exception.NotFoundException;
 import com.steepcliff.thinkboom.gallery.Gallery;
 import com.steepcliff.thinkboom.gallery.GallerySaveResponseDto;
 import com.steepcliff.thinkboom.gallery.GalleryService;
@@ -65,10 +66,8 @@ public class BwService {
     // 브레인 라이팅 방 생성.
     public BwRoomResponseDto createBwRoom(BwRoomRequestDto requestDto) {
 
-        // 시간 구하기
-        LocalDateTime localDateTime = LocalDateTime.now().plusMinutes(requestDto.getTime());
 
-        BwRoom bwRoom = new BwRoom(requestDto.getTitle(), requestDto.getHeadCount(), localDateTime, 0, true);
+        BwRoom bwRoom = new BwRoom(requestDto.getTitle(), requestDto.getHeadCount(), requestDto.getTime(), 0, true);
 
         bwRoomRepository.save(bwRoom);
 
@@ -97,12 +96,14 @@ public class BwService {
     public void createIdea(String bwRoomId) {
         BwRoom bwRoom = findBwRoom(bwRoomId);
 
+        renewTime(bwRoom, bwRoom.getTimes());
+
         List<BwUserRoom> userRoomList = bwUserRoomRepository.findAllByBwroom(bwRoom);
         Queue<User> userQueue = new LinkedList<>();
         for(BwUserRoom bwUserRoom:userRoomList) {
             userQueue.add(bwUserRoom.getUser());
         }
-        List<BwIdea> bwIdeaList = new ArrayList<>();
+
         for(int i=0; i<bwRoom.getHeadCount(); i++) {
             StringBuilder sequence = new StringBuilder();
             for(User user : userQueue) {
@@ -114,21 +115,15 @@ public class BwService {
 
             BwIdea bwIdea = new BwIdea(user, sequence.toString(),bwRoom, 1, 0);
 
-            bwIdeaList.add(bwIdea);
-        }
-        List<BwIdea> bwIdeaListTest =  bwIdeaRepository.saveAll(bwIdeaList);
-
-        // 테스트용
-//        List<BwIdea> bwIdeaListTest = bwIdeaRepository.findAllByBwRoom(bwRoom);
-        for (BwIdea bwIdea : bwIdeaListTest) {
-            log.info("{} {}", bwIdea.getId(),bwIdea.getBwSequence());
+            bwIdeaRepository.save(bwIdea);
+            log.info("{} {}", bwIdea.getId(), bwIdea.getBwSequence());
         }
     }
 
     // 브레인 라이팅 아이디어 입력
     @Transactional
     public BwIdeaResponseDto insertIdea(String bwRoomId, BwIdeaRequestDto requestDto) {
-        BwRoom bwRoom = findBwRoom(bwRoomId);
+//        BwRoom bwRoom = findBwRoom(bwRoomId);
         User user = userService.findById(requestDto.getUserId());
 
         BwIdea bwIdea = bwIdeaRepository.findByUser(user);
@@ -142,6 +137,9 @@ public class BwService {
     public BwIdeaListDto getAllIdeaWithOrederBy(String bwRoomId) {
 
         BwRoom bwRoom = findBwRoom(bwRoomId);
+
+        // 시간 갱신하기
+        renewTime(bwRoom, bwRoom.getTimes());
 
         List<BwIdea> bwIdeaList = bwIdeaRepository.findAllByBwRoom(bwRoom);
         List<BwIdeaListItem> bwIdeaListItemList = new ArrayList<>();
@@ -168,10 +166,12 @@ public class BwService {
 
     // 코멘트 입력
     public BwCommentResponseDto insertComment(String bwRoomId, BwCommentRequestDto requestDto) {
+
         BwRoom bwRoom = findBwRoom(bwRoomId);
+
         User user =userService.findById(requestDto.getUserId());
         BwIdea bwIdea = bwIdeaRepository.findById(requestDto.getIdeaId()).orElseThrow(
-                () -> new NullPointerException("해당 아이디어가 존재하지 않습니다.")
+                () -> new NotFoundException("해당 아이디어가 존재하지 않습니다.")
         );
 
         BwComments bwComments = new BwComments();
@@ -189,6 +189,9 @@ public class BwService {
     public BwVoteViewResponseDto voteViewIdea(String bwRoomId) {
 
         BwRoom bwRoom = findBwRoom(bwRoomId);
+
+        // 시간 갱신하기
+        renewTime(bwRoom, bwRoom.getTimes());
 
         List<BwVoteViewCardsItem> bwVoteViewCardsItemList = new ArrayList<>();
 
@@ -217,7 +220,7 @@ public class BwService {
 
         for(Long votedIdeaId : requestDto.getVotedIdeaList()) {
             BwIdea bwIdea = bwIdeaRepository.findById(votedIdeaId).orElseThrow(
-                    () -> new NullPointerException("찾는 아이디어가 없습니다.")
+                    () -> new NotFoundException("찾는 아이디어가 없습니다.")
             );
             bwIdea.setNumberOfVotes(bwIdea.getNumberOfVotes()+1);
         }
@@ -237,11 +240,15 @@ public class BwService {
 
         LocalDateTime remainingTime = bwRoom.getTimer();
 
-        long hours = ChronoUnit.HOURS.between(remainingTime, nowTime);
-        long minutes = ChronoUnit.MINUTES.between(remainingTime, nowTime);
-        long seconds = ChronoUnit.MINUTES.between(remainingTime, nowTime);
+        long hours = ChronoUnit.HOURS.between(nowTime, remainingTime);
+        long minutes = ChronoUnit.MINUTES.between(nowTime, remainingTime);
+        long seconds = ChronoUnit.SECONDS.between(nowTime, remainingTime);
 
         Long remainingSec = hours*3600 + minutes*60 + seconds;
+        log.info("남은시간 hours:{}", hours);
+        log.info("남은시간 minutes:{}", minutes);
+        log.info("남은시간 seconds:{}", seconds);
+        log.info("남은시간 total:{}", remainingSec);
 
         return new BwTimersResponseDto(remainingSec);
     }
@@ -322,11 +329,29 @@ public class BwService {
     // 브레인 라이팅 방 찾기
     public BwRoom findBwRoom(String roomId) {
         return bwRoomRepository.findById(roomId).orElseThrow(
-                () -> new NullPointerException("해당 방이 존재하지 않습니다.")
+                () -> new NotFoundException("해당 방이 존재하지 않습니다.")
         );
     }
 
     public String getEnterUserRoomId(String senderId) {
         return bwUserRoomRepository.findByUserId(Long.valueOf(senderId)).getBwroom().getId();
     }
+
+    //  주제 저장하기
+    @Transactional
+    public void saveSubject(String bwRoomId, String subject) {
+        BwRoom bwRoom = findBwRoom(bwRoomId);
+
+        bwRoom.setSubject(subject);
+    }
+
+    // 시간 갱신하기
+    @Transactional
+    public void renewTime(BwRoom bwRoom, Integer times) {
+
+        LocalDateTime localDateTime = LocalDateTime.now().plusMinutes(times);
+
+        bwRoom.setTimer(localDateTime);
+    }
+    // 해당 방의 유저 리스트 넘기기.
 }

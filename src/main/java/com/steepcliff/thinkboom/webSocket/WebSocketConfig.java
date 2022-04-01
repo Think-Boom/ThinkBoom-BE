@@ -26,8 +26,8 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         log.info("/sub 실행");
         config.enableSimpleBroker("/sub", "/subSH");
         log.info("/pub 실행");
-        config.setApplicationDestinationPrefixes("/pub");
-        config.setApplicationDestinationPrefixes("/pubSH");
+        config.setApplicationDestinationPrefixes("/pub","/pubSH");
+//        config.setApplicationDestinationPrefixes("/pubSH");
     }
 
     @Override

@@ -1,6 +1,7 @@
 package com.steepcliff.thinkboom.randomWord.service;
 
 
+import com.steepcliff.thinkboom.exception.NotFoundException;
 import com.steepcliff.thinkboom.gallery.Gallery;
 import com.steepcliff.thinkboom.gallery.GallerySaveResponseDto;
 import com.steepcliff.thinkboom.gallery.GalleryService;
@@ -43,7 +44,7 @@ public class RandomWordService {
             int rint = random.nextInt(5467)+1;
             //DB에서 rint와 id가 같은 단어를 찾아옴
             Word word=wordRepository.findById(Long.valueOf(rint)).orElseThrow(
-                    ()->new NullPointerException("찾을단어가 없습니다.")
+                    ()->new NotFoundException("찾을단어가 없습니다.")
             );
             String wordStr = word.getWord();
 
@@ -92,7 +93,7 @@ public class RandomWordService {
     public String shareCheck(String uuId) {
         //전달받은 UUID로 randomword객체를 찾아서 공유여부 변경
         RandomWord randomWord = randomWordRepository.findByUuId(uuId).orElseThrow(
-                ()->new NullPointerException("수정할 랜덤워드 결과가 없습니다.")
+                ()->new NotFoundException("수정할 랜덤워드 결과가 없습니다.")
         );
 
         randomWord.update();
@@ -103,7 +104,7 @@ public class RandomWordService {
     //랜덤워드 결과물에 대한 상세 정보 반환
     public RwResponseDto getRwGallery(String uuId) {
         RandomWord randomWord = randomWordRepository.findByUuId(uuId).orElseThrow(
-                ()->new NullPointerException("반환할 랜덤워드 결과가 없습니다.")
+                ()->new NotFoundException("반환할 랜덤워드 결과가 없습니다.")
         );
         List<String> wordDtoList=new ArrayList<>();
         List<Word> dbWordList=rwWdRepository.findWordByRandomWord(randomWord);

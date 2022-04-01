@@ -50,8 +50,8 @@ public class GalleryController {
         return bwService.getResult(bwroomid);
     }
 
-
-    @GetMapping("/randomWord/filter/{lastGalleryId}")
+    // 방 종류에 따른 필터
+    @GetMapping("/gallery/filter/{lastGalleryId}")
     public List<Gallery> getRwGallerypages(@PathVariable Long lastGalleryId, @RequestParam("type") Gallery.RoomType type, @RequestParam("size") int size) {
         return galleryService.getGalleryFilter(lastGalleryId, type, size);
     }

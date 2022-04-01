@@ -9,6 +9,7 @@ import com.steepcliff.thinkboom.sixHat.service.ShService;
 import com.steepcliff.thinkboom.sixHat.domain.ShRoom;
 import com.steepcliff.thinkboom.user.User;
 import com.steepcliff.thinkboom.user.UserRepository;
+import com.steepcliff.thinkboom.webSocket.chat.UserListItem;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.Message;
@@ -18,6 +19,7 @@ import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.messaging.support.ChannelInterceptor;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.Optional;
 
 @Slf4j
@@ -71,13 +73,17 @@ public class StompHandler implements ChannelInterceptor {
                         .sender(user.getNickname())
                         .totalUser(room.getHeadCount())
                         .currentUser(room.getCurrentUsers())
+                        .subject(room.getSubject())
                         .build());
                 log.info("SUBSCRIBED {}, {}", user.getNickname(), roomId);
 
             } else if(category.equals("SH")) {
                 shService.plusUserCount(roomId);
                 ShRoom room = shService.findShRoom(roomId);
-
+                // 해당 방의 모자 정보와 유저 정보가 담긴 리스트 가져오기
+                List<UserListItem> userListItemList = shService.getUserList(roomId);
+                log.info("userList {}", userListItemList.get(0));
+                log.info("{}",userListItemList.get(0).getHat() );
                 chatMessageService.EnterQuitChatMessage(EnterQuitMessageResponseDto
                         .builder()
                         .type(EnterQuitMessageResponseDto.MessageType.ENTER)
@@ -85,6 +91,8 @@ public class StompHandler implements ChannelInterceptor {
                         .sender(user.getNickname())
                         .totalUser(room.getHeadCount())
                         .currentUser(room.getCurrentUsers())
+                        .subject(room.getSubject())
+                        .userList(userListItemList)
                         .build());
                 log.info("SUBSCRIBED {}, {}", user.getNickname(), roomId);
             }

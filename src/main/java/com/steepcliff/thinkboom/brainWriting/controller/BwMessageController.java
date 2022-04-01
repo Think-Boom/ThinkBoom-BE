@@ -25,7 +25,7 @@ public class BwMessageController {
         this.bwMessageService = bwMessageService;
     }
 
-    @MessageMapping("/api/brainWriting/chat/message")
+    @MessageMapping("/api/brainwriting/chat/message")
     public void bwMessage(@RequestBody BwMessageRequestDto requestDto) {
         log.info("message controller 시작");
         log.info(requestDto.toString());
@@ -43,12 +43,14 @@ public class BwMessageController {
         bwMessageResponseDto.setMessage(requestDto.getMessage());
         bwMessageResponseDto.setSender(requestDto.getSender());
         bwMessageResponseDto.setSenderId(requestDto.getSenderId());
-        bwMessageResponseDto.setSubject(requestDto.getSubject());
         bwMessageResponseDto.setCreatedAt(dateResult);
 
         if(bwMessageResponseDto.getType().equals(BwChatMessage.MessageType.NEXTPAGE)) {
             log.info("현재 페이지 {}", requestDto.getCurrentPage());
             bwMessageResponseDto.setCurrentPage(requestDto.getCurrentPage());
+        } else if(bwMessageResponseDto.getType().equals(BwChatMessage.MessageType.SUBJECT)) {
+            log.info("브레인라이팅 주제: {}", requestDto.getSubject());
+            bwMessageResponseDto.setSubject(requestDto.getSubject());
         }
 
         log.info("값 담기 완료");

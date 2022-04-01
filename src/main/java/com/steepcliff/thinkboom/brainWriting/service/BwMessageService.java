@@ -20,18 +20,23 @@ public class BwMessageService {
     private final ChannelTopic channelTopic;
     private final RedisTemplate redisTemplate;
     private final UserService userService;
-    private final BwRoomRepository bwRoomRepository;
+    private final BwService bwService;
 
-    public BwMessageService(BwMessageRepository bwMessageRepository, ChannelTopic channelTopic, RedisTemplate redisTemplate, UserService userService, BwRoomRepository bwRoomRepository) {
+    public BwMessageService(BwMessageRepository bwMessageRepository, ChannelTopic channelTopic, RedisTemplate redisTemplate, UserService userService, BwService bwService) {
         this.bwMessageRepository = bwMessageRepository;
         this.channelTopic = channelTopic;
         this.redisTemplate = redisTemplate;
         this.userService = userService;
-        this.bwRoomRepository = bwRoomRepository;
+        this.bwService = bwService;
     }
 
     public void SendBwChatMessage(BwMessageResponseDto bwMessageResponseDto) {
         log.info("SendBwChatMessage 시작");
+        if(BwChatMessage.MessageType.SUBJECT.equals(bwMessageResponseDto.getType())) {
+            bwService.saveSubject(bwMessageResponseDto.getRoomId(), bwMessageResponseDto.getSubject());
+            bwMessageResponseDto.setMessage("[알림] 주제가" + bwMessageResponseDto.getSubject() + "로 변경되었습니다.");
+        }
+
         redisTemplate.convertAndSend(channelTopic.getTopic(), bwMessageResponseDto);
     }
 
@@ -39,9 +44,7 @@ public class BwMessageService {
 
         User user = userService.findById(bwMessageResponseDto.getSenderId());
 
-        BwRoom bwRoom = bwRoomRepository.findById(bwMessageResponseDto.getRoomId()).orElseThrow(
-                ()-> new NullPointerException()
-        );
+        BwRoom bwRoom = bwService.findBwRoom(bwMessageResponseDto.getRoomId());
 
         BwChatMessage message = new BwChatMessage();
 

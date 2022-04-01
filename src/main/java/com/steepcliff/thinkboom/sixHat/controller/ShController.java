@@ -39,4 +39,10 @@ public class ShController {
     public ShTimerResponseDto remainingTime(@PathVariable String shRoomId) {
         return shService.getTime(shRoomId);
     }
+
+    // 갤러리에 저장하기
+    @GetMapping("/save/gallery/{shRoomId}")
+    public void saveGallery(@PathVariable String shRoomId) {
+        shService.shSaveGallery(shRoomId);
+    }
 }

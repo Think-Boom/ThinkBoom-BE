@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -30,8 +32,12 @@ public class EnterQuitMessageResponseDto {
 
     private Integer currentUser;
 
+    private String subject;
+
+    private List<UserListItem> userList;
+
     @Builder
-    public EnterQuitMessageResponseDto(MessageType type, String roomId, Long senderId, String sender, String message, String createdAt, Integer totalUser, Integer currentUser) {
+    public EnterQuitMessageResponseDto(MessageType type, String roomId, Long senderId, String sender, String message, String createdAt, Integer totalUser, Integer currentUser, String subject, List<UserListItem> userList) {
         this.type = type;
         this.roomId = roomId;
         this.senderId = senderId;
@@ -40,5 +46,7 @@ public class EnterQuitMessageResponseDto {
         this.createdAt = createdAt;
         this.totalUser = totalUser;
         this.currentUser = currentUser;
+        this.subject = subject;
+        this.userList = userList;
     }
 }
