@@ -13,9 +13,19 @@ public class ShNickResponseDto {
 
     private String nickname;
 
-    public ShNickResponseDto(String roomId, Long userId, String nickname) {
+    private Boolean isDuplicated;
+
+    public ShNickResponseDto(String roomId, Long userId, String nickname, Boolean isDuplicated) {
         this.roomId = roomId;
         this.userId = userId;
         this.nickname = nickname;
+        this.isDuplicated = isDuplicated;
+    }
+
+    public ShNickResponseDto(String roomId, String nickname, Boolean isDuplicated) {
+        this.roomId = roomId;
+        this.userId = null;
+        this.nickname = nickname;
+        this.isDuplicated = isDuplicated;
     }
 }

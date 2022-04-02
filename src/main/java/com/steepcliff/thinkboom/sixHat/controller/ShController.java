@@ -45,4 +45,10 @@ public class ShController {
     public void saveGallery(@PathVariable String shRoomId) {
         shService.shSaveGallery(shRoomId);
     }
+
+    // 시간 갱신하기
+    @PostMapping("/timer/{shRoomId}")
+    public void renewGallery(@PathVariable String shRoomId) {
+        shService.renewTimer(shRoomId);
+    }
 }

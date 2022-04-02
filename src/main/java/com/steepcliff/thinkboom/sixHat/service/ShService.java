@@ -43,10 +43,7 @@ public class ShService {
     // 식스햇 방 생성.
     public ShRoomResponseDto createRoom(ShRoomRequestDto requestDto) {
 
-        // 시간 구하기
-        LocalDateTime localDateTime = LocalDateTime.now().plusMinutes(requestDto.getTimer());
-
-        ShRoom shRoom = new ShRoom(requestDto.getTitle(),requestDto.getHeadCount(), localDateTime, 0, true);
+        ShRoom shRoom = new ShRoom(requestDto.getTitle(),requestDto.getHeadCount(), 0, true, requestDto.getTimer());
 
         shRoomRepository.save(shRoom);
 
@@ -64,20 +61,23 @@ public class ShService {
         for(ShUserRoom shUserRoom:shUserRoomList) {
             userNicknameList.add(shUserRoom.getUser().getNickname());
         }
+
         if(userNicknameList.contains(requestDto.getNickname())) {
-            throw new NotFoundException("중복된 닉네임입니다.");
+            return new ShNickResponseDto(requestDto.getShRoomId(),requestDto.getNickname(), true );
+        } else {
+            User user = userService.save(requestDto.getNickname());
+            log.info("유저 아이디{}, 모자 {}", user.getId(), user.getHat());
+            if(shRoom.getHostId() == null) shRoom.setHostId(user.getId());
+
+            shRoomRepository.save(shRoom);
+            ShUserRoom shUserRoom= new ShUserRoom(user, shRoom);
+
+            shUserRoomRepository.save(shUserRoom);
+            log.info("shRoom.getId() {} user.getId() {}",shRoom.getId(), user.getId());
+            return new ShNickResponseDto(String.valueOf(shRoom.getId()), user.getId(), user.getNickname(), false);
         }
 
-        User user = userService.save(requestDto.getNickname());
-        log.info("유저 아이디{}, 모자 {}", user.getId(), user.getHat());
-        if(shRoom.getHostId() == null) shRoom.setHostId(user.getId());
 
-        shRoomRepository.save(shRoom);
-        ShUserRoom shUserRoom= new ShUserRoom(user, shRoom);
-
-        shUserRoomRepository.save(shUserRoom);
-        log.info("shRoom.getId() {} user.getId() {}",shRoom.getId(), user.getId());
-        return new ShNickResponseDto(String.valueOf(shRoom.getId()), user.getId(), user.getNickname());
     }
 
     // 남은 시간 주기
@@ -88,13 +88,10 @@ public class ShService {
 
         LocalDateTime remainingTime = shRoom.getShTimer();
 
-        long hours = ChronoUnit.HOURS.between(nowTime, remainingTime);
-        long minutes = ChronoUnit.MINUTES.between(nowTime, remainingTime);
         long seconds = ChronoUnit.SECONDS.between(nowTime, remainingTime);
 
-        Long remainingSec = hours*3600 + minutes*60 + seconds;
-        log.info("남은시간 hours:{}", hours);
-        log.info("남은시간 minutes:{}", minutes);
+        Long remainingSec = seconds;
+
         log.info("남은시간 seconds:{}", seconds);
         log.info("남은시간 total:{}", remainingSec);
 
@@ -178,4 +175,14 @@ public class ShService {
         return userListItemList;
     }
 
+    // 시간 갱신하기
+    @Transactional
+    public void renewTimer(String shRoomId) {
+        ShRoom shRoom = findShRoom(shRoomId);
+
+        LocalDateTime localDateTime = LocalDateTime.now().plusMinutes(shRoom.getTimes());
+        log.info("sixHat renew time: {}", localDateTime);
+
+        shRoom.setShTimer(localDateTime);
+    }
 }

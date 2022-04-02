@@ -144,10 +144,7 @@ public class StompHandler implements ChannelInterceptor {
                 log.info("DISCONNECT {}", roomId);
             }
         }
-
         return message;
     }
-
-
 
 }
