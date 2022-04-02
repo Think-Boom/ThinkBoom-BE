@@ -1,18 +1,23 @@
 package com.steepcliff.thinkboom.webSocket.chat;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.listener.ChannelTopic;
+import org.springframework.data.redis.listener.PatternTopic;
 import org.springframework.stereotype.Service;
 
 @Service
-@RequiredArgsConstructor
 @Slf4j
 public class ChatMessageService {
 
-    private final ChannelTopic channelTopic;
+    private final PatternTopic bwPatternTopic;
+    private final PatternTopic shPatternTopic;
     private final RedisTemplate redisTemplate;
+
+    public ChatMessageService(PatternTopic bwPatternTopic, PatternTopic shPatternTopic, RedisTemplate redisTemplate) {
+        this.bwPatternTopic = bwPatternTopic;
+        this.shPatternTopic = shPatternTopic;
+        this.redisTemplate = redisTemplate;
+    }
 
 
     // destination 정보에서 roomId 추출
@@ -40,16 +45,7 @@ public class ChatMessageService {
             log.info("QUIT 데이터 {}", enterMessageResponseDto.getMessage());
         }
         log.info("ChatMessageService userList {}", enterMessageResponseDto.getUserList());
-        redisTemplate.convertAndSend(channelTopic.getTopic(), enterMessageResponseDto);
+        redisTemplate.convertAndSend(bwPatternTopic.getTopic(), enterMessageResponseDto);
+        redisTemplate.convertAndSend(shPatternTopic.getTopic(), enterMessageResponseDto);
     }
-
-//    public void SendChatMessage(BwMessageResponseDto bwMessageResponseDto) {
-//        log.info("SendChatMessage 시작");
-//        redisTemplate.convertAndSend(channelTopic.getTopic(), bwMessageResponseDto);
-//    }
-//
-//    public void SendChatMessage2(BwMessageResponseDto bwMessageResponseDto) {
-//        log.info("SendChatMessage2 시작");
-//        redisTemplate.convertAndSend(channelTopic.getTopic(), bwMessageResponseDto);
-//    }
 }

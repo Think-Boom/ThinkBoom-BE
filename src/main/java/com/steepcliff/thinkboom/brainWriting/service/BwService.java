@@ -93,31 +93,34 @@ public class BwService {
     }
 
     // 아이디어 카드 생성
-    public void createIdea(String bwRoomId) {
+    public void createIdea(String bwRoomId, Long userId) {
         BwRoom bwRoom = findBwRoom(bwRoomId);
 
-        renewTime(bwRoom, bwRoom.getTimes());
+        if(bwRoom.getHostId().equals(userId)) {
+            renewTime(bwRoom, bwRoom.getTimes());
 
-        List<BwUserRoom> userRoomList = bwUserRoomRepository.findAllByBwroom(bwRoom);
-        Queue<User> userQueue = new LinkedList<>();
-        for(BwUserRoom bwUserRoom:userRoomList) {
-            userQueue.add(bwUserRoom.getUser());
-        }
-
-        for(int i=0; i<bwRoom.getHeadCount(); i++) {
-            StringBuilder sequence = new StringBuilder();
-            for(User user : userQueue) {
-                sequence.append(user.getId());
-                sequence.append(":");
+            List<BwUserRoom> userRoomList = bwUserRoomRepository.findAllByBwroom(bwRoom);
+            Queue<User> userQueue = new LinkedList<>();
+            for(BwUserRoom bwUserRoom:userRoomList) {
+                userQueue.add(bwUserRoom.getUser());
             }
-            User user = userQueue.poll();
-            userQueue.add(user);
 
-            BwIdea bwIdea = new BwIdea(user, sequence.toString(),bwRoom, 1, 0);
+            for(int i=0; i<bwRoom.getHeadCount(); i++) {
+                StringBuilder sequence = new StringBuilder();
+                for(User user : userQueue) {
+                    sequence.append(user.getId());
+                    sequence.append(":");
+                }
+                User user = userQueue.poll();
+                userQueue.add(user);
 
-            bwIdeaRepository.save(bwIdea);
-            log.info("{} {}", bwIdea.getId(), bwIdea.getBwSequence());
+                BwIdea bwIdea = new BwIdea(user, sequence.toString(),bwRoom, 1, 0);
+
+                bwIdeaRepository.save(bwIdea);
+                log.info("{} {}", bwIdea.getId(), bwIdea.getBwSequence());
+            }
         }
+
     }
 
     // 브레인 라이팅 아이디어 입력
@@ -237,16 +240,13 @@ public class BwService {
         BwRoom bwRoom = findBwRoom(roomId);
 
         LocalDateTime nowTime = LocalDateTime.now();
-
+        log.info("nowTime seconds:{}", nowTime);
         LocalDateTime remainingTime = bwRoom.getTimer();
-
-        long hours = ChronoUnit.HOURS.between(nowTime, remainingTime);
-        long minutes = ChronoUnit.MINUTES.between(nowTime, remainingTime);
+        log.info("remainingTime seconds:{}", remainingTime);
         long seconds = ChronoUnit.SECONDS.between(nowTime, remainingTime);
 
-        Long remainingSec = hours*3600 + minutes*60 + seconds;
-        log.info("남은시간 hours:{}", hours);
-        log.info("남은시간 minutes:{}", minutes);
+        Long remainingSec = seconds;
+
         log.info("남은시간 seconds:{}", seconds);
         log.info("남은시간 total:{}", remainingSec);
 
@@ -350,7 +350,7 @@ public class BwService {
     public void renewTime(BwRoom bwRoom, Integer times) {
 
         LocalDateTime localDateTime = LocalDateTime.now().plusMinutes(times);
-
+        log.info("localDateTime {}", localDateTime);
         bwRoom.setTimer(localDateTime);
     }
     // 해당 방의 유저 리스트 넘기기.

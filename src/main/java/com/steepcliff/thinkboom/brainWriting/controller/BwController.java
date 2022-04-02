@@ -75,9 +75,9 @@ public class BwController {
     }
 
     // 아이디어 카드 생성.
-    @GetMapping("/idea/create/{bwRoomId}")
-    public void createIdea(@PathVariable String bwRoomId) {
-        bwService.createIdea(bwRoomId);
+    @PostMapping("/idea/create/{bwRoomId}")
+    public void createIdea(@PathVariable String bwRoomId, @RequestBody CreateIdeaRequestDto createIdeaRequestDto) {
+        bwService.createIdea(bwRoomId, createIdeaRequestDto.getUserId());
     }
 
     // 공유여부 변경 true->false

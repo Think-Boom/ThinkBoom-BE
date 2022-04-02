@@ -6,12 +6,13 @@ import com.steepcliff.thinkboom.sixHat.dto.message.ShMessageResponseDto;
 import com.steepcliff.thinkboom.sixHat.dto.ShResultMessageItem;
 import com.steepcliff.thinkboom.sixHat.dto.ShResultResponseDto;
 import com.steepcliff.thinkboom.sixHat.repository.ShMessageRepository;
-import com.steepcliff.thinkboom.sixHat.repository.ShRoomRepository;
 import com.steepcliff.thinkboom.user.User;
 import com.steepcliff.thinkboom.user.UserService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.listener.ChannelTopic;
+import org.springframework.data.redis.listener.PatternTopic;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -22,14 +23,15 @@ import java.util.List;
 public class ShMessageService {
 
     private final ShMessageRepository shMessageRepository;
-    private final ChannelTopic channelTopic;
+    private final PatternTopic patternTopic;
     private final RedisTemplate redisTemplate;
     private final UserService userService;
     private final ShService shService;
 
-    public ShMessageService(ShMessageRepository shMessageRepository, ChannelTopic channelTopic, RedisTemplate redisTemplate, UserService userService, ShService shService) {
+    @Autowired
+    public ShMessageService(ShMessageRepository shMessageRepository, @Qualifier("shPatternTopic") PatternTopic patternTopic, RedisTemplate redisTemplate, UserService userService, ShService shService) {
         this.shMessageRepository = shMessageRepository;
-        this.channelTopic = channelTopic;
+        this.patternTopic = patternTopic;
         this.redisTemplate = redisTemplate;
         this.userService = userService;
         this.shService = shService;
@@ -48,7 +50,7 @@ public class ShMessageService {
         } else if(ShChatMessage.MessageType.RANDOMHAT.equals(shMessageResponseDto.getType())) {
             shMessageResponseDto.setMessage("[알림] 모자가 랜덤으로 설정되었습니다.");
         }
-        redisTemplate.convertAndSend(channelTopic.getTopic(), shMessageResponseDto);
+        redisTemplate.convertAndSend(patternTopic.getTopic(), shMessageResponseDto);
     }
 
     // 메시지 저장.

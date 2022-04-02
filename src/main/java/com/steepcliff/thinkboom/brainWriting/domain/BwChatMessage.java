@@ -14,7 +14,7 @@ import javax.persistence.*;
 public class BwChatMessage {
 
     public enum MessageType {
-        ENTER, TALK, QUIT, HAT, SUBJECT, NEXTPAGE, DEBATING
+        ENTER, TALK, QUIT, SUBJECT, NEXTPAGE
     }
 
     @Id
