@@ -12,6 +12,7 @@ import com.steepcliff.thinkboom.brainWriting.dto.bwIdea.BwIdeaResponseDto;
 import com.steepcliff.thinkboom.brainWriting.dto.bwNickname.BwNickRequestDto;
 import com.steepcliff.thinkboom.brainWriting.dto.bwNickname.BwNickResponseDto;
 import com.steepcliff.thinkboom.brainWriting.dto.bwResult.BwResultResponseComments;
+import com.steepcliff.thinkboom.brainWriting.dto.bwResult.BwResultResponseContainer;
 import com.steepcliff.thinkboom.brainWriting.dto.bwResult.BwResultResponseDto;
 import com.steepcliff.thinkboom.brainWriting.dto.bwResult.BwResultResponseItem;
 import com.steepcliff.thinkboom.brainWriting.dto.bwRoom.BwRoomRequestDto;
@@ -259,7 +260,7 @@ public class BwService {
 
         GallerySaveResponseDto gallerySaveResponseDto = new GallerySaveResponseDto();
         gallerySaveResponseDto.setRoomId(bwRoom.getId());
-        gallerySaveResponseDto.setType(Gallery.RoomType.BW);
+        gallerySaveResponseDto.setType(Gallery.RoomType.brainwriting);
         gallerySaveResponseDto.setTitle(bwRoom.getTitle());
         gallerySaveResponseDto.setSubject(bwRoom.getSubject());
 
@@ -268,7 +269,7 @@ public class BwService {
     }
 
     // 브레인 라이팅 결과 데이터
-   public BwResultResponseDto getResult(String bwRoomId) {
+   public BwResultResponseContainer getResult(String bwRoomId) {
         BwRoom bwRoom = findBwRoom(bwRoomId);
         List<BwIdea> bwIdeaList = bwIdeaRepository.findAllByBwRoom(bwRoom);
 
@@ -297,7 +298,10 @@ public class BwService {
        bwResultResponseDto.setSubject(bwRoom.getSubject());
        bwResultResponseDto.setResult(bwResultResponseItemList);
 
-       return bwResultResponseDto;
+       BwResultResponseContainer bwResultResponseContainer = new BwResultResponseContainer();
+       bwResultResponseContainer.setCategory(Gallery.RoomType.brainwriting);
+       bwResultResponseContainer.setData(bwResultResponseDto);
+       return bwResultResponseContainer;
     }
 
     // 공유 여부 변경

@@ -1,6 +1,10 @@
 package com.steepcliff.thinkboom.sixHat.controller;
 
 import com.steepcliff.thinkboom.sixHat.dto.*;
+import com.steepcliff.thinkboom.sixHat.dto.nickname.ShNickRequestDto;
+import com.steepcliff.thinkboom.sixHat.dto.nickname.ShNickResponseDto;
+import com.steepcliff.thinkboom.sixHat.dto.room.ShRoomRequestDto;
+import com.steepcliff.thinkboom.sixHat.dto.room.ShRoomResponseDto;
 import com.steepcliff.thinkboom.sixHat.service.ShService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -41,7 +45,7 @@ public class ShController {
     }
 
     // 갤러리에 저장하기
-    @GetMapping("/save/gallery/{shRoomId}")
+    @PostMapping("/save/gallery/{shRoomId}")
     public void saveGallery(@PathVariable String shRoomId) {
         shService.shSaveGallery(shRoomId);
     }

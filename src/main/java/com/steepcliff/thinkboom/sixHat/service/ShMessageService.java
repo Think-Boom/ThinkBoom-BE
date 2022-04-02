@@ -1,10 +1,12 @@
 package com.steepcliff.thinkboom.sixHat.service;
 
+import com.steepcliff.thinkboom.gallery.Gallery;
 import com.steepcliff.thinkboom.sixHat.domain.ShChatMessage;
 import com.steepcliff.thinkboom.sixHat.domain.ShRoom;
 import com.steepcliff.thinkboom.sixHat.dto.message.ShMessageResponseDto;
-import com.steepcliff.thinkboom.sixHat.dto.ShResultMessageItem;
-import com.steepcliff.thinkboom.sixHat.dto.ShResultResponseDto;
+import com.steepcliff.thinkboom.sixHat.dto.result.ShResultMessageItem;
+import com.steepcliff.thinkboom.sixHat.dto.result.ShResultResponseDto;
+import com.steepcliff.thinkboom.sixHat.dto.result.ShResultResponseContainer;
 import com.steepcliff.thinkboom.sixHat.repository.ShMessageRepository;
 import com.steepcliff.thinkboom.user.User;
 import com.steepcliff.thinkboom.user.UserService;
@@ -75,7 +77,7 @@ public class ShMessageService {
 
     // 결과 데이터 얻기
     // 채팅 목록 반환하기
-    public ShResultResponseDto getResult(String shRoomId) {
+    public ShResultResponseContainer getResult(String shRoomId) {
         ShRoom shRoom = shService.findShRoom(shRoomId);
 
         ShResultResponseDto shResultResponseDto = new ShResultResponseDto();
@@ -97,6 +99,10 @@ public class ShMessageService {
         }
         shResultResponseDto.setMessageList(shResultMessageItemList);
 
-        return shResultResponseDto;
+        ShResultResponseContainer shResultResponseContainer = new ShResultResponseContainer();
+        shResultResponseContainer.setCategory(Gallery.RoomType.sixHat);
+        shResultResponseContainer.setData(shResultResponseDto);
+
+        return shResultResponseContainer;
     }
 }

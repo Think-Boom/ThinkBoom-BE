@@ -1,6 +1,5 @@
 package com.steepcliff.thinkboom.sixHat.service;
 
-import com.steepcliff.thinkboom.brainWriting.dto.BwTimersResponseDto;
 import com.steepcliff.thinkboom.exception.NotFoundException;
 import com.steepcliff.thinkboom.gallery.Gallery;
 import com.steepcliff.thinkboom.gallery.GallerySaveResponseDto;
@@ -8,6 +7,10 @@ import com.steepcliff.thinkboom.gallery.GalleryService;
 import com.steepcliff.thinkboom.sixHat.domain.ShRoom;
 import com.steepcliff.thinkboom.sixHat.domain.ShUserRoom;
 import com.steepcliff.thinkboom.sixHat.dto.*;
+import com.steepcliff.thinkboom.sixHat.dto.nickname.ShNickRequestDto;
+import com.steepcliff.thinkboom.sixHat.dto.nickname.ShNickResponseDto;
+import com.steepcliff.thinkboom.sixHat.dto.room.ShRoomRequestDto;
+import com.steepcliff.thinkboom.sixHat.dto.room.ShRoomResponseDto;
 import com.steepcliff.thinkboom.sixHat.repository.ShRoomRepository;
 import com.steepcliff.thinkboom.sixHat.repository.ShUserRoomRepository;
 import com.steepcliff.thinkboom.user.User;
@@ -104,7 +107,7 @@ public class ShService {
 
         GallerySaveResponseDto gallerySaveResponseDto = new GallerySaveResponseDto();
         gallerySaveResponseDto.setRoomId(shRoom.getId());
-        gallerySaveResponseDto.setType(Gallery.RoomType.SH);
+        gallerySaveResponseDto.setType(Gallery.RoomType.sixHat);
         gallerySaveResponseDto.setTitle(shRoom.getTitle());
         gallerySaveResponseDto.setSubject(shRoom.getSubject());
         galleryService.saveGallery(gallerySaveResponseDto);

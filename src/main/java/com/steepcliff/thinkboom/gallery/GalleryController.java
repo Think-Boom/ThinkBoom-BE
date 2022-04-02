@@ -1,11 +1,12 @@
 package com.steepcliff.thinkboom.gallery;
 
-import com.steepcliff.thinkboom.brainWriting.dto.bwResult.BwResultResponseDto;
+import com.steepcliff.thinkboom.brainWriting.dto.bwResult.BwResultResponseContainer;
 import com.steepcliff.thinkboom.brainWriting.service.BwService;
-import com.steepcliff.thinkboom.randomWord.dto.RwResponseDto;
+import com.steepcliff.thinkboom.randomWord.dto.RwResponseContainer;
 import com.steepcliff.thinkboom.randomWord.service.RandomWordService;
+import com.steepcliff.thinkboom.sixHat.dto.result.ShResultResponseContainer;
 import com.steepcliff.thinkboom.sixHat.service.ShMessageService;
-import com.steepcliff.thinkboom.sixHat.dto.ShResultResponseDto;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -26,27 +27,39 @@ public class GalleryController {
         this.bwService = bwService;
     }
 
+    // 갤러리에 처음으로 나올 데이터 넘겨주기
+
+
+//    // 갤러리 메인페이지 데이터 넘겨주기(페이징처리)
+//    @GetMapping("")
+//    public List<Gallery> getGallerypages(@RequestParam Long lastGalleryId, @RequestParam int size) {
+//        return galleryService.getGalleryMain(lastGalleryId, size);
+//    }
+
+    // 갤러리 메인페이지 데이터 넘겨주기(페이징처리)
     @GetMapping("")
-    public List<Gallery> getGallerypages(@RequestParam Long lastGalleryId, @RequestParam int size) {
-        return galleryService.getGalleryMain(lastGalleryId, size);
+    public List<Gallery> getCalleryPages(Pageable pageable) {
+        return galleryService.galleriesMain(pageable);
     }
 
-    //랜덤워드 결과에 관한 상세 조회 요청
+
+
+    //랜덤워드 결과 데이터 넘겨주기
     @GetMapping("/randomWord/{rwId}")
-    public RwResponseDto getRwGallery(@PathVariable String rwId) {
+    public RwResponseContainer getRwGallery(@PathVariable String rwId) {
 
         return randomWordService.getRwGallery(rwId);
     }
 
     // 식스햇 결과 데이터 넘겨주기
     @GetMapping("/sixhat/{shroomid}")
-    public ShResultResponseDto getShGallery(@PathVariable String shroomid) {
+    public ShResultResponseContainer getShGallery(@PathVariable String shroomid) {
         return shMessageService.getResult(shroomid);
     }
 
     // 브레인 라이팅 결과 데이터 넘겨주기
     @GetMapping("/brainwriting/{bwroomid}")
-    public BwResultResponseDto getBwGallery(@PathVariable String bwroomid) {
+    public BwResultResponseContainer getBwGallery(@PathVariable String bwroomid) {
         return bwService.getResult(bwroomid);
     }
 
@@ -55,5 +68,7 @@ public class GalleryController {
     public List<Gallery> getRwGallerypages(@PathVariable Long lastGalleryId, @RequestParam("type") Gallery.RoomType type, @RequestParam("size") int size) {
         return galleryService.getGalleryFilter(lastGalleryId, type, size);
     }
+
+
 
 }

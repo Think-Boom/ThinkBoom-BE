@@ -1,4 +1,4 @@
-package com.steepcliff.thinkboom.sixHat.dto;
+package com.steepcliff.thinkboom.sixHat.dto.nickname;
 
 import lombok.Getter;
 import lombok.Setter;

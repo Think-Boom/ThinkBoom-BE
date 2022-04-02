@@ -6,6 +6,7 @@ import com.steepcliff.thinkboom.gallery.Gallery;
 import com.steepcliff.thinkboom.gallery.GallerySaveResponseDto;
 import com.steepcliff.thinkboom.gallery.GalleryService;
 import com.steepcliff.thinkboom.randomWord.dto.RwRequestDto;
+import com.steepcliff.thinkboom.randomWord.dto.RwResponseContainer;
 import com.steepcliff.thinkboom.randomWord.dto.RwResponseDto;
 import com.steepcliff.thinkboom.randomWord.model.RandomWord;
 import com.steepcliff.thinkboom.randomWord.model.RwWd;
@@ -80,7 +81,7 @@ public class RandomWordService {
         // 갤러리 db에 저장
         GallerySaveResponseDto gallerySaveResponseDto = new GallerySaveResponseDto();
         gallerySaveResponseDto.setRoomId(uuid);
-        gallerySaveResponseDto.setType(Gallery.RoomType.RW);
+        gallerySaveResponseDto.setType(Gallery.RoomType.randomWord);
         gallerySaveResponseDto.setTitle("랜덤워드");
         gallerySaveResponseDto.setSubject(requestDto.getSubject());
         galleryService.saveGallery(gallerySaveResponseDto);
@@ -102,7 +103,7 @@ public class RandomWordService {
     }
 
     //랜덤워드 결과물에 대한 상세 정보 반환
-    public RwResponseDto getRwGallery(String uuId) {
+    public RwResponseContainer getRwGallery(String uuId) {
         RandomWord randomWord = randomWordRepository.findByUuId(uuId).orElseThrow(
                 ()->new NotFoundException("반환할 랜덤워드 결과가 없습니다.")
         );
@@ -114,7 +115,11 @@ public class RandomWordService {
         RwResponseDto rwResponseDto=new RwResponseDto();
         rwResponseDto.setRwId(uuId);
         rwResponseDto.setWordList(wordDtoList);
-        return rwResponseDto;
+
+        RwResponseContainer rwResponseContainer = new RwResponseContainer();
+        rwResponseContainer.setCategory(Gallery.RoomType.randomWord);
+        rwResponseContainer.setData(rwResponseDto);
+        return rwResponseContainer;
     }
 
     //api를통해 단어와 뜻을 받아오는 코드

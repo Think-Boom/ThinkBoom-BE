@@ -9,8 +9,9 @@ import java.util.Collection;
 
 public interface GalleryRepository extends JpaRepository<Gallery, Long> {
 
-    Page<Gallery>findByIdLessThanOrderByIdDesc(Long id, PageRequest pageRequest);
+//    Page<Gallery>findByIdLessThanOrderByIdDesc(Long id, PageRequest pageRequest);
 
+    Page<Gallery> findAllByOrderByIdDesc(Pageable pageable);
     Page<Gallery>findByIdLessThanAndTypeIn(Long id, Collection<Gallery.RoomType> type, Pageable pageable);
 
     void deleteByRoomId(String roomId);
