@@ -8,6 +8,8 @@ import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.GenericGenerators;
 
 import javax.persistence.*;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 @Setter
 @Getter
@@ -25,7 +27,10 @@ public class BwRoom {
     private Integer headCount;
 
     @Column
-    private Integer timer;
+    private Integer times;
+
+    @Column
+    private LocalDateTime timer;
 
     @Column
     private String title;
@@ -48,17 +53,17 @@ public class BwRoom {
     @Column
     private Integer currentUsers;
 
-    public BwRoom(Integer headCount, Integer timer, String subject, Long hostId) {
+    public BwRoom(Integer headCount, LocalDateTime timer, String subject, Long hostId) {
         this.headCount = headCount;
         this.timer = timer;
         this.subject = subject;
         this.hostId = hostId;
     }
 
-    public  BwRoom(String title ,Integer headCount, Integer timer, Integer currentUsers, Boolean sharing) {
+    public  BwRoom(String title ,Integer headCount, Integer times, Integer currentUsers, Boolean sharing) {
         this.title = title;
         this.headCount = headCount;
-        this.timer = timer;
+        this.times = times;
         this.currentUsers = currentUsers;
         this.sharing = sharing;
     }

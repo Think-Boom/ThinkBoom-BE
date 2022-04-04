@@ -2,6 +2,7 @@ package com.steepcliff.thinkboom.gallery;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -31,28 +32,35 @@ public class GalleryService {
         galleryRepository.deleteByRoomId(roomId);
     }
 
-    // 갤러리 메인 페이지 데이터 전달
-    public List<Gallery> getGalleryMain(Long lastGalleryId, int size) {
-        Page<Gallery> galleries = fetchPages(lastGalleryId, size);
 
-        return galleries.getContent();
+//    // 갤러리 메인 페이지 데이터 전달
+//    public List<Gallery> getGalleryMain(Long lastGalleryId, int size) {
+//        Page<Gallery> galleries = fetchPages(lastGalleryId, size);
+//
+//        return galleries.getContent();
+//    }
+//    // 갤러리 메인페이지 페이지네이션
+//    public Page<Gallery> fetchPages(Long lastGalleryId, int size) {
+//        PageRequest pageRequest = PageRequest.of(0, size); // 페이지네이션을 위한 PageRequest, 페이지는 0으로 고전한다.
+//        return galleryRepository.findByIdLessThanOrderByIdDesc(lastGalleryId, pageRequest); // JPA 쿼리 메소드
+//    }
+
+    // 갤러리 메인 페이지 데이터 전달
+    public List<Gallery> galleriesMain(Pageable pageable) {
+        return galleryRepository.findAllByOrderByIdDesc(pageable).getContent();
     }
-    // 갤러리 메인페이지 페이지네이션
-    public Page<Gallery> fetchPages(Long lastGalleryId, int size) {
-        PageRequest pageRequest = PageRequest.of(0, size); // 페이지네이션을 위한 PageRequest, 페이지는 0으로 고전한다.
-        return galleryRepository.findByIdLessThanOrderByIdDesc(lastGalleryId, pageRequest); // JPA 쿼리 메소드
-    }
+
 
 
     public List<Gallery> getGalleryFilter(Long lastGalleryId, Gallery.RoomType type, int size) {
         List<Gallery> galleryList = new ArrayList<>();
-        if(Gallery.RoomType.RW.equals(type)) {
+        if(Gallery.RoomType.randomword.equals(type)) {
             Page<Gallery> galleries = rwFetchPages(lastGalleryId, size);
             galleryList = galleries.getContent();
-        } else if(Gallery.RoomType.BW.equals(type)) {
+        } else if(Gallery.RoomType.brainwriting.equals(type)) {
             Page<Gallery> galleries = bwFetchPages(lastGalleryId, size);
             galleryList = galleries.getContent();
-        } else if(Gallery.RoomType.SH.equals(type)) {
+        } else if(Gallery.RoomType.sixhat.equals(type)) {
             Page<Gallery> galleries = shFetchPages(lastGalleryId, size);
             galleryList = galleries.getContent();
         }
@@ -63,17 +71,17 @@ public class GalleryService {
 
     public Page<Gallery> rwFetchPages(Long lastGalleryId, int size) {
         PageRequest pageRequest = PageRequest.of(0, size);
-        return galleryRepository.findByIdLessThanAndTypeIn(lastGalleryId, Collections.singleton(Gallery.RoomType.RW), pageRequest);
+        return galleryRepository.findByIdLessThanAndCategoryIn(lastGalleryId, Collections.singleton(Gallery.RoomType.randomword), pageRequest);
     }
 
     public Page<Gallery> bwFetchPages(Long lastGalleryId, int size) {
         PageRequest pageRequest = PageRequest.of(0, size);
-        return galleryRepository.findByIdLessThanAndTypeIn(lastGalleryId, Collections.singleton(Gallery.RoomType.BW), pageRequest);
+        return galleryRepository.findByIdLessThanAndCategoryIn(lastGalleryId, Collections.singleton(Gallery.RoomType.brainwriting), pageRequest);
     }
 
     public Page<Gallery> shFetchPages(Long lastGalleryId, int size) {
         PageRequest pageRequest = PageRequest.of(0, size);
-        return galleryRepository.findByIdLessThanAndTypeIn(lastGalleryId, Collections.singleton(Gallery.RoomType.SH), pageRequest);
+        return galleryRepository.findByIdLessThanAndCategoryIn(lastGalleryId, Collections.singleton(Gallery.RoomType.sixhat), pageRequest);
     }
 
 

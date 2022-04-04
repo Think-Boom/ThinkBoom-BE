@@ -9,5 +9,7 @@ import java.util.List;
 @Getter
 public class RwResponseDto {
     String rwId;
+
+
     List<String> wordList;
 }

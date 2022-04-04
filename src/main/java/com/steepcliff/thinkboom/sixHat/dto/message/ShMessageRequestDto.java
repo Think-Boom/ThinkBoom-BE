@@ -25,5 +25,7 @@ public class ShMessageRequestDto {
 
     private String message;
 
+    private Integer currentPage;
+
     private List<ShRandomHatItem> randomHat;
 }

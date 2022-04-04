@@ -1,10 +1,12 @@
 package com.steepcliff.thinkboom.randomWord.service;
 
 
+import com.steepcliff.thinkboom.exception.NotFoundException;
 import com.steepcliff.thinkboom.gallery.Gallery;
 import com.steepcliff.thinkboom.gallery.GallerySaveResponseDto;
 import com.steepcliff.thinkboom.gallery.GalleryService;
 import com.steepcliff.thinkboom.randomWord.dto.RwRequestDto;
+import com.steepcliff.thinkboom.randomWord.dto.RwResponseContainer;
 import com.steepcliff.thinkboom.randomWord.dto.RwResponseDto;
 import com.steepcliff.thinkboom.randomWord.model.RandomWord;
 import com.steepcliff.thinkboom.randomWord.model.RwWd;
@@ -43,7 +45,7 @@ public class RandomWordService {
             int rint = random.nextInt(5467)+1;
             //DB에서 rint와 id가 같은 단어를 찾아옴
             Word word=wordRepository.findById(Long.valueOf(rint)).orElseThrow(
-                    ()->new NullPointerException("찾을단어가 없습니다.")
+                    ()->new NotFoundException("찾을단어가 없습니다.")
             );
             String wordStr = word.getWord();
 
@@ -79,7 +81,7 @@ public class RandomWordService {
         // 갤러리 db에 저장
         GallerySaveResponseDto gallerySaveResponseDto = new GallerySaveResponseDto();
         gallerySaveResponseDto.setRoomId(uuid);
-        gallerySaveResponseDto.setType(Gallery.RoomType.RW);
+        gallerySaveResponseDto.setCategory(Gallery.RoomType.randomword);
         gallerySaveResponseDto.setTitle("랜덤워드");
         gallerySaveResponseDto.setSubject(requestDto.getSubject());
         galleryService.saveGallery(gallerySaveResponseDto);
@@ -92,7 +94,7 @@ public class RandomWordService {
     public String shareCheck(String uuId) {
         //전달받은 UUID로 randomword객체를 찾아서 공유여부 변경
         RandomWord randomWord = randomWordRepository.findByUuId(uuId).orElseThrow(
-                ()->new NullPointerException("수정할 랜덤워드 결과가 없습니다.")
+                ()->new NotFoundException("수정할 랜덤워드 결과가 없습니다.")
         );
 
         randomWord.update();
@@ -101,9 +103,9 @@ public class RandomWordService {
     }
 
     //랜덤워드 결과물에 대한 상세 정보 반환
-    public RwResponseDto getRwGallery(String uuId) {
+    public RwResponseContainer getRwGallery(String uuId) {
         RandomWord randomWord = randomWordRepository.findByUuId(uuId).orElseThrow(
-                ()->new NullPointerException("반환할 랜덤워드 결과가 없습니다.")
+                ()->new NotFoundException("반환할 랜덤워드 결과가 없습니다.")
         );
         List<String> wordDtoList=new ArrayList<>();
         List<Word> dbWordList=rwWdRepository.findWordByRandomWord(randomWord);
@@ -113,7 +115,11 @@ public class RandomWordService {
         RwResponseDto rwResponseDto=new RwResponseDto();
         rwResponseDto.setRwId(uuId);
         rwResponseDto.setWordList(wordDtoList);
-        return rwResponseDto;
+
+        RwResponseContainer rwResponseContainer = new RwResponseContainer();
+        rwResponseContainer.setCategory(Gallery.RoomType.randomword);
+        rwResponseContainer.setData(rwResponseDto);
+        return rwResponseContainer;
     }
 
     //api를통해 단어와 뜻을 받아오는 코드

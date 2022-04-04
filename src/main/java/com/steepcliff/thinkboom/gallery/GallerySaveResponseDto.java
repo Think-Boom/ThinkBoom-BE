@@ -10,7 +10,7 @@ public class GallerySaveResponseDto {
 
     private String roomId;
 
-    private Gallery.RoomType type;
+    private Gallery.RoomType category;
 
     private String title;
 

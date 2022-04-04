@@ -1,5 +1,6 @@
-package com.steepcliff.thinkboom.sixHat.dto;
+package com.steepcliff.thinkboom.sixHat.dto.result;
 
+import com.steepcliff.thinkboom.sixHat.dto.result.ShResultMessageItem;
 import lombok.Getter;
 import lombok.Setter;
 

@@ -1,17 +1,20 @@
 package com.steepcliff.thinkboom.sixHat.service;
 
+import com.steepcliff.thinkboom.gallery.Gallery;
 import com.steepcliff.thinkboom.sixHat.domain.ShChatMessage;
 import com.steepcliff.thinkboom.sixHat.domain.ShRoom;
 import com.steepcliff.thinkboom.sixHat.dto.message.ShMessageResponseDto;
-import com.steepcliff.thinkboom.sixHat.dto.ShResultMessageItem;
-import com.steepcliff.thinkboom.sixHat.dto.ShResultResponseDto;
+import com.steepcliff.thinkboom.sixHat.dto.result.ShResultMessageItem;
+import com.steepcliff.thinkboom.sixHat.dto.result.ShResultResponseDto;
+import com.steepcliff.thinkboom.sixHat.dto.result.ShResultResponseContainer;
 import com.steepcliff.thinkboom.sixHat.repository.ShMessageRepository;
-import com.steepcliff.thinkboom.sixHat.repository.ShRoomRepository;
 import com.steepcliff.thinkboom.user.User;
 import com.steepcliff.thinkboom.user.UserService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.listener.ChannelTopic;
+import org.springframework.data.redis.listener.PatternTopic;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -22,18 +25,17 @@ import java.util.List;
 public class ShMessageService {
 
     private final ShMessageRepository shMessageRepository;
-    private final ChannelTopic channelTopic;
+    private final PatternTopic patternTopic;
     private final RedisTemplate redisTemplate;
     private final UserService userService;
-    private final ShRoomRepository shRoomRepository;
     private final ShService shService;
 
-    public ShMessageService(ShMessageRepository shMessageRepository, ChannelTopic channelTopic, RedisTemplate redisTemplate, UserService userService, ShRoomRepository shRoomRepository, ShService shService) {
+    @Autowired
+    public ShMessageService(ShMessageRepository shMessageRepository, @Qualifier("shPatternTopic") PatternTopic patternTopic, RedisTemplate redisTemplate, UserService userService, ShService shService) {
         this.shMessageRepository = shMessageRepository;
-        this.channelTopic = channelTopic;
+        this.patternTopic = patternTopic;
         this.redisTemplate = redisTemplate;
         this.userService = userService;
-        this.shRoomRepository = shRoomRepository;
         this.shService = shService;
     }
 
@@ -45,21 +47,19 @@ public class ShMessageService {
             shMessageResponseDto.setMessage(message);
         } else if(ShChatMessage.MessageType.SUBJECT.equals(shMessageResponseDto.getType())) {
             shService.saveSubject(shMessageResponseDto.getRoomId(), shMessageResponseDto.getSubject());
-            shMessageResponseDto.setMessage("[알림]주제가" + shMessageResponseDto.getSubject() + "로 변경되었습니다.");
+            shMessageResponseDto.setMessage("[알림] 주제가" + shMessageResponseDto.getSubject() + "로 변경되었습니다.");
 
         } else if(ShChatMessage.MessageType.RANDOMHAT.equals(shMessageResponseDto.getType())) {
             shMessageResponseDto.setMessage("[알림] 모자가 랜덤으로 설정되었습니다.");
         }
-        redisTemplate.convertAndSend(channelTopic.getTopic(), shMessageResponseDto);
+        redisTemplate.convertAndSend(patternTopic.getTopic(), shMessageResponseDto);
     }
 
     // 메시지 저장.
     public void save(ShMessageResponseDto shMessageResponseDto) {
         User user = userService.findById(shMessageResponseDto.getSenderId());
 
-        ShRoom shRoom = shRoomRepository.findById(shMessageResponseDto.getRoomId()).orElseThrow(
-                () -> new NullPointerException()
-        );
+        ShRoom shRoom = shService.findShRoom(shMessageResponseDto.getRoomId());
 
         ShChatMessage message = new ShChatMessage();
 
@@ -77,15 +77,13 @@ public class ShMessageService {
 
     // 결과 데이터 얻기
     // 채팅 목록 반환하기
-    public ShResultResponseDto getResult(String shRoomId) {
-        ShRoom shRoom = shRoomRepository.findById(shRoomId).orElseThrow(
-                () -> new NullPointerException("해당 방이 존재하지 않습니다.")
-        );
+    public ShResultResponseContainer getResult(String shRoomId) {
+        ShRoom shRoom = shService.findShRoom(shRoomId);
 
         ShResultResponseDto shResultResponseDto = new ShResultResponseDto();
         shResultResponseDto.setSubject(shRoom.getSubject());
 
-        List<ShChatMessage> shChatMessageList = shMessageRepository.findAllByShRoom(shRoom);
+        List<ShChatMessage> shChatMessageList = shMessageRepository.findAllByShRoomOrderByIdDesc(shRoom);
 
         List<ShResultMessageItem> shResultMessageItemList = new ArrayList<>();
 
@@ -101,6 +99,10 @@ public class ShMessageService {
         }
         shResultResponseDto.setMessageList(shResultMessageItemList);
 
-        return shResultResponseDto;
+        ShResultResponseContainer shResultResponseContainer = new ShResultResponseContainer();
+        shResultResponseContainer.setCategory(Gallery.RoomType.sixhat);
+        shResultResponseContainer.setData(shResultResponseDto);
+
+        return shResultResponseContainer;
     }
 }

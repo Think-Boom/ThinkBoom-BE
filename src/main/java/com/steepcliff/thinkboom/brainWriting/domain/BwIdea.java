@@ -34,10 +34,6 @@ public class BwIdea {
     @JoinColumn(name = "bwRoom_id")
     private BwRoom bwRoom;
 
-//    @OneToMany(mappedBy = "bwIdea")
-//    @JoinColumn(name = "bw_comments")
-//    private BwComments bwComments;
-
     @Column
     private String bwSequence;
 

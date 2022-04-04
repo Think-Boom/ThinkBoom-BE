@@ -26,6 +26,9 @@ public class User {
     @ColumnDefault("false")
     private Boolean isVote;
 
+    @Column
+    private String hat = "none";
+
     public User(String nickname) {
         this.nickname = nickname;
     }

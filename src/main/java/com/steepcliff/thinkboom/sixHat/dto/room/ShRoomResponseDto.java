@@ -1,4 +1,4 @@
-package com.steepcliff.thinkboom.sixHat.dto;
+package com.steepcliff.thinkboom.sixHat.dto.room;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

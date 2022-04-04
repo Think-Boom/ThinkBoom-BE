@@ -11,11 +11,10 @@ import javax.persistence.*;
 @Entity
 @Getter
 @Setter
-@NoArgsConstructor
 public class BwChatMessage {
 
     public enum MessageType {
-        ENTER, TALK, QUIT, HAT
+        ENTER, TALK, QUIT, SUBJECT, NEXTPAGE
     }
 
     @Id
@@ -32,19 +31,12 @@ public class BwChatMessage {
     @Column
     private String createdAt;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "room_id")
     private BwRoom room;
 
-    @Builder
-    public BwChatMessage(MessageType type, User user, BwRoom room, String message) {
-        this.type = type;
-        this.user = user;
-        this.room = room;
-        this.message = message;
-    }
 }

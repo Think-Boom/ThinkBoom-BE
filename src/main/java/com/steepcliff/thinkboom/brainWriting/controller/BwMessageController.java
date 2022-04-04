@@ -1,8 +1,10 @@
 package com.steepcliff.thinkboom.brainWriting.controller;
 
+import com.steepcliff.thinkboom.brainWriting.domain.BwChatMessage;
 import com.steepcliff.thinkboom.brainWriting.dto.bwMessage.BwMessageRequestDto;
 import com.steepcliff.thinkboom.brainWriting.dto.bwMessage.BwMessageResponseDto;
 import com.steepcliff.thinkboom.brainWriting.service.BwMessageService;
+import com.steepcliff.thinkboom.sixHat.domain.ShChatMessage;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -23,7 +25,7 @@ public class BwMessageController {
         this.bwMessageService = bwMessageService;
     }
 
-    @MessageMapping("/api/brainWriting/chat/message")
+    @MessageMapping("/api/brainwriting/chat/message")
     public void bwMessage(@RequestBody BwMessageRequestDto requestDto) {
         log.info("message controller 시작");
         log.info(requestDto.toString());
@@ -35,19 +37,28 @@ public class BwMessageController {
         String dateResult = sdf.format(date);
         log.info("날짜 생성 완료");
 
-        BwMessageResponseDto bwChatMessageResponseDto = new BwMessageResponseDto();
-        bwChatMessageResponseDto.setType(requestDto.getType());
-        bwChatMessageResponseDto.setRoomId(requestDto.getRoomId());
-        bwChatMessageResponseDto.setMessage(requestDto.getMessage());
-        bwChatMessageResponseDto.setSender(requestDto.getSender());
-        bwChatMessageResponseDto.setSenderId(requestDto.getSenderId());
-        bwChatMessageResponseDto.setCreatedAt(dateResult);
+        BwMessageResponseDto bwMessageResponseDto = new BwMessageResponseDto();
+        bwMessageResponseDto.setType(requestDto.getType());
+        bwMessageResponseDto.setRoomId(requestDto.getRoomId());
+        bwMessageResponseDto.setMessage(requestDto.getMessage());
+        bwMessageResponseDto.setSender(requestDto.getSender());
+        bwMessageResponseDto.setSenderId(requestDto.getSenderId());
+        bwMessageResponseDto.setCreatedAt(dateResult);
+
+        if(bwMessageResponseDto.getType().equals(BwChatMessage.MessageType.NEXTPAGE)) {
+            log.info("현재 페이지 {}", requestDto.getCurrentPage());
+            bwMessageResponseDto.setCurrentPage(requestDto.getCurrentPage());
+        } else if(bwMessageResponseDto.getType().equals(BwChatMessage.MessageType.SUBJECT)) {
+            log.info("브레인라이팅 주제: {}", requestDto.getSubject());
+            bwMessageResponseDto.setSubject(requestDto.getSubject());
+        }
+
         log.info("값 담기 완료");
-        bwMessageService.SendBwChatMessage(bwChatMessageResponseDto);
+        bwMessageService.SendBwChatMessage(bwMessageResponseDto);
 
-        log.info("sendBwChatMessage 완료 userId {}", bwChatMessageResponseDto.getSenderId());
+        log.info("sendBwChatMessage 완료 userId {}", bwMessageResponseDto.getSenderId());
 
-        bwMessageService.save(bwChatMessageResponseDto);
+        bwMessageService.save(bwMessageResponseDto);
         log.info("message controller 끝");
     }
 }
