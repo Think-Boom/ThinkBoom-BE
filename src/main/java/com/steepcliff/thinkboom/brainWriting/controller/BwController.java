@@ -95,7 +95,10 @@ public class BwController {
     }
 
     // 투표 타이머 갱신하기
-
+    @PatchMapping("/vote/timer/{bwRoomId}")
+    public BwTimersResponseDto renewVoteTimer(@PathVariable String bwRoomId) {
+        return bwService.renewVoteTime(bwRoomId);
+    }
 
     // 타이머 남은 시간 주기
     @GetMapping("/timer/{bwroomid}")
