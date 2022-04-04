@@ -31,6 +31,7 @@ import com.steepcliff.thinkboom.gallery.GallerySaveResponseDto;
 import com.steepcliff.thinkboom.gallery.GalleryService;
 import com.steepcliff.thinkboom.user.User;
 import com.steepcliff.thinkboom.user.UserService;
+import com.steepcliff.thinkboom.webSocket.chat.UserListItem;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -38,10 +39,7 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Queue;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -94,10 +92,8 @@ public class BwService {
     }
 
     // 아이디어 카드 생성
-    public void createIdea(String bwRoomId, Long userId) {
+    public void createIdea(String bwRoomId) {
         BwRoom bwRoom = findBwRoom(bwRoomId);
-
-        if(bwRoom.getHostId().equals(userId)) {
 
             List<BwUserRoom> userRoomList = bwUserRoomRepository.findAllByBwroom(bwRoom);
             Queue<User> userQueue = new LinkedList<>();
@@ -119,8 +115,6 @@ public class BwService {
                 bwIdeaRepository.save(bwIdea);
                 log.info("{} {}", bwIdea.getId(), bwIdea.getBwSequence());
             }
-        }
-
     }
 
     // 브레인 라이팅 아이디어 입력
@@ -144,7 +138,7 @@ public class BwService {
         List<BwIdea> bwIdeaList = bwIdeaRepository.findAllByBwRoom(bwRoom);
         List<BwIdeaListItem> bwIdeaListItemList = new ArrayList<>();
 
-        boolean endComment = false;
+        boolean isEndComment = false;
         for(BwIdea bwIdea:bwIdeaList) {
             BwIdeaListItem bwIdeaListItem = new BwIdeaListItem();
 
@@ -158,10 +152,10 @@ public class BwService {
             bwIdea.setBwIndex(bwIdea.getBwIndex()+1);
             bwIdeaRepository.save(bwIdea);
             if(bwIdea.getBwIndex().equals(bwRoom.getHeadCount())) {
-                endComment = true;
+                isEndComment = true;
             }
         }
-        return new BwIdeaListDto(endComment, bwIdeaListItemList);
+        return new BwIdeaListDto(isEndComment, bwIdeaListItemList);
     }
 
     // 코멘트 입력
@@ -264,7 +258,10 @@ public class BwService {
     // 브레인 라이팅 결과 데이터
    public BwResultResponseContainer getResult(String bwRoomId) {
         BwRoom bwRoom = findBwRoom(bwRoomId);
-        List<BwIdea> bwIdeaList = bwIdeaRepository.findAllByBwRoom(bwRoom);
+
+       // 아이디어 투표 수로 내림차순 정렬.
+       List<BwIdea> bwIdeaList = bwIdeaRepository.findAllByBwRoom(bwRoom);
+       bwIdeaList.sort((o1, o2) -> o2.getNumberOfVotes() - o1.getNumberOfVotes());
 
        List<BwResultResponseItem> bwResultResponseItemList = new ArrayList<>();
        for(BwIdea bwIdea:bwIdeaList) {
@@ -286,6 +283,17 @@ public class BwService {
            bwResultResponseItem.setCommentsList(bwResultResponseCommentsList);
            bwResultResponseItemList.add(bwResultResponseItem);
        }
+
+       // isWinner에 1등 표시하기.
+       int BigNum=0;
+       for(BwResultResponseItem bwResultResponseItem:bwResultResponseItemList) {
+           if(bwResultResponseItem.getVoteCount() >= BigNum) {
+               BigNum = bwResultResponseItem.getVoteCount();
+               bwResultResponseItem.setIsWinner(true);
+           } else bwResultResponseItem.setIsWinner(false);
+       }
+
+
        // 최종적으로 반환할 dto 준비
        BwResultResponseDto bwResultResponseDto = new BwResultResponseDto();
        bwResultResponseDto.setSubject(bwRoom.getSubject());
@@ -344,12 +352,30 @@ public class BwService {
 
     // 시간 갱신하기
     @Transactional
-    public void renewTime(String bwRoomId) {
-
+    public BwTimersResponseDto renewTime(String bwRoomId) {
         BwRoom bwRoom = findBwRoom(bwRoomId);
+
         LocalDateTime localDateTime = LocalDateTime.now().plusMinutes(bwRoom.getTimes());
         log.info("localDateTime {}", localDateTime);
         bwRoom.setTimer(localDateTime);
+
+        return new BwTimersResponseDto((long)bwRoom.getTimes()*60);
     }
-    // 해당 방의 유저 리스트 넘기기.
+
+//    // 해당 방의 유저 리스트 넘기기.
+    public List<UserListItem> getBwUserList(String bwRoomId) {
+        BwRoom bwRoom = findBwRoom(bwRoomId);
+
+        List<BwUserRoom> bwUserRoomList = bwUserRoomRepository.findAllByBwroom(bwRoom);
+
+        List<UserListItem> userListItemList = new ArrayList<>();
+        for(BwUserRoom bwUserRoom:bwUserRoomList) {
+            UserListItem userListItem = new UserListItem();
+            userListItem.setNickname(bwUserRoom.getUser().getNickname());
+
+
+            userListItemList.add(userListItem);
+        }
+        return userListItemList;
+    }
 }

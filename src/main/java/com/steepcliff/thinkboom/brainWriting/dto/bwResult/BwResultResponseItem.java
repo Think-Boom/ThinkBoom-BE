@@ -17,5 +17,7 @@ public class BwResultResponseItem {
 
     private Integer voteCount;
 
+    private Boolean isWinner;
+
     private List<BwResultResponseComments> commentsList;
 }

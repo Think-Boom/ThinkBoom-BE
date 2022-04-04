@@ -41,9 +41,9 @@ public class BwController {
     }
 
     // 아이디어 카드 생성.(준비)
-    @PostMapping("/idea/create/{bwRoomId}")
-    public void createIdea(@PathVariable String bwRoomId, @RequestBody CreateIdeaRequestDto createIdeaRequestDto) {
-        bwService.createIdea(bwRoomId, createIdeaRequestDto.getUserId());
+    @PostMapping("/idea/{bwRoomId}")
+    public void createIdea(@PathVariable String bwRoomId) {
+        bwService.createIdea(bwRoomId);
     }
 
     // 브레인라이팅 아이디어 입력
@@ -71,7 +71,7 @@ public class BwController {
     }
 
     // 브레인 라이팅 투표하기
-    @PostMapping("/vote/{bwRoomId}")
+    @PatchMapping("/vote/{bwRoomId}")
     public BwVoteResponseDto voting(@PathVariable String bwRoomId, @RequestBody BwVoteRequestDto requestDto, @PathVariable String BwRoomId) {
         return bwService.voteIdea(bwRoomId, requestDto);
     }
@@ -90,9 +90,11 @@ public class BwController {
 
     // 타이머 시간 갱신하기
     @PatchMapping("/timer/{bwRoomId}")
-    public void renewTimer(@PathVariable String bwRoomId) {
-        bwService.renewTime(bwRoomId);
+    public BwTimersResponseDto renewTimer(@PathVariable String bwRoomId) {
+        return bwService.renewTime(bwRoomId);
     }
+
+    // 투표 타이머 갱신하기
 
     // 타이머 남은 시간 주기
     @GetMapping("/timer/{bwroomid}")

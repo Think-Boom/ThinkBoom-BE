@@ -65,6 +65,7 @@ public class StompHandler implements ChannelInterceptor {
             if(category.equals("BW")) {
                 bwService.plusUserCount(roomId);
                 BwRoom room = bwService.findBwRoom(roomId);
+                List<UserListItem> userListItemList = bwService.getBwUserList(roomId);
 
                 chatMessageService.EnterQuitChatMessage(EnterQuitMessageResponseDto
                         .builder()
@@ -74,6 +75,7 @@ public class StompHandler implements ChannelInterceptor {
                         .totalUser(room.getHeadCount())
                         .currentUser(room.getCurrentUsers())
                         .subject(room.getSubject())
+                        .userList(userListItemList)
                         .build());
                 log.info("SUBSCRIBED {}, {}", user.getNickname(), roomId);
 

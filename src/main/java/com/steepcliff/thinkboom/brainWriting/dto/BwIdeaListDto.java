@@ -11,7 +11,7 @@ import java.util.List;
 @AllArgsConstructor
 public class BwIdeaListDto {
 
-    private Boolean endComment;
+    private Boolean isEndComment;
 
     private List<BwIdeaListItem> bwIdeaListItemList;
 

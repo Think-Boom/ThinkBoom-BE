@@ -13,7 +13,7 @@ public class BwVoteViewResponseDto {
 
     private String subject;
 
-    private List<BwVoteViewCardsItem> bwVoteViewCardsItems;
+    private List<BwVoteViewCardsItem> ideaList;
 
 
 }
