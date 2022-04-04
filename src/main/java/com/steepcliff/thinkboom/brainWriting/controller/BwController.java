@@ -82,17 +82,22 @@ public class BwController {
         bwService.bwSaveGallery(bwRoomId);
     }
 
-
-
     // 공유여부 변경 true->false
     @PatchMapping("/sharing/{bwRoomId}")
     public void BwSharingCheck(@PathVariable String bwRoomId) {
         bwService.shareCheck(bwRoomId);
     }
 
-    // 남은 시간 주기
+    // 타이머 시간 갱신하기
+    @PatchMapping("/timer/{bwRoomId}")
+    public void renewTimer(@PathVariable String bwRoomId) {
+        bwService.renewTime(bwRoomId);
+    }
+
+    // 타이머 남은 시간 주기
     @GetMapping("/timer/{bwroomid}")
     public BwTimersResponseDto remainingTime(@PathVariable String bwroomid) {
         return bwService.getTime(bwroomid);
     }
+
 }
