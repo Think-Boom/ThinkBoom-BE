@@ -350,7 +350,7 @@ public class BwService {
         bwRoom.setSubject(subject);
     }
 
-    // 시간 갱신하기
+    // 아이디어 작성 및 코멘트 작성 시간 갱신하기
     @Transactional
     public BwTimersResponseDto renewTime(String bwRoomId) {
         BwRoom bwRoom = findBwRoom(bwRoomId);
@@ -362,7 +362,46 @@ public class BwService {
         return new BwTimersResponseDto((long)bwRoom.getTimes()*60);
     }
 
-//    // 해당 방의 유저 리스트 넘기기.
+    // 투표 시간 갱신하기
+    @Transactional
+    public BwTimersResponseDto renewVoteTime(String bwRoomId) {
+        BwRoom bwRoom = findBwRoom(bwRoomId);
+
+        LocalDateTime localDateTime;
+        switch (bwRoom.getHeadCount()) {
+            case 2:
+                localDateTime = LocalDateTime.now().plusMinutes(2);
+                bwRoom.setTimer(localDateTime);
+                break;
+            case 3:
+                localDateTime = LocalDateTime.now().plusMinutes(4);
+                bwRoom.setTimer(localDateTime);
+                break;
+            case 4:
+                localDateTime = LocalDateTime.now().plusMinutes(8);
+                bwRoom.setTimer(localDateTime);
+                break;
+            case 5:
+                localDateTime = LocalDateTime.now().plusMinutes(12);
+                bwRoom.setTimer(localDateTime);
+                break;
+            case 6:
+                localDateTime = LocalDateTime.now().plusMinutes(18);
+                bwRoom.setTimer(localDateTime);
+                break;
+            case 7:
+                localDateTime = LocalDateTime.now().plusMinutes(24);
+                bwRoom.setTimer(localDateTime);
+                break;
+            case 8:
+                localDateTime = LocalDateTime.now().plusMinutes(32);
+                bwRoom.setTimer(localDateTime);
+                break;
+        }
+        return new BwTimersResponseDto((long)bwRoom.getTimes()*60);
+    }
+
+    // 해당 방의 유저 리스트 넘기기.
     public List<UserListItem> getBwUserList(String bwRoomId) {
         BwRoom bwRoom = findBwRoom(bwRoomId);
 

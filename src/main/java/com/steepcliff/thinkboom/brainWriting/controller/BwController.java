@@ -96,6 +96,7 @@ public class BwController {
 
     // 투표 타이머 갱신하기
 
+
     // 타이머 남은 시간 주기
     @GetMapping("/timer/{bwroomid}")
     public BwTimersResponseDto remainingTime(@PathVariable String bwroomid) {
