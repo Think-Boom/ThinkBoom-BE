@@ -23,7 +23,7 @@ public class ThinkBoomApplication {
 
         SpringApplication.run(ThinkBoomApplication.class, args);
     }
-
+// 크롤링해서 DB에 단어를 추가하는 코드
 //    @Bean
 //    public CommandLineRunner save(WordRepository wordRepository) {
 //        return (args) -> {
