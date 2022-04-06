@@ -1,4 +1,4 @@
-# ThinkBoom-BE
+# ThinkBoom
 팅크붐설명
 
 
