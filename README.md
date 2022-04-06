@@ -22,39 +22,43 @@ https://www.figma.com/file/Lv45MYlh1HZA5huoJ5jTmz/%ED%95%AD%ED%95%B499_B-7%EC%A1
 ## 4. 기술 스택
 - Frontend : 
 - Backend : Java,Springboot,nginx,redis,stomp,https,MySql
+## 사용 기술
+ <p> </p>
+ <p> </p>
+ <p> </p>
+<code> Back-end </code> 
+</br>
+<p float="left">
+<img src="https://img.shields.io/badge/JAVA-007396?style=for-the-badge&logo=java&logoColor=white">
+<img src="https://img.shields.io/badge/Springboot-6DB33F?style=for-the-badge&logo=Springboot&logoColor=white">
+<img src="https://img.shields.io/badge/SpringSecurity-6DB33F?style=for-the-badge&logo=Spring&logoColor=white">
+<img src="https://img.shields.io/badge/mysql-4479A1?style=for-the-badge&logo=mysql&logoColor=white">
+<img src="https://img.shields.io/badge/amazonaws-232F3E?style=for-the-badge&logo=amazonaws&logoColor=white"> 
+ </br>
+<img src="https://img.shields.io/badge/Gradle-02303A?style=for-the-badge&logo=Gradle&logoColor=white"> 
+<img src="https://img.shields.io/badge/JWT-232F3E?style=for-the-badge&logo=Jwt&logoColor=white"> 
+<img src="https://img.shields.io/badge/CORS-231F20?style=for-the-badge&logo=Cors&logoColor=white"> 
+<img src="https://img.shields.io/badge/FileZilla-BF0000?style=for-the-badge&logo=FileZilla&logoColor=white"> 
+</p>
+<code> Front-end </code> 
+</br>
+<p float="left">
+  <img src="https://img.shields.io/badge/html5-E34F26?style=for-the-badge&logo=html5&logoColor=white"> 
+  <img src="https://img.shields.io/badge/css-1572B6?style=for-the-badge&logo=css3&logoColor=white"> 
+  <img src="https://img.shields.io/badge/javascript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black"> 
+  <img src="https://img.shields.io/badge/react-61DAFB?style=for-the-badge&logo=react&logoColor=black"> 
+ 
+ <code>  Version Control </code> 
+</br>
+<p float="left">
+  <img src="https://img.shields.io/badge/github-181717?style=for-the-badge&logo=github&logoColor=white">
+  <img src="https://img.shields.io/badge/git-F05032?style=for-the-badge&logo=git&logoColor=white">
 
 
 
 ## 5. Trouble Shooting
 
-# 항해99 클론코딩 8조 - 당근마켓
-<img src="https://user-images.githubusercontent.com/97422693/155444394-feb226b9-fdd8-4575-afaa-b179e190abc1.PNG" width="500px">
- 
- ## 🤷 프로젝트 소개 
- <p> 당근마켓 클론 코딩입니다. </p>
- <p> </p>
- <p> </p>
- <p> </p>
-  
-[당근마켓!] http://jeonhaekang.shop.s3-website.ap-northeast-2.amazonaws.com
-</br>
 
-
- ## 시연 영상입니다! 링크로 들어가시면 확인 가능합니다!
-https://youtu.be/MD0YCfuaAkQ
-
-
- ## 🏼‍💻 개발기간 및 팀원소개
- ### 기간: 2022.02.18 ~ 2022.02.24   
- <p> </p>
- <p> </p>
- <p> </p>
- 
-#### 프론트 - [전해강](https://github.com/jeonhaekang/hanghae_clone_01),[유영탁]()
-#### 백 - [김채경](https://github.com/KimCG1130/Clone_Backendd),[김종훈](https://github.com/kjhbbjoker/Clone_Backend)
-#### 프론트 GIT-HUB 주소 https://github.com/jeonhaekang/hanghae_clone_01
-### API 설계서
-https://www.notion.so/8-Clone-Coding-e23b83af71d744b492a8771ee301d9cd
 ## 사용 기술
  <p> </p>
  <p> </p>
