@@ -1,16 +1,14 @@
 package com.steepcliff.thinkboom.sixHat.controller;
 
-import com.steepcliff.thinkboom.sixHat.ShService;
-import com.steepcliff.thinkboom.sixHat.dto.ShNickRequestDto;
-import com.steepcliff.thinkboom.sixHat.dto.ShNickResponseDto;
-import com.steepcliff.thinkboom.sixHat.dto.ShRoomRequestDto;
-import com.steepcliff.thinkboom.sixHat.dto.ShRoomResponseDto;
+import com.steepcliff.thinkboom.sixHat.dto.*;
+import com.steepcliff.thinkboom.sixHat.dto.nickname.ShNickRequestDto;
+import com.steepcliff.thinkboom.sixHat.dto.nickname.ShNickResponseDto;
+import com.steepcliff.thinkboom.sixHat.dto.room.ShRoomRequestDto;
+import com.steepcliff.thinkboom.sixHat.dto.room.ShRoomResponseDto;
+import com.steepcliff.thinkboom.sixHat.service.ShService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -32,5 +30,29 @@ public class ShController {
     public ShNickResponseDto createNick(@RequestBody ShNickRequestDto requestDto) {
         log.info("닉네임 입력");
         return shService.createNickname(requestDto);
+    }
+
+    // 식스햇 공유 여부 변경 true->false
+    @PostMapping("/sharing/{shRoomId}")
+    public void sharingCheck(@PathVariable String shRoomId) {
+        shService.shSharingCheck(shRoomId);
+    }
+
+    // 남은 시간 주기
+    @GetMapping("/timer/{shRoomId}")
+    public ShTimerResponseDto remainingTime(@PathVariable String shRoomId) {
+        return shService.getTime(shRoomId);
+    }
+
+    // 갤러리에 저장하기
+    @PostMapping("/save/gallery/{shRoomId}")
+    public void saveGallery(@PathVariable String shRoomId) {
+        shService.shSaveGallery(shRoomId);
+    }
+
+    // 시간 갱신하기
+    @PostMapping("/timer/{shRoomId}")
+    public void renewGallery(@PathVariable String shRoomId) {
+        shService.renewTimer(shRoomId);
     }
 }

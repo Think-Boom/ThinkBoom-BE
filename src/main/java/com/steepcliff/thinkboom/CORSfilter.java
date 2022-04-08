@@ -15,7 +15,7 @@ public class CORSfilter {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
         config.addAllowedOriginPattern("*");
-        config.addAllowedOrigin("http://localhost:3000, http://localhost:8080");
+        config.addAllowedOrigin("https://thinkboom.co.kr, http://localhost:3000");
         config.addAllowedHeader("*");
         config.addAllowedMethod("*");
 

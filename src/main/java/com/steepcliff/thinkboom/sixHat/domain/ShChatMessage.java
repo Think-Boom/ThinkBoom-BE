@@ -14,7 +14,7 @@ import javax.persistence.*;
 public class ShChatMessage {
 
     public enum MessageType {
-        ENTER, TALK, DEBATING, QUIT, HAT, SUBJECT
+        ENTER, TALK, DEBATING, QUIT, HAT, SUBJECT, RANDOMHAT, NEXTPAGE
     }
 
     @Id
@@ -29,6 +29,7 @@ public class ShChatMessage {
     private String hat;
 
     @Column
+    @Lob
     private String message;
 
     @Column

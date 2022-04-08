@@ -1,9 +1,6 @@
 package com.steepcliff.thinkboom.user;
 
-import com.steepcliff.thinkboom.brainWriting.dto.BwNickRequestDto;
-import com.steepcliff.thinkboom.brainWriting.dto.BwNickResponseDto;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @Slf4j

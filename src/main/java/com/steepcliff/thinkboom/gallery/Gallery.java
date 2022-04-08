@@ -1,17 +1,19 @@
 package com.steepcliff.thinkboom.gallery;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
 
 @Getter
 @Setter
+@NoArgsConstructor
 @Entity
 public class Gallery {
 
     public enum RoomType {
-        RW, BW, SH
+        randomword, brainwriting, sixhat
     }
 
     @Id
@@ -19,10 +21,10 @@ public class Gallery {
     private Long id;
 
     @Column
-    private Long roomId;
+    private String roomId;
 
     @Column
-    private RoomType type;
+    private RoomType category;
 
     @Column
     private String title;
@@ -30,4 +32,10 @@ public class Gallery {
     @Column
     private String subject;
 
+    public Gallery(GallerySaveResponseDto gallerySaveResponseDto){
+        this.roomId = gallerySaveResponseDto.getRoomId();
+        this.category = gallerySaveResponseDto.getCategory();
+        this.title = gallerySaveResponseDto.getTitle();
+        this.subject = gallerySaveResponseDto.getSubject();
+    }
 }

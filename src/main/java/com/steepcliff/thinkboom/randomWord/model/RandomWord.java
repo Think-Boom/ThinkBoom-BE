@@ -14,6 +14,9 @@ public class RandomWord {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long rwId;
 
+    @Column
+    private String subject;
+
     @Column(nullable = false)
     private String uuId;
 

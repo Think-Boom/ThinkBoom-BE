@@ -7,6 +7,7 @@ import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -27,10 +28,16 @@ public class ShRoom {
     private Integer headCount;
 
     @Column
-    private Integer shTimer;
+    private LocalDateTime shTimer;
+
+    @Column
+    private Integer times;
 
     @Column
     private String subject;
+
+    @Column
+    private Boolean sharing;
 
     @Column
     private Long hostId;
@@ -39,10 +46,11 @@ public class ShRoom {
     private Integer currentUsers;
 
 
-    public ShRoom(String title, Integer headCount, Integer shTimer, Integer currentUsers) {
+    public ShRoom(String title, Integer headCount, Integer currentUsers, Boolean sharing, Integer times) {
         this.title = title;
         this.headCount = headCount;
-        this.shTimer = shTimer;
         this.currentUsers = currentUsers;
+        this.sharing = sharing;
+        this.times = times;
     }
 }

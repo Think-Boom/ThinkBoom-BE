@@ -2,14 +2,14 @@ package com.steepcliff.thinkboom.brainWriting.service;
 
 import com.steepcliff.thinkboom.brainWriting.domain.BwChatMessage;
 import com.steepcliff.thinkboom.brainWriting.domain.BwRoom;
-import com.steepcliff.thinkboom.brainWriting.dto.BwMessageResponseDto;
+import com.steepcliff.thinkboom.brainWriting.dto.bwMessage.BwMessageResponseDto;
 import com.steepcliff.thinkboom.brainWriting.repository.BwMessageRepository;
-import com.steepcliff.thinkboom.brainWriting.repository.BwRoomRepository;
 import com.steepcliff.thinkboom.user.User;
 import com.steepcliff.thinkboom.user.UserService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.listener.ChannelTopic;
+import org.springframework.data.redis.listener.PatternTopic;
 import org.springframework.stereotype.Service;
 
 @Slf4j
@@ -17,31 +17,34 @@ import org.springframework.stereotype.Service;
 public class BwMessageService {
 
     private final BwMessageRepository bwMessageRepository;
-    private final ChannelTopic channelTopic;
+    private final PatternTopic patternTopic;
     private final RedisTemplate redisTemplate;
     private final UserService userService;
-    private final BwRoomRepository bwRoomRepository;
+    private final BwService bwService;
 
-    public BwMessageService(BwMessageRepository bwMessageRepository, ChannelTopic channelTopic, RedisTemplate redisTemplate, UserService userService, BwRoomRepository bwRoomRepository) {
+    public BwMessageService(BwMessageRepository bwMessageRepository, @Qualifier("bwPatternTopic") PatternTopic patternTopic, RedisTemplate redisTemplate, UserService userService, BwService bwService) {
         this.bwMessageRepository = bwMessageRepository;
-        this.channelTopic = channelTopic;
+        this.patternTopic = patternTopic;
         this.redisTemplate = redisTemplate;
         this.userService = userService;
-        this.bwRoomRepository = bwRoomRepository;
+        this.bwService = bwService;
     }
 
     public void SendBwChatMessage(BwMessageResponseDto bwMessageResponseDto) {
         log.info("SendBwChatMessage 시작");
-        redisTemplate.convertAndSend(channelTopic.getTopic(), bwMessageResponseDto);
+        if(BwChatMessage.MessageType.SUBJECT.equals(bwMessageResponseDto.getType())) {
+            bwService.saveSubject(bwMessageResponseDto.getRoomId(), bwMessageResponseDto.getSubject());
+            bwMessageResponseDto.setMessage("[알림] 주제가" + bwMessageResponseDto.getSubject() + "로 변경되었습니다.");
+        }
+
+        redisTemplate.convertAndSend(patternTopic.getTopic(), bwMessageResponseDto);
     }
 
     public void save(BwMessageResponseDto bwMessageResponseDto) {
 
         User user = userService.findById(bwMessageResponseDto.getSenderId());
 
-        BwRoom bwRoom = bwRoomRepository.findById(Long.valueOf(bwMessageResponseDto.getRoomId())).orElseThrow(
-                ()-> new NullPointerException()
-        );
+        BwRoom bwRoom = bwService.findBwRoom(bwMessageResponseDto.getRoomId());
 
         BwChatMessage message = new BwChatMessage();
 

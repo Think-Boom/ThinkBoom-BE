@@ -5,9 +5,9 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class ShNickRequestDto {
+public class DuplicateRequestDto {
 
-    private Long shRoomId;
+    private String shRoomId;
 
     private String nickname;
 }

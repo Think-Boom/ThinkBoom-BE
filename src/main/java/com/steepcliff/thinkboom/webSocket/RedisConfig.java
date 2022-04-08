@@ -1,11 +1,15 @@
 package com.steepcliff.thinkboom.webSocket;
 
+import com.steepcliff.thinkboom.webSocket.subscriber.BwRedisSubscriber;
+import com.steepcliff.thinkboom.webSocket.subscriber.ShRedisSubscriber;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.listener.ChannelTopic;
+import org.springframework.data.redis.listener.PatternTopic;
 import org.springframework.data.redis.listener.RedisMessageListenerContainer;
 import org.springframework.data.redis.listener.adapter.MessageListenerAdapter;
 import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
@@ -26,50 +30,43 @@ public class RedisConfig {
     }
 
     @Bean
-    public ChannelTopic ChannelTopic() {
-
-        return new ChannelTopic("thinkBoom");
+    public PatternTopic bwPatternTopic() {
+        return new PatternTopic("BW");
     }
 
+    @Bean
+    public PatternTopic shPatternTopic() {
+        return new PatternTopic("SH");
+    }
 
     @Bean
-    public RedisMessageListenerContainer BwRedisMessageListener(RedisConnectionFactory connectionFactory,
-                                                                MessageListenerAdapter BwListenerAdapter,
-                                                                ChannelTopic ChannelTopic) {
+    public RedisMessageListenerContainer RedisMessageListener(RedisConnectionFactory connectionFactory,
+                                                              MessageListenerAdapter BwListenerAdapter,
+                                                              MessageListenerAdapter ShListenerAdapter,
+                                                              PatternTopic bwPatternTopic,
+                                                              PatternTopic shPatternTopic) {
         log.info("brain writing messageListener start");
         RedisMessageListenerContainer container = new RedisMessageListenerContainer();
         container.setConnectionFactory(connectionFactory);
-        container.addMessageListener(BwListenerAdapter, ChannelTopic);
+
+        container.addMessageListener(BwListenerAdapter, bwPatternTopic);
+        container.addMessageListener(ShListenerAdapter, shPatternTopic);
         return container;
     }
-
-    @Bean
-    public RedisMessageListenerContainer ShRedisMessageListener(RedisConnectionFactory connectionFactory,
-                                                                MessageListenerAdapter ShListenerAdapter,
-//                                                                MessageListenerAdapter BwListenerAdapter,
-                                                                ChannelTopic ChannelTopic) {
-        log.info("six hat messageListener start");
-        RedisMessageListenerContainer container = new RedisMessageListenerContainer();
-        container.setConnectionFactory(connectionFactory);
-        container.addMessageListener(ShListenerAdapter, ChannelTopic);
-//        container.addMessageListener(BwListenerAdapter, ChannelTopic);
-        return container;
-    }
-
-
 
     // 이 곳으로 메시지가 던져짐.
     @Bean
-    public MessageListenerAdapter BwListenerAdapter(RedisSubscriber subscriber) {
-        ;
+    public MessageListenerAdapter BwListenerAdapter(BwRedisSubscriber subscriber) {
+
         log.info("BwListenerAdapter");
         return new MessageListenerAdapter(subscriber, "BwSendMessage");
     }
 
     @Bean
-    public MessageListenerAdapter ShListenerAdapter(RedisSubscriber subscriber) {
+    public MessageListenerAdapter ShListenerAdapter(ShRedisSubscriber subscriber) {
         log.info("ShListenerAdapter");
 
         return new MessageListenerAdapter(subscriber, "ShSendMessage");
     }
+
 }
