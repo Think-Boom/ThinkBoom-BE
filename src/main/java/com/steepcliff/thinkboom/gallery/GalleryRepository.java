@@ -12,7 +12,11 @@ public interface GalleryRepository extends JpaRepository<Gallery, Long> {
 //    Page<Gallery>findByIdLessThanOrderByIdDesc(Long id, PageRequest pageRequest);
 
     Page<Gallery> findAllByOrderByIdDesc(Pageable pageable);
+<<<<<<< HEAD
     Page<Gallery>findByIdLessThanAndTypeIn(Long id, Collection<Gallery.RoomType> type, Pageable pageable);
+=======
+    Page<Gallery>findByIdLessThanAndCategoryIn(Long id, Collection<Gallery.RoomType> type, Pageable pageable);
+>>>>>>> e3ecf966c16a767229a9405bc18c6cfccdcba3a3
 
     void deleteByRoomId(String roomId);
 }

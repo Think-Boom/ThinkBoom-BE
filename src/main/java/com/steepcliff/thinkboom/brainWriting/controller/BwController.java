@@ -40,16 +40,16 @@ public class BwController {
         return bwService.createNickname(bwRoomId, requestDto);
     }
 
-    // 브레인라이팅 아이디어 입력
-    @PostMapping("/idea/{bwRoomId}")
-    public BwIdeaResponseDto idea(@PathVariable String bwRoomId, @RequestBody BwIdeaRequestDto requestDto) {
-        return bwService.insertIdea(bwRoomId, requestDto);
+    // 아이디어 카드 생성.(준비)
+    @PostMapping("/idea/create/{bwRoomId}")
+    public void createIdea(@PathVariable String bwRoomId, @RequestBody CreateIdeaRequestDto createIdeaRequestDto) {
+        bwService.createIdea(bwRoomId, createIdeaRequestDto.getUserId());
     }
 
-    // 브레인 라이팅 코멘트 입력.
-    @PostMapping("/comment/{bwRoomId}")
-    public BwCommentResponseDto comment(@PathVariable String bwRoomId, @RequestBody BwCommentRequestDto requestDto) {
-        return bwService.insertComment(bwRoomId,requestDto);
+    // 브레인라이팅 아이디어 입력
+    @PatchMapping("/idea/{bwRoomId}")
+    public BwIdeaResponseDto idea(@PathVariable String bwRoomId, @RequestBody BwIdeaRequestDto requestDto) {
+        return bwService.insertIdea(bwRoomId, requestDto);
     }
 
     // 브레인 라이팅 아이디어 클라이언트에 전달.
@@ -58,11 +58,19 @@ public class BwController {
         return bwService.getAllIdeaWithOrederBy(bwRoomId);
     }
 
+    // 브레인 라이팅 코멘트 입력.
+    @PostMapping("/comment/{bwRoomId}")
+    public BwCommentResponseDto comment(@PathVariable String bwRoomId, @RequestBody BwCommentRequestDto requestDto) {
+        return bwService.insertComment(bwRoomId,requestDto);
+    }
+
+    // 브레인 라이팅 투표 뷰 데이터
     @GetMapping("/voteview/{bwRoomId}")
     public BwVoteViewResponseDto voteView(@PathVariable String bwRoomId) {
         return bwService.voteViewIdea(bwRoomId);
     }
 
+    // 브레인 라이팅 투표하기
     @PostMapping("/vote/{bwRoomId}")
     public BwVoteResponseDto voting(@PathVariable String bwRoomId, @RequestBody BwVoteRequestDto requestDto, @PathVariable String BwRoomId) {
         return bwService.voteIdea(bwRoomId, requestDto);
@@ -74,21 +82,38 @@ public class BwController {
         bwService.bwSaveGallery(bwRoomId);
     }
 
+<<<<<<< HEAD
     // 아이디어 카드 생성.
     @PostMapping("/idea/create/{bwRoomId}")
     public void createIdea(@PathVariable String bwRoomId, @RequestBody CreateIdeaRequestDto createIdeaRequestDto) {
         bwService.createIdea(bwRoomId, createIdeaRequestDto.getUserId());
     }
 
+=======
+>>>>>>> e3ecf966c16a767229a9405bc18c6cfccdcba3a3
     // 공유여부 변경 true->false
-    @PostMapping("/sharing/{bwRoomId}")
+    @PatchMapping("/sharing/{bwRoomId}")
     public void BwSharingCheck(@PathVariable String bwRoomId) {
         bwService.shareCheck(bwRoomId);
     }
 
+<<<<<<< HEAD
     // 남은 시간 주기
+=======
+    // 타이머 시간 갱신하기
+    @PatchMapping("/timer/{bwRoomId}")
+    public void renewTimer(@PathVariable String bwRoomId) {
+        bwService.renewTime(bwRoomId);
+    }
+
+    // 타이머 남은 시간 주기
+>>>>>>> e3ecf966c16a767229a9405bc18c6cfccdcba3a3
     @GetMapping("/timer/{bwroomid}")
     public BwTimersResponseDto remainingTime(@PathVariable String bwroomid) {
         return bwService.getTime(bwroomid);
     }
+<<<<<<< HEAD
+=======
+
+>>>>>>> e3ecf966c16a767229a9405bc18c6cfccdcba3a3
 }

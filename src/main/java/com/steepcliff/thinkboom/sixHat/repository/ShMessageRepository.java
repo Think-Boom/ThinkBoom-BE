@@ -7,5 +7,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface ShMessageRepository extends JpaRepository<ShChatMessage, Long> {
-    List<ShChatMessage> findAllByShRoom(ShRoom shRoom);
+    List<ShChatMessage> findAllByShRoomOrderByIdDesc(ShRoom shRoom);
 }

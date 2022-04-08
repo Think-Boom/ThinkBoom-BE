@@ -81,7 +81,11 @@ public class RandomWordService {
         // 갤러리 db에 저장
         GallerySaveResponseDto gallerySaveResponseDto = new GallerySaveResponseDto();
         gallerySaveResponseDto.setRoomId(uuid);
+<<<<<<< HEAD
         gallerySaveResponseDto.setType(Gallery.RoomType.randomWord);
+=======
+        gallerySaveResponseDto.setCategory(Gallery.RoomType.randomword);
+>>>>>>> e3ecf966c16a767229a9405bc18c6cfccdcba3a3
         gallerySaveResponseDto.setTitle("랜덤워드");
         gallerySaveResponseDto.setSubject(requestDto.getSubject());
         galleryService.saveGallery(gallerySaveResponseDto);
@@ -117,7 +121,11 @@ public class RandomWordService {
         rwResponseDto.setWordList(wordDtoList);
 
         RwResponseContainer rwResponseContainer = new RwResponseContainer();
+<<<<<<< HEAD
         rwResponseContainer.setCategory(Gallery.RoomType.randomWord);
+=======
+        rwResponseContainer.setCategory(Gallery.RoomType.randomword);
+>>>>>>> e3ecf966c16a767229a9405bc18c6cfccdcba3a3
         rwResponseContainer.setData(rwResponseDto);
         return rwResponseContainer;
     }

@@ -54,13 +54,21 @@ public class GalleryService {
 
     public List<Gallery> getGalleryFilter(Long lastGalleryId, Gallery.RoomType type, int size) {
         List<Gallery> galleryList = new ArrayList<>();
+<<<<<<< HEAD
         if(Gallery.RoomType.randomWord.equals(type)) {
+=======
+        if(Gallery.RoomType.randomword.equals(type)) {
+>>>>>>> e3ecf966c16a767229a9405bc18c6cfccdcba3a3
             Page<Gallery> galleries = rwFetchPages(lastGalleryId, size);
             galleryList = galleries.getContent();
         } else if(Gallery.RoomType.brainwriting.equals(type)) {
             Page<Gallery> galleries = bwFetchPages(lastGalleryId, size);
             galleryList = galleries.getContent();
+<<<<<<< HEAD
         } else if(Gallery.RoomType.sixHat.equals(type)) {
+=======
+        } else if(Gallery.RoomType.sixhat.equals(type)) {
+>>>>>>> e3ecf966c16a767229a9405bc18c6cfccdcba3a3
             Page<Gallery> galleries = shFetchPages(lastGalleryId, size);
             galleryList = galleries.getContent();
         }
@@ -71,17 +79,29 @@ public class GalleryService {
 
     public Page<Gallery> rwFetchPages(Long lastGalleryId, int size) {
         PageRequest pageRequest = PageRequest.of(0, size);
+<<<<<<< HEAD
         return galleryRepository.findByIdLessThanAndTypeIn(lastGalleryId, Collections.singleton(Gallery.RoomType.randomWord), pageRequest);
+=======
+        return galleryRepository.findByIdLessThanAndCategoryIn(lastGalleryId, Collections.singleton(Gallery.RoomType.randomword), pageRequest);
+>>>>>>> e3ecf966c16a767229a9405bc18c6cfccdcba3a3
     }
 
     public Page<Gallery> bwFetchPages(Long lastGalleryId, int size) {
         PageRequest pageRequest = PageRequest.of(0, size);
+<<<<<<< HEAD
         return galleryRepository.findByIdLessThanAndTypeIn(lastGalleryId, Collections.singleton(Gallery.RoomType.brainwriting), pageRequest);
+=======
+        return galleryRepository.findByIdLessThanAndCategoryIn(lastGalleryId, Collections.singleton(Gallery.RoomType.brainwriting), pageRequest);
+>>>>>>> e3ecf966c16a767229a9405bc18c6cfccdcba3a3
     }
 
     public Page<Gallery> shFetchPages(Long lastGalleryId, int size) {
         PageRequest pageRequest = PageRequest.of(0, size);
+<<<<<<< HEAD
         return galleryRepository.findByIdLessThanAndTypeIn(lastGalleryId, Collections.singleton(Gallery.RoomType.sixHat), pageRequest);
+=======
+        return galleryRepository.findByIdLessThanAndCategoryIn(lastGalleryId, Collections.singleton(Gallery.RoomType.sixhat), pageRequest);
+>>>>>>> e3ecf966c16a767229a9405bc18c6cfccdcba3a3
     }
 
 

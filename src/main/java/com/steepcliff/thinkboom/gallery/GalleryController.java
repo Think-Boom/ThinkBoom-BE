@@ -45,7 +45,11 @@ public class GalleryController {
 
 
     //랜덤워드 결과 데이터 넘겨주기
+<<<<<<< HEAD
     @GetMapping("/randomWord/{rwId}")
+=======
+    @GetMapping("/randomword/{rwId}")
+>>>>>>> e3ecf966c16a767229a9405bc18c6cfccdcba3a3
     public RwResponseContainer getRwGallery(@PathVariable String rwId) {
 
         return randomWordService.getRwGallery(rwId);

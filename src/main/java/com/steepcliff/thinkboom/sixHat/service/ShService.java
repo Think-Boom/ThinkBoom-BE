@@ -107,7 +107,11 @@ public class ShService {
 
         GallerySaveResponseDto gallerySaveResponseDto = new GallerySaveResponseDto();
         gallerySaveResponseDto.setRoomId(shRoom.getId());
+<<<<<<< HEAD
         gallerySaveResponseDto.setType(Gallery.RoomType.sixHat);
+=======
+        gallerySaveResponseDto.setCategory(Gallery.RoomType.sixhat);
+>>>>>>> e3ecf966c16a767229a9405bc18c6cfccdcba3a3
         gallerySaveResponseDto.setTitle(shRoom.getTitle());
         gallerySaveResponseDto.setSubject(shRoom.getSubject());
         galleryService.saveGallery(gallerySaveResponseDto);

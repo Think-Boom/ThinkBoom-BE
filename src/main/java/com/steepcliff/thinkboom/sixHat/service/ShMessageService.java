@@ -83,7 +83,7 @@ public class ShMessageService {
         ShResultResponseDto shResultResponseDto = new ShResultResponseDto();
         shResultResponseDto.setSubject(shRoom.getSubject());
 
-        List<ShChatMessage> shChatMessageList = shMessageRepository.findAllByShRoom(shRoom);
+        List<ShChatMessage> shChatMessageList = shMessageRepository.findAllByShRoomOrderByIdDesc(shRoom);
 
         List<ShResultMessageItem> shResultMessageItemList = new ArrayList<>();
 
@@ -100,7 +100,11 @@ public class ShMessageService {
         shResultResponseDto.setMessageList(shResultMessageItemList);
 
         ShResultResponseContainer shResultResponseContainer = new ShResultResponseContainer();
+<<<<<<< HEAD
         shResultResponseContainer.setCategory(Gallery.RoomType.sixHat);
+=======
+        shResultResponseContainer.setCategory(Gallery.RoomType.sixhat);
+>>>>>>> e3ecf966c16a767229a9405bc18c6cfccdcba3a3
         shResultResponseContainer.setData(shResultResponseDto);
 
         return shResultResponseContainer;

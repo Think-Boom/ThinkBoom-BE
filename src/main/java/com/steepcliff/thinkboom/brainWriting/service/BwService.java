@@ -98,7 +98,10 @@ public class BwService {
         BwRoom bwRoom = findBwRoom(bwRoomId);
 
         if(bwRoom.getHostId().equals(userId)) {
+<<<<<<< HEAD
             renewTime(bwRoom, bwRoom.getTimes());
+=======
+>>>>>>> e3ecf966c16a767229a9405bc18c6cfccdcba3a3
 
             List<BwUserRoom> userRoomList = bwUserRoomRepository.findAllByBwroom(bwRoom);
             Queue<User> userQueue = new LinkedList<>();
@@ -260,7 +263,11 @@ public class BwService {
 
         GallerySaveResponseDto gallerySaveResponseDto = new GallerySaveResponseDto();
         gallerySaveResponseDto.setRoomId(bwRoom.getId());
+<<<<<<< HEAD
         gallerySaveResponseDto.setType(Gallery.RoomType.brainwriting);
+=======
+        gallerySaveResponseDto.setCategory(Gallery.RoomType.brainwriting);
+>>>>>>> e3ecf966c16a767229a9405bc18c6cfccdcba3a3
         gallerySaveResponseDto.setTitle(bwRoom.getTitle());
         gallerySaveResponseDto.setSubject(bwRoom.getSubject());
 
@@ -351,9 +358,16 @@ public class BwService {
 
     // 시간 갱신하기
     @Transactional
+<<<<<<< HEAD
     public void renewTime(BwRoom bwRoom, Integer times) {
 
         LocalDateTime localDateTime = LocalDateTime.now().plusMinutes(times);
+=======
+    public void renewTime(String bwRoomId) {
+
+        BwRoom bwRoom = findBwRoom(bwRoomId);
+        LocalDateTime localDateTime = LocalDateTime.now().plusMinutes(bwRoom.getTimes());
+>>>>>>> e3ecf966c16a767229a9405bc18c6cfccdcba3a3
         log.info("localDateTime {}", localDateTime);
         bwRoom.setTimer(localDateTime);
     }
