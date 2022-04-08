@@ -11,11 +11,11 @@ public class BwResultResponseItem {
 
     private Long ideaId;
 
-    private String nickname;
-
     private String idea;
 
     private Integer voteCount;
 
-    private List<BwResultResponseComments> commentsList;
+    private Boolean isWinner;
+
+    private List<String> commentList;
 }

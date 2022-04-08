@@ -11,7 +11,6 @@ import com.steepcliff.thinkboom.brainWriting.dto.bwIdea.BwIdeaRequestDto;
 import com.steepcliff.thinkboom.brainWriting.dto.bwIdea.BwIdeaResponseDto;
 import com.steepcliff.thinkboom.brainWriting.dto.bwNickname.BwNickRequestDto;
 import com.steepcliff.thinkboom.brainWriting.dto.bwNickname.BwNickResponseDto;
-import com.steepcliff.thinkboom.brainWriting.dto.bwResult.BwResultResponseComments;
 import com.steepcliff.thinkboom.brainWriting.dto.bwResult.BwResultResponseContainer;
 import com.steepcliff.thinkboom.brainWriting.dto.bwResult.BwResultResponseDto;
 import com.steepcliff.thinkboom.brainWriting.dto.bwResult.BwResultResponseItem;
@@ -31,6 +30,7 @@ import com.steepcliff.thinkboom.gallery.GallerySaveResponseDto;
 import com.steepcliff.thinkboom.gallery.GalleryService;
 import com.steepcliff.thinkboom.user.User;
 import com.steepcliff.thinkboom.user.UserService;
+import com.steepcliff.thinkboom.webSocket.chat.UserListItem;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -38,10 +38,7 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Queue;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -68,11 +65,11 @@ public class BwService {
     public BwRoomResponseDto createBwRoom(BwRoomRequestDto requestDto) {
 
 
-        BwRoom bwRoom = new BwRoom(requestDto.getTitle(), requestDto.getHeadCount(), requestDto.getTime(), 0, true);
+        BwRoom bwRoom = new BwRoom(requestDto.getTitle(), requestDto.getHeadCount(), requestDto.getTime(), 0, true, 0);
 
         bwRoomRepository.save(bwRoom);
 
-        return new BwRoomResponseDto(bwRoom.getId(),requestDto.getHeadCount(), requestDto.getTime());
+        return new BwRoomResponseDto(bwRoom.getId(), requestDto.getHeadCount(), requestDto.getTime());
     }
 
     // 브레인 라이팅 닉네임 입력.
@@ -83,7 +80,7 @@ public class BwService {
 
         User user = userService.save(requestDto.getNickname());
 
-        if(bwRoom.getHostId() == null) {
+        if (bwRoom.getHostId() == null) {
             bwRoom.setHostId(user.getId());
         }
         bwRoomRepository.save(bwRoom);
@@ -94,37 +91,31 @@ public class BwService {
     }
 
     // 아이디어 카드 생성
-    public void createIdea(String bwRoomId, Long userId) {
+    public void createIdea(String bwRoomId) {
         BwRoom bwRoom = findBwRoom(bwRoomId);
 
-        if(bwRoom.getHostId().equals(userId)) {
-<<<<<<< HEAD
-            renewTime(bwRoom, bwRoom.getTimes());
-=======
->>>>>>> e3ecf966c16a767229a9405bc18c6cfccdcba3a3
-
-            List<BwUserRoom> userRoomList = bwUserRoomRepository.findAllByBwroom(bwRoom);
-            Queue<User> userQueue = new LinkedList<>();
-            for(BwUserRoom bwUserRoom:userRoomList) {
-                userQueue.add(bwUserRoom.getUser());
-            }
-
-            for(int i=0; i<bwRoom.getHeadCount(); i++) {
-                StringBuilder sequence = new StringBuilder();
-                for(User user : userQueue) {
-                    sequence.append(user.getId());
-                    sequence.append(":");
-                }
-                User user = userQueue.poll();
-                userQueue.add(user);
-
-                BwIdea bwIdea = new BwIdea(user, sequence.toString(),bwRoom, 1, 0);
-
-                bwIdeaRepository.save(bwIdea);
-                log.info("{} {}", bwIdea.getId(), bwIdea.getBwSequence());
-            }
+        List<BwUserRoom> userRoomList = bwUserRoomRepository.findAllByBwroom(bwRoom);
+        Queue<User> userQueue = new LinkedList<>();
+        for (BwUserRoom bwUserRoom : userRoomList) {
+            userQueue.add(bwUserRoom.getUser());
         }
 
+        for (int i = 0; i < bwRoom.getHeadCount(); i++) {
+            StringBuilder sequence = new StringBuilder();
+            for (User user : userQueue) {
+                sequence.append(user.getId());
+                sequence.append(":");
+            }
+            User user = userQueue.poll();
+            userQueue.add(user);
+
+            String sequenceStr = sequence.toString();
+            sequenceStr = sequenceStr.substring(0, sequenceStr.length() - 1);
+            BwIdea bwIdea = new BwIdea(user, sequenceStr, bwRoom, 1, 0);
+
+            bwIdeaRepository.save(bwIdea);
+            log.info("{} {}", bwIdea.getId(), bwIdea.getBwSequence());
+        }
     }
 
     // 브레인 라이팅 아이디어 입력
@@ -137,59 +128,77 @@ public class BwService {
         log.info(requestDto.getIdea());
         bwIdea.setIdea(requestDto.getIdea());
 
-        return new  BwIdeaResponseDto(user.getId(),bwIdea.getIdea());
+        return new BwIdeaResponseDto(user.getId(), bwIdea.getIdea());
     }
 
-    // 브레인 라이팅 아이디어 목록 반환
-    public BwIdeaListDto getAllIdeaWithOrederBy(String bwRoomId) {
+    // 브레인 라이팅 아이디어 반환
+    @Transactional
+    public BwIdeaViewResponseDto getAllIdeaWithOrederBy(String bwRoomId, Long userId) {
 
+        User user = userService.findById(userId);
+        log.info("{} {}", userId, user.getBwIndex());
         BwRoom bwRoom = findBwRoom(bwRoomId);
 
-        // 시간 갱신하기
-        renewTime(bwRoom, bwRoom.getTimes());
-
         List<BwIdea> bwIdeaList = bwIdeaRepository.findAllByBwRoom(bwRoom);
-        List<BwIdeaListItem> bwIdeaListItemList = new ArrayList<>();
+        log.info("아이디어 목록반환1");
 
-        boolean endComment = false;
-        for(BwIdea bwIdea:bwIdeaList) {
-            BwIdeaListItem bwIdeaListItem = new BwIdeaListItem();
+        BwIdeaViewResponseDto bwIdeaViewResponseDto = new BwIdeaViewResponseDto();
+
+        for (BwIdea bwIdea : bwIdeaList) {
+
+            if (bwIdea.getBwIndex() >= bwRoom.getHeadCount()) {
+                log.info("continue 진행");
+                continue;
+            }
 
             String[] strings = bwIdea.getBwSequence().split(":");
+            if (Long.valueOf(strings[bwIdea.getBwIndex()]).equals(userId) && bwIdea.getBwIndex().equals(user.getBwIndex())) {
 
-            bwIdeaListItem.setViewUserId(Long.valueOf(strings[bwIdea.getBwIndex()]));
-            bwIdeaListItem.setIdeaId(bwIdea.getId());
-            bwIdeaListItem.setIdea(bwIdea.getIdea());
-            bwIdeaListItemList.add(bwIdeaListItem);
+                log.info("bwIndex {}", bwIdea.getBwIndex());
+                bwIdeaViewResponseDto.setViewUserId(Long.valueOf(strings[bwIdea.getBwIndex()]));
+                bwIdeaViewResponseDto.setIdeaId(bwIdea.getId());
+                bwIdeaViewResponseDto.setIdea(bwIdea.getIdea());
 
-            bwIdea.setBwIndex(bwIdea.getBwIndex()+1);
-            bwIdeaRepository.save(bwIdea);
-            if(bwIdea.getBwIndex().equals(bwRoom.getHeadCount())) {
-                endComment = true;
+                if (bwIdea.getBwIndex() == 1) {
+                    bwIdeaViewResponseDto.setIsFirstComment(true);
+                }
+                bwIdea.setBwIndex(bwIdea.getBwIndex() + 1);
+                user.setBwIndex(user.getBwIndex() + 1);
+                if (bwIdea.getBwIndex().equals(bwRoom.getHeadCount())) {
+                    bwIdeaViewResponseDto.setIsLastComment(true);
+                }
+                break;
             }
         }
-        return new BwIdeaListDto(endComment, bwIdeaListItemList);
+        log.info("아이디어 반환 종료");
+        return bwIdeaViewResponseDto;
     }
 
     // 코멘트 입력
+    @Transactional
     public BwCommentResponseDto insertComment(String bwRoomId, BwCommentRequestDto requestDto) {
 
         BwRoom bwRoom = findBwRoom(bwRoomId);
 
-        User user =userService.findById(requestDto.getUserId());
+        User user = userService.findById(requestDto.getUserId());
         BwIdea bwIdea = bwIdeaRepository.findById(requestDto.getIdeaId()).orElseThrow(
                 () -> new NotFoundException("해당 아이디어가 존재하지 않습니다.")
         );
 
-        BwComments bwComments = new BwComments();
-        bwComments.setComments(requestDto.getComment());
-        bwComments.setUser(user);
-        bwComments.setBwRoom(bwRoom);
-        bwComments.setBwIdea(bwIdea);
+        if (bwCommentsRepository.existsByBwIdeaAndUser(bwIdea, user)) {
+            BwComments bwComments = bwCommentsRepository.findByBwIdeaAndUser(bwIdea, user);
+            bwComments.setComments(requestDto.getComment());
+            return new BwCommentResponseDto(bwComments.getBwIdea().getId(), bwComments.getUser().getId(), bwComments.getComments());
+        } else {
+            BwComments bwComments = new BwComments();
+            bwComments.setComments(requestDto.getComment());
+            bwComments.setUser(user);
+            bwComments.setBwRoom(bwRoom);
+            bwComments.setBwIdea(bwIdea);
+            bwCommentsRepository.save(bwComments);
+            return new BwCommentResponseDto(bwComments.getBwIdea().getId(), bwComments.getUser().getId(), bwComments.getComments());
+        }
 
-        bwCommentsRepository.save(bwComments);
-
-        return new BwCommentResponseDto(bwComments.getBwIdea().getId(), bwComments.getUser().getId(), bwComments.getComments());
     }
 
     // 투표뷰 데이터 주기.
@@ -197,46 +206,52 @@ public class BwService {
 
         BwRoom bwRoom = findBwRoom(bwRoomId);
 
-        // 시간 갱신하기
-        renewTime(bwRoom, bwRoom.getTimes());
-
         List<BwVoteViewCardsItem> bwVoteViewCardsItemList = new ArrayList<>();
 
         List<BwIdea> bwIdeaList = bwIdeaRepository.findAllByBwRoom(bwRoom);
 
-        for(BwIdea bwIdea : bwIdeaList) {
+        for (BwIdea bwIdea : bwIdeaList) {
 
-            List<BwComments> bwCommentsList = bwCommentsRepository.findAllByBwIdea(bwIdea);
+            List<BwComments> bwCommentsList = bwIdea.getBwCommentsList();
+            List<String> commentList = new ArrayList<>();
+            for(BwComments bwComments:bwCommentsList) {
+                commentList.add(bwComments.getComments());
+            }
 
             BwVoteViewCardsItem bwVoteViewCardsItem = new BwVoteViewCardsItem();
 
             bwVoteViewCardsItem.setIdeaId(bwIdea.getId());
             bwVoteViewCardsItem.setIdea(bwIdea.getIdea());
-            bwVoteViewCardsItem.setCommentsList(bwCommentsList);
+            bwVoteViewCardsItem.setCommentList(commentList);
 
             bwVoteViewCardsItemList.add(bwVoteViewCardsItem);
         }
-        return new BwVoteViewResponseDto(bwRoom.getSubject(), bwVoteViewCardsItemList);
+        BwVoteViewResponseDto bwVoteViewResponseDto = new BwVoteViewResponseDto();
+        bwVoteViewResponseDto.setSubject(bwRoom.getSubject());
+        bwVoteViewResponseDto.setIdeaList(bwVoteViewCardsItemList);
+
+        return bwVoteViewResponseDto;
     }
 
     // 투표하기
     @Transactional
     public BwVoteResponseDto voteIdea(String bwRoomId, BwVoteRequestDto requestDto) {
-
+        log.info("투표하기 시작");
         userService.isvote(requestDto.getUserId());
 
-        for(Long votedIdeaId : requestDto.getVotedIdeaList()) {
+        for (Long votedIdeaId : requestDto.getVotedIdeaList()) {
             BwIdea bwIdea = bwIdeaRepository.findById(votedIdeaId).orElseThrow(
                     () -> new NotFoundException("찾는 아이디어가 없습니다.")
             );
-            bwIdea.setNumberOfVotes(bwIdea.getNumberOfVotes()+1);
+
+            bwIdea.setNumberOfVotes(bwIdea.getNumberOfVotes() + 1);
         }
 
         BwRoom bwRoom = findBwRoom(bwRoomId);
-
-        bwRoom.setPresentVoted(bwRoom.getPresentVoted()+1);
-
-        return new BwVoteResponseDto(bwRoom.getHeadCount(), bwRoom.getPresentVoted());
+        bwRoom.setPresentVoted(bwRoom.getPresentVoted() + 1);
+        BwVoteResponseDto bwVoteResponseDto = new BwVoteResponseDto(bwRoom.getHeadCount(), bwRoom.getPresentVoted());
+        log.info("투표하기 끝");
+        return bwVoteResponseDto;
     }
 
     // 남은 시간 주기
@@ -263,11 +278,7 @@ public class BwService {
 
         GallerySaveResponseDto gallerySaveResponseDto = new GallerySaveResponseDto();
         gallerySaveResponseDto.setRoomId(bwRoom.getId());
-<<<<<<< HEAD
-        gallerySaveResponseDto.setType(Gallery.RoomType.brainwriting);
-=======
         gallerySaveResponseDto.setCategory(Gallery.RoomType.brainwriting);
->>>>>>> e3ecf966c16a767229a9405bc18c6cfccdcba3a3
         gallerySaveResponseDto.setTitle(bwRoom.getTitle());
         gallerySaveResponseDto.setSubject(bwRoom.getSubject());
 
@@ -276,39 +287,49 @@ public class BwService {
     }
 
     // 브레인 라이팅 결과 데이터
-   public BwResultResponseContainer getResult(String bwRoomId) {
+    public BwResultResponseContainer getResult(String bwRoomId) {
         BwRoom bwRoom = findBwRoom(bwRoomId);
+
+        // 아이디어 투표 수로 내림차순 정렬.
         List<BwIdea> bwIdeaList = bwIdeaRepository.findAllByBwRoom(bwRoom);
+        bwIdeaList.sort((o1, o2) -> o2.getNumberOfVotes() - o1.getNumberOfVotes());
 
-       List<BwResultResponseItem> bwResultResponseItemList = new ArrayList<>();
-       for(BwIdea bwIdea:bwIdeaList) {
-           // BwResultResponseItem 을 위한 코멘트 리스트 준비
-           List<BwResultResponseComments> bwResultResponseCommentsList = new ArrayList<>();
-           for(BwComments bwComments:bwIdea.getBwCommentsList()) {
-               BwResultResponseComments bwResultResponseComments = new BwResultResponseComments();
-               bwResultResponseComments.setNickname(bwComments.getUser().getNickname());
-               bwResultResponseComments.setComment(bwComments.getComments());
-               bwResultResponseCommentsList.add(bwResultResponseComments);
-           }
+        List<BwResultResponseItem> bwResultResponseItemList = new ArrayList<>();
+        for (BwIdea bwIdea : bwIdeaList) {
+            // BwResultResponseItem 을 위한 코멘트 리스트 준비
+            List<String> commentList = new ArrayList<>();
+            for (BwComments bwComments : bwIdea.getBwCommentsList()) {
+                commentList.add(bwComments.getComments());
+            }
 
-           // BwResultResponseDto 를 위한 아이디어 리스트 준비.
-           BwResultResponseItem bwResultResponseItem = new BwResultResponseItem();
-           bwResultResponseItem.setIdeaId(bwIdea.getId());
-           bwResultResponseItem.setNickname(bwIdea.getUser().getNickname());
-           bwResultResponseItem.setIdea(bwIdea.getIdea());
-           bwResultResponseItem.setVoteCount(bwIdea.getNumberOfVotes());
-           bwResultResponseItem.setCommentsList(bwResultResponseCommentsList);
-           bwResultResponseItemList.add(bwResultResponseItem);
-       }
-       // 최종적으로 반환할 dto 준비
-       BwResultResponseDto bwResultResponseDto = new BwResultResponseDto();
-       bwResultResponseDto.setSubject(bwRoom.getSubject());
-       bwResultResponseDto.setResult(bwResultResponseItemList);
+            // BwResultResponseDto 를 위한 아이디어 리스트 준비.
+            BwResultResponseItem bwResultResponseItem = new BwResultResponseItem();
+            bwResultResponseItem.setIdeaId(bwIdea.getId());
+            bwResultResponseItem.setIdea(bwIdea.getIdea());
+            bwResultResponseItem.setVoteCount(bwIdea.getNumberOfVotes());
+            bwResultResponseItem.setCommentList(commentList);
+            bwResultResponseItemList.add(bwResultResponseItem);
+        }
 
-       BwResultResponseContainer bwResultResponseContainer = new BwResultResponseContainer();
-       bwResultResponseContainer.setCategory(Gallery.RoomType.brainwriting);
-       bwResultResponseContainer.setData(bwResultResponseDto);
-       return bwResultResponseContainer;
+        // isWinner에 1등 표시하기.
+        int BigNum = 0;
+        for (BwResultResponseItem bwResultResponseItem : bwResultResponseItemList) {
+            if (bwResultResponseItem.getVoteCount() >= BigNum) {
+                BigNum = bwResultResponseItem.getVoteCount();
+                bwResultResponseItem.setIsWinner(true);
+            } else bwResultResponseItem.setIsWinner(false);
+        }
+
+
+        // 최종적으로 반환할 dto 준비
+        BwResultResponseDto bwResultResponseDto = new BwResultResponseDto();
+        bwResultResponseDto.setSubject(bwRoom.getSubject());
+        bwResultResponseDto.setVoteResult(bwResultResponseItemList);
+
+        BwResultResponseContainer bwResultResponseContainer = new BwResultResponseContainer();
+        bwResultResponseContainer.setCategory(Gallery.RoomType.brainwriting);
+        bwResultResponseContainer.setData(bwResultResponseDto);
+        return bwResultResponseContainer;
     }
 
     // 공유 여부 변경
@@ -333,7 +354,7 @@ public class BwService {
     public void minusUserCount(String roomId) {
         BwRoom bwRoom = findBwRoom(roomId);
 
-        bwRoom.setCurrentUsers(bwRoom.getCurrentUsers() -1);
+        bwRoom.setCurrentUsers(bwRoom.getCurrentUsers() - 1);
 
     }
 
@@ -356,20 +377,72 @@ public class BwService {
         bwRoom.setSubject(subject);
     }
 
-    // 시간 갱신하기
+    // 아이디어 작성 및 코멘트 작성 시간 갱신하기
     @Transactional
-<<<<<<< HEAD
-    public void renewTime(BwRoom bwRoom, Integer times) {
-
-        LocalDateTime localDateTime = LocalDateTime.now().plusMinutes(times);
-=======
-    public void renewTime(String bwRoomId) {
-
+    public BwTimersResponseDto renewTime(String bwRoomId) {
         BwRoom bwRoom = findBwRoom(bwRoomId);
+
         LocalDateTime localDateTime = LocalDateTime.now().plusMinutes(bwRoom.getTimes());
->>>>>>> e3ecf966c16a767229a9405bc18c6cfccdcba3a3
         log.info("localDateTime {}", localDateTime);
         bwRoom.setTimer(localDateTime);
+
+        return new BwTimersResponseDto((long) bwRoom.getTimes() * 60);
     }
+
+    // 투표 시간 갱신하기
+    @Transactional
+    public BwTimersResponseDto renewVoteTime(String bwRoomId) {
+        BwRoom bwRoom = findBwRoom(bwRoomId);
+
+        LocalDateTime localDateTime = null;
+        switch (bwRoom.getHeadCount()) {
+            case 2:
+                localDateTime = LocalDateTime.now().plusMinutes(2);
+                
+                break;
+            case 3:
+                localDateTime = LocalDateTime.now().plusMinutes(4);
+                
+                break;
+            case 4:
+                localDateTime = LocalDateTime.now().plusMinutes(6);
+                
+                break;
+            case 5:
+                localDateTime = LocalDateTime.now().plusMinutes(8);
+                
+                break;
+            case 6:
+                localDateTime = LocalDateTime.now().plusMinutes(10);
+                
+                break;
+            case 7:
+                localDateTime = LocalDateTime.now().plusMinutes(12);
+                
+                break;
+            case 8:
+                localDateTime = LocalDateTime.now().plusMinutes(15);
+                break;
+        }
+        bwRoom.setTimer(localDateTime);
+
+//        return new BwTimersResponseDto((long) bwRoom.getTimes() * 60);
+        return getTime(bwRoomId);
+    }
+
     // 해당 방의 유저 리스트 넘기기.
+    public List<UserListItem> getBwUserList(String bwRoomId) {
+        BwRoom bwRoom = findBwRoom(bwRoomId);
+
+        List<BwUserRoom> bwUserRoomList = bwUserRoomRepository.findAllByBwroom(bwRoom);
+
+        List<UserListItem> userListItemList = new ArrayList<>();
+        for (BwUserRoom bwUserRoom : bwUserRoomList) {
+            UserListItem userListItem = new UserListItem();
+            userListItem.setNickname(bwUserRoom.getUser().getNickname());
+
+            userListItemList.add(userListItem);
+        }
+        return userListItemList;
+    }
 }

@@ -13,11 +13,7 @@ import javax.persistence.*;
 public class Gallery {
 
     public enum RoomType {
-<<<<<<< HEAD
-        randomWord, brainwriting, sixHat
-=======
         randomword, brainwriting, sixhat
->>>>>>> e3ecf966c16a767229a9405bc18c6cfccdcba3a3
     }
 
     @Id

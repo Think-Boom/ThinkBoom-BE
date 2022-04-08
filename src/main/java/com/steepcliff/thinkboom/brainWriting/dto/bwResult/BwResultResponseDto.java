@@ -11,5 +11,5 @@ public class BwResultResponseDto {
 
     private String subject;
 
-    private List<BwResultResponseItem> result;
+    private List<BwResultResponseItem> VoteResult;
 }

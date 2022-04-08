@@ -60,11 +60,12 @@ public class BwRoom {
         this.hostId = hostId;
     }
 
-    public  BwRoom(String title ,Integer headCount, Integer times, Integer currentUsers, Boolean sharing) {
+    public  BwRoom(String title ,Integer headCount, Integer times, Integer currentUsers, Boolean sharing, Integer presentVoted) {
         this.title = title;
         this.headCount = headCount;
         this.times = times;
         this.currentUsers = currentUsers;
         this.sharing = sharing;
+        this.presentVoted = presentVoted;
     }
 }
