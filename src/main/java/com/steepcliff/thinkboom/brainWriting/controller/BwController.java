@@ -13,10 +13,11 @@ import com.steepcliff.thinkboom.brainWriting.dto.bwVote.BwVoteRequestDto;
 import com.steepcliff.thinkboom.brainWriting.dto.bwVote.BwVoteResponseDto;
 import com.steepcliff.thinkboom.brainWriting.dto.bwVoteView.BwVoteViewResponseDto;
 import com.steepcliff.thinkboom.brainWriting.service.BwService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-
+@Slf4j
 @RestController
 @RequestMapping("/api/brainwriting")
 public class BwController {
@@ -54,8 +55,8 @@ public class BwController {
 
     // 브레인 라이팅 아이디어 클라이언트에 전달.
     @GetMapping("/idea/{bwRoomId}")
-    public BwIdeaListDto getCards(@PathVariable String bwRoomId) {
-        return bwService.getAllIdeaWithOrederBy(bwRoomId);
+    public BwIdeaViewResponseDto getCards(@PathVariable String bwRoomId, @RequestParam Long userId) {
+        return bwService.getAllIdeaWithOrederBy(bwRoomId, userId);
     }
 
     // 브레인 라이팅 코멘트 입력.
@@ -72,7 +73,8 @@ public class BwController {
 
     // 브레인 라이팅 투표하기
     @PatchMapping("/vote/{bwRoomId}")
-    public BwVoteResponseDto voting(@PathVariable String bwRoomId, @RequestBody BwVoteRequestDto requestDto, @PathVariable String BwRoomId) {
+    public BwVoteResponseDto voting(@PathVariable String bwRoomId, @RequestBody BwVoteRequestDto requestDto) {
+        log.info("controller 진입");
         return bwService.voteIdea(bwRoomId, requestDto);
     }
 

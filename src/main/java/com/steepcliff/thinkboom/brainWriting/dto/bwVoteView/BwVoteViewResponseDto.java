@@ -8,7 +8,6 @@ import java.util.List;
 
 @Getter
 @Setter
-@AllArgsConstructor
 public class BwVoteViewResponseDto {
 
     private String subject;

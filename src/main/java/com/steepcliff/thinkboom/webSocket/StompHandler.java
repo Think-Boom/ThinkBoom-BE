@@ -63,6 +63,7 @@ public class StompHandler implements ChannelInterceptor {
             );
 
             if(category.equals("BW")) {
+                log.info("BW  SUB 시작");
                 bwService.plusUserCount(roomId);
                 BwRoom room = bwService.findBwRoom(roomId);
                 List<UserListItem> userListItemList = bwService.getBwUserList(roomId);

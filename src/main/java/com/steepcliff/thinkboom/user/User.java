@@ -23,8 +23,10 @@ public class User {
     private String nickname;
 
     @Column
-    @ColumnDefault("false")
-    private Boolean isVote;
+    private Boolean isVote = false;
+
+    @Column
+    private Integer bwIndex = 1;
 
     @Column
     private String hat = "none";

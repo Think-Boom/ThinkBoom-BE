@@ -14,5 +14,5 @@ public class BwVoteViewCardsItem {
 
     private String idea;
 
-    private List<BwComments> commentsList;
+    private List<String> commentList;
 }

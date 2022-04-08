@@ -69,42 +69,4 @@ public class RedisConfig {
         return new MessageListenerAdapter(subscriber, "ShSendMessage");
     }
 
-
-
-
-
-
-
-
-
-
-
-//    @Bean
-//    public RedisMessageListenerContainer BwRedisMessageListener(RedisConnectionFactory connectionFactory,
-//                                                                MessageListenerAdapter BwListenerAdapter,
-//                                                                ChannelTopic channelTopic) {
-//        log.info("brain writing messageListener start");
-//        RedisMessageListenerContainer container = new RedisMessageListenerContainer();
-//        container.setConnectionFactory(connectionFactory);
-//
-//        container.addMessageListener(BwListenerAdapter, channelTopic);
-//        return container;
-//    }
-//
-//    @Bean
-//    public RedisMessageListenerContainer ShRedisMessageListener(RedisConnectionFactory connectionFactory,
-//                                                                MessageListenerAdapter ShListenerAdapter,
-////                                                                MessageListenerAdapter BwListenerAdapter,
-//                                                                ChannelTopic channelTopic) {
-//        log.info("six hat messageListener start");
-//        RedisMessageListenerContainer container = new RedisMessageListenerContainer();
-//        container.setConnectionFactory(connectionFactory);
-//        container.addMessageListener(ShListenerAdapter, channelTopic);
-////        container.addMessageListener(BwListenerAdapter, ChannelTopic);
-//        return container;
-//    }
-
-
-
-
 }
