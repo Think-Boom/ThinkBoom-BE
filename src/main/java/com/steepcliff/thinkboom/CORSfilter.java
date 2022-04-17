@@ -26,6 +26,5 @@ public class CORSfilter {
         source.registerCorsConfiguration("/**", config);
 
         return new CorsFilter(source);
-        // http://localhost:3000,http://localhost:8080
     }
 }

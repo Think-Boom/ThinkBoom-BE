@@ -64,7 +64,7 @@ public class RandomWordService {
         randomWord.setUuId(uuid);
         randomWord.setSubject(requestDto.getSubject());
         randomWordRepository.save(randomWord);
-        log.info("여기까지 진행1");
+
         //전달받은 단어 리스트를 하나씩 꺼내서 DB에 저장
         for(String w : wordDtoList){
             Word word = wordRepository.findWordByWord(w);
@@ -77,7 +77,6 @@ public class RandomWordService {
         rwResponseDto.setWordList(wordDtoList);
 
         rwResponseDto.setRwId(uuid);
-        log.info("여기까지 진행2");
         // 갤러리 db에 저장
         GallerySaveResponseDto gallerySaveResponseDto = new GallerySaveResponseDto();
         gallerySaveResponseDto.setRoomId(uuid);

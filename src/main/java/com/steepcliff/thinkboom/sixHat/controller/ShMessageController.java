@@ -31,14 +31,12 @@ public class ShMessageController {
 
     @MessageMapping("/api/sixHat/chat/message")
     public void shMessage(@RequestBody ShMessageRequestDto requestDto) {
-        log.info("six hat message controller 시작");
 
         SimpleDateFormat sdf = new SimpleDateFormat("YYYY-MM-dd HH:mm");
         Calendar cal = Calendar.getInstance();
         Date date = cal.getTime();
         sdf.setTimeZone(TimeZone.getTimeZone("Asia/Seoul"));
         String dateResult = sdf.format(date);
-        log.info("날짜 생성 완료");
 
         ShMessageResponseDto shMessageResponseDto = new ShMessageResponseDto();
         shMessageResponseDto.setType(requestDto.getType());
@@ -54,7 +52,6 @@ public class ShMessageController {
         } else if(shMessageResponseDto.getType().equals(ShChatMessage.MessageType.RANDOMHAT)) {
             shMessageResponseDto.setRandomHat(requestDto.getRandomHat());
         } else if(shMessageResponseDto.getType().equals(ShChatMessage.MessageType.NEXTPAGE)) {
-            log.info("현재 페이지 {}", requestDto.getCurrentPage());
             shMessageResponseDto.setCurrentPage(requestDto.getCurrentPage());
         } else if(shMessageResponseDto.getType().equals(ShChatMessage.MessageType.HAT)) {
             userService.saveHat(requestDto.getSenderId(), requestDto.getHat());
@@ -62,10 +59,8 @@ public class ShMessageController {
 
         shMessageService.SendShChatMessage(shMessageResponseDto);
 
-        log.info("sendBwChatMessage 완료 userId {}", shMessageResponseDto.getSenderId());
         if(shMessageResponseDto.getType().equals(ShChatMessage.MessageType.DEBATING)) {
             shMessageService.save(shMessageResponseDto);
         }
-        log.info("six hat message controller 끝");
     }
 }

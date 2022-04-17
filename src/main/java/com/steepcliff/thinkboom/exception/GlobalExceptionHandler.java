@@ -12,15 +12,8 @@ import static com.steepcliff.thinkboom.exception.ErrorCode.NOT_FOUND_ROOM;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-//    @ExceptionHandler(NullPointerException.class)
-//    public String handleNullPosintException(final NullPointerException e) {
-//        log.error("NullPointerException : {}", e.getMessage());
-//        return e.getMessage();
-//    }
-
     @ExceptionHandler(NotFoundException.class)
     public ResponseEntity<Object> handleNotFoundException(final NotFoundException e) {
-        log.error("{} notFioundException : {}",e.getErrorMessage() ,e.getMessage());
 
         NotFoundException notFoundException = new NotFoundException();
         notFoundException.setErrorMessage(e.getErrorMessage());

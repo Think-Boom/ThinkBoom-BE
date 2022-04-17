@@ -114,7 +114,6 @@ public class BwService {
             BwIdea bwIdea = new BwIdea(user, sequenceStr, bwRoom, 1, 0);
 
             bwIdeaRepository.save(bwIdea);
-            log.info("{} {}", bwIdea.getId(), bwIdea.getBwSequence());
         }
     }
 
@@ -136,25 +135,21 @@ public class BwService {
     public BwIdeaViewResponseDto getAllIdeaWithOrederBy(String bwRoomId, Long userId) {
 
         User user = userService.findById(userId);
-        log.info("{} {}", userId, user.getBwIndex());
         BwRoom bwRoom = findBwRoom(bwRoomId);
 
         List<BwIdea> bwIdeaList = bwIdeaRepository.findAllByBwRoom(bwRoom);
-        log.info("아이디어 목록반환1");
 
         BwIdeaViewResponseDto bwIdeaViewResponseDto = new BwIdeaViewResponseDto();
 
         for (BwIdea bwIdea : bwIdeaList) {
 
             if (bwIdea.getBwIndex() >= bwRoom.getHeadCount()) {
-                log.info("continue 진행");
                 continue;
             }
 
             String[] strings = bwIdea.getBwSequence().split(":");
             if (Long.valueOf(strings[bwIdea.getBwIndex()]).equals(userId) && bwIdea.getBwIndex().equals(user.getBwIndex())) {
 
-                log.info("bwIndex {}", bwIdea.getBwIndex());
                 bwIdeaViewResponseDto.setViewUserId(Long.valueOf(strings[bwIdea.getBwIndex()]));
                 bwIdeaViewResponseDto.setIdeaId(bwIdea.getId());
                 bwIdeaViewResponseDto.setIdea(bwIdea.getIdea());
@@ -170,7 +165,7 @@ public class BwService {
                 break;
             }
         }
-        log.info("아이디어 반환 종료");
+
         return bwIdeaViewResponseDto;
     }
 
@@ -236,7 +231,7 @@ public class BwService {
     // 투표하기
     @Transactional
     public BwVoteResponseDto voteIdea(String bwRoomId, BwVoteRequestDto requestDto) {
-        log.info("투표하기 시작");
+
         userService.isvote(requestDto.getUserId());
 
         for (Long votedIdeaId : requestDto.getVotedIdeaList()) {
@@ -250,7 +245,7 @@ public class BwService {
         BwRoom bwRoom = findBwRoom(bwRoomId);
         bwRoom.setPresentVoted(bwRoom.getPresentVoted() + 1);
         BwVoteResponseDto bwVoteResponseDto = new BwVoteResponseDto(bwRoom.getHeadCount(), bwRoom.getPresentVoted());
-        log.info("투표하기 끝");
+
         return bwVoteResponseDto;
     }
 
@@ -259,15 +254,12 @@ public class BwService {
         BwRoom bwRoom = findBwRoom(roomId);
 
         LocalDateTime nowTime = LocalDateTime.now();
-        log.info("nowTime seconds:{}", nowTime);
+
         LocalDateTime remainingTime = bwRoom.getTimer();
-        log.info("remainingTime seconds:{}", remainingTime);
+
         long seconds = ChronoUnit.SECONDS.between(nowTime, remainingTime);
 
         Long remainingSec = seconds;
-
-        log.info("남은시간 seconds:{}", seconds);
-        log.info("남은시간 total:{}", remainingSec);
 
         return new BwTimersResponseDto(remainingSec);
     }
@@ -383,7 +375,7 @@ public class BwService {
         BwRoom bwRoom = findBwRoom(bwRoomId);
 
         LocalDateTime localDateTime = LocalDateTime.now().plusMinutes(bwRoom.getTimes());
-        log.info("localDateTime {}", localDateTime);
+
         bwRoom.setTimer(localDateTime);
 
         return new BwTimersResponseDto((long) bwRoom.getTimes() * 60);

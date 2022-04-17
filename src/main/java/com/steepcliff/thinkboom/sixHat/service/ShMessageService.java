@@ -41,7 +41,6 @@ public class ShMessageService {
 
     // six hat 메시지 보내기
     public void SendShChatMessage(ShMessageResponseDto shMessageResponseDto) {
-        log.info("SendShChatMessage 시작");
         if(ShChatMessage.MessageType.HAT.equals(shMessageResponseDto.getType())) {
             String message = shMessageResponseDto.getSender() + "의 모자색이 " + shMessageResponseDto.getHat() + "으로 변경되었습니다.";
             shMessageResponseDto.setMessage(message);

@@ -56,7 +56,7 @@ public class ShService {
     // 식스햇 닉네임 입력
     @Transactional
     public ShNickResponseDto createNickname(ShNickRequestDto requestDto) {
-        log.info("서비스 시작");
+
         ShRoom shRoom = findShRoom(requestDto.getShRoomId());
         // 방에서 닉네임 중복 검사
         List<ShUserRoom> shUserRoomList = shUserRoomRepository.findAllByShRoom(shRoom);
@@ -69,14 +69,14 @@ public class ShService {
             return new ShNickResponseDto(requestDto.getShRoomId(),requestDto.getNickname(), true );
         } else {
             User user = userService.save(requestDto.getNickname());
-            log.info("유저 아이디{}, 모자 {}", user.getId(), user.getHat());
+
             if(shRoom.getHostId() == null) shRoom.setHostId(user.getId());
 
             shRoomRepository.save(shRoom);
             ShUserRoom shUserRoom= new ShUserRoom(user, shRoom);
 
             shUserRoomRepository.save(shUserRoom);
-            log.info("shRoom.getId() {} user.getId() {}",shRoom.getId(), user.getId());
+
             return new ShNickResponseDto(String.valueOf(shRoom.getId()), user.getId(), user.getNickname(), false);
         }
 
@@ -94,9 +94,6 @@ public class ShService {
         long seconds = ChronoUnit.SECONDS.between(nowTime, remainingTime);
 
         Long remainingSec = seconds;
-
-        log.info("남은시간 seconds:{}", seconds);
-        log.info("남은시간 total:{}", remainingSec);
 
         return new ShTimerResponseDto(remainingSec);
     }
@@ -119,7 +116,6 @@ public class ShService {
         ShRoom shRoom = findShRoom(shRoomId);
 
         shRoom.setSharing(false);
-//        galleryService.deleteGallery(shRoomId);
 
     }
 
@@ -184,7 +180,6 @@ public class ShService {
         ShRoom shRoom = findShRoom(shRoomId);
 
         LocalDateTime localDateTime = LocalDateTime.now().plusMinutes(shRoom.getTimes());
-        log.info("sixHat renew time: {}", localDateTime);
 
         shRoom.setShTimer(localDateTime);
     }

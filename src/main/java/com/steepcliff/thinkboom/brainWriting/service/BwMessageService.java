@@ -31,7 +31,6 @@ public class BwMessageService {
     }
 
     public void SendBwChatMessage(BwMessageResponseDto bwMessageResponseDto) {
-        log.info("SendBwChatMessage 시작");
         if(BwChatMessage.MessageType.SUBJECT.equals(bwMessageResponseDto.getType())) {
             bwService.saveSubject(bwMessageResponseDto.getRoomId(), bwMessageResponseDto.getSubject());
             bwMessageResponseDto.setMessage("[알림] 주제가" + bwMessageResponseDto.getSubject() + "로 변경되었습니다.");

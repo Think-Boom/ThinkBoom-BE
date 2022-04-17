@@ -44,7 +44,6 @@ public class StompHandler implements ChannelInterceptor {
         }
 
         else if (StompCommand.SUBSCRIBE == accessor.getCommand()) {
-            log.info("SUBSCRIBE");
 
             String category = accessor.getFirstNativeHeader("category");
 
@@ -63,7 +62,7 @@ public class StompHandler implements ChannelInterceptor {
             );
 
             if(category.equals("BW")) {
-                log.info("BW  SUB 시작");
+
                 bwService.plusUserCount(roomId);
                 BwRoom room = bwService.findBwRoom(roomId);
                 List<UserListItem> userListItemList = bwService.getBwUserList(roomId);
@@ -78,15 +77,12 @@ public class StompHandler implements ChannelInterceptor {
                         .subject(room.getSubject())
                         .userList(userListItemList)
                         .build());
-                log.info("SUBSCRIBED {}, {}", user.getNickname(), roomId);
 
             } else if(category.equals("SH")) {
                 shService.plusUserCount(roomId);
                 ShRoom room = shService.findShRoom(roomId);
                 // 해당 방의 모자 정보와 유저 정보가 담긴 리스트 가져오기
                 List<UserListItem> userListItemList = shService.getUserList(roomId);
-                log.info("userList {}", userListItemList.get(0));
-                log.info("{}",userListItemList.get(0).getHat() );
                 chatMessageService.EnterQuitChatMessage(EnterQuitMessageResponseDto
                         .builder()
                         .type(EnterQuitMessageResponseDto.MessageType.ENTER)
@@ -97,7 +93,6 @@ public class StompHandler implements ChannelInterceptor {
                         .subject(room.getSubject())
                         .userList(userListItemList)
                         .build());
-                log.info("SUBSCRIBED {}, {}", user.getNickname(), roomId);
             }
 
         }
@@ -105,13 +100,8 @@ public class StompHandler implements ChannelInterceptor {
         else if (StompCommand.DISCONNECT == accessor.getCommand()) {
             String sessionId = (String) message.getHeaders().get("simpSessionId");
 
-
-//            String roomId = chatMessageService.getRoomId(destination);
-
             String category = accessor.getFirstNativeHeader("category");
 
-//            log.info("DISCONNECT 값 가져오기 완료 {}", roomId);
-            log.info("senderId{}", accessor.getFirstNativeHeader("senderId"));
             chatRoomService.removeUserEnterInfo(sessionId);
             // 에러처리 필요
             String senderId = Optional.ofNullable(accessor.getFirstNativeHeader("senderId")).orElse("UnknownUser");
@@ -131,7 +121,6 @@ public class StompHandler implements ChannelInterceptor {
                         .totalUser(room.getHeadCount())
                         .currentUser(room.getCurrentUsers())
                         .build());
-                log.info("DISCONNECT {}", roomId);
             } else if(category.equals("SH")) {
                 String roomId = shService.getEnterUserRoomId(senderId);
                 shService.minusUserCount(roomId);
@@ -144,7 +133,6 @@ public class StompHandler implements ChannelInterceptor {
                         .totalUser(room.getHeadCount())
                         .currentUser(room.getCurrentUsers())
                         .build());
-                log.info("DISCONNECT {}", roomId);
             }
         }
         return message;
