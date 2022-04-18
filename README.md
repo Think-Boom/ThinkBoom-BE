@@ -140,6 +140,8 @@ FrontEnd GIT : https://github.com/Think-Boom/ThinkBoom-FE
 
 <br><br>
 ## ERD
+![ERD](https://user-images.githubusercontent.com/97424544/163747688-3382736f-4551-4da8-92a4-69b913b330bf.PNG)
+
 
 <br><br>
 ## 시연 영상
